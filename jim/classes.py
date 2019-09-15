@@ -31,13 +31,9 @@ class BasePackage:
     def get_dict(self):
         return {s: getattr(self, s, None) for s in self.__slots__}
 
-    def __str__(self):
-        time = dt.fromtimestamp(self.time)
-        return time.strftime("%d/%m/%y %H:%M:%S")
-
 
 class Request(BasePackage):
-    __slots__ = (ACTION, BODY)
+    __slots__ = (ACTION, BODY, TIME)
 
     def __init__(self, action, body=''):
         super().__init__()
@@ -52,12 +48,22 @@ class Request(BasePackage):
         return ins
 
     def __str__(self):
-        d = self.get_dict()
-        return f'{super().__str__()} | REQUEST  | {str(d)}'
+        return f'REQUEST  | {str(self.get_dict())}'
+
+    def __eq__(self, other):
+        if not isinstance(other, Request):
+            return False
+        elif other.action != self.action:
+            return False
+        elif other.body != self.body:
+            return False
+        elif other.time != self.time:
+            return False
+        return True
 
 
 class Response(BasePackage):
-    __slots__ = (CODE, MESSAGE)
+    __slots__ = (CODE, MESSAGE, TIME)
 
     def __init__(self, code):
         super().__init__()
@@ -72,5 +78,15 @@ class Response(BasePackage):
         return ins
 
     def __str__(self):
-        d = self.get_dict()
-        return f'{super().__str__()} | RESPONSE | {str(d)}'
+        return f'RESPONSE | {str(self.get_dict())}'
+
+    def __eq__(self, other):
+        if not isinstance(other, Response):
+            return False
+        elif other.code != self.code:
+            return False
+        elif other.message != self.message:
+            return False
+        elif other.time != self.time:
+            return False
+        return True
