@@ -13,14 +13,19 @@ class Client:
     TCP = (AF_INET, SOCK_STREAM)
     USER = f'Test{random.randint(0,1000)}'
     connected = False
+    socket = None
 
     def __init__(self, addr, port):
-        self.socket = socket(*self.TCP)
-        print_log(f'Connect to {addr}:{port}')
-        wrapper(self.start, addr, port)
+        self.addr = addr
+        self.port = port
 
-    def start(self, addr, port):
-        self.socket.connect((addr, port))
+    def start(self):
+        self.socket = socket(*self.TCP)
+        print_log(f'Connect to {self.addr}:{self.port}')
+        wrapper(self.connect)
+
+    def connect(self):
+        self.socket.connect((self.addr, self.port))
         self.connected = True
         self.presence()
 
@@ -30,7 +35,7 @@ class Client:
     def send_request(self, request):
         if not self.connected:
             return
-        print(request)
+        print_log(request)
         wrapper(send_request, self.socket, request)
 
     def get_response(self):
@@ -39,7 +44,7 @@ class Client:
         response = wrapper(get_data, self.socket)
         if response is not None:
             response = Response.from_dict(response)
-        print(response)
+        print_log(response)
         return response
 
     def presence(self):
@@ -64,6 +69,7 @@ def main():
     port = args.port
 
     client = Client(addr, port)
+    client.start()
     client.send_msg('Hello server')
     input('')
 

@@ -12,13 +12,17 @@ class Server:
     TCP = (AF_INET, SOCK_STREAM)
     clients = []
     exit_flag = False
+    socket = None
 
     def __init__(self, bind_addr, port):
-        self.socket = socket(*self.TCP)
-        self.socket.bind((bind_addr, port))
-        print_log(f'Config server port - {port}| Bind address - {bind_addr}')
+        self.bind_addr = bind_addr
+        self.port = port
 
     def start(self, request_count=5):
+        self.socket = socket(*self.TCP)
+        self.socket.bind((self.bind_addr, self.port))
+        print_log(f'Config server port - {self.port}| Bind address - {self.bind_addr}')
+
         self.socket.listen(request_count)
         self.exit_flag = False
         self.listen()
