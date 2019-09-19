@@ -6,6 +6,8 @@ from common import *
 from jim.classes import *
 from jim.constants import *
 from jim.functions import *
+import logging
+import logs.client_log_config as log_config
 
 
 class Client:
@@ -18,11 +20,12 @@ class Client:
     def __init__(self, addr, port):
         self.addr = addr
         self.port = port
+        self.logger = logging.getLogger(log_config.LOGGER_NAME)
 
     def start(self):
         self.socket = socket(*self.TCP)
-        print_log(f'Connect to {self.addr}:{self.port}')
-        wrapper(self.connect)
+        self.logger.info(f'Connect to {self.addr}:{self.port}')
+        wrapper(self.logger, self.connect)
 
     def connect(self):
         self.socket.connect((self.addr, self.port))
@@ -35,16 +38,16 @@ class Client:
     def send_request(self, request):
         if not self.connected:
             return
-        print_log(request)
-        wrapper(send_request, self.socket, request)
+        self.logger.info(request)
+        wrapper(self.logger, send_request, self.socket, request)
 
     def get_response(self):
         if not self.connected:
             return
-        response = wrapper(get_data, self.socket)
+        response = wrapper(self.logger, get_data, self.socket)
         if response is not None:
             response = Response.from_dict(response)
-        print_log(response)
+        self.logger.info(response)
         return response
 
     def presence(self):
