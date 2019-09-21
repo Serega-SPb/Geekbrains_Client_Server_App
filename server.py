@@ -5,6 +5,8 @@ from common import *
 from jim.classes import *
 from jim.constants import *
 from jim.functions import *
+import logging
+import logs.server_log_config as log_config
 
 
 class Server:
@@ -17,11 +19,12 @@ class Server:
     def __init__(self, bind_addr, port):
         self.bind_addr = bind_addr
         self.port = port
+        self.logger = logging.getLogger(log_config.LOGGER_NAME)
 
     def start(self, request_count=5):
         self.socket = socket(*self.TCP)
         self.socket.bind((self.bind_addr, self.port))
-        print_log(f'Config server port - {self.port}| Bind address - {self.bind_addr}')
+        self.logger.info(f'Config server port - {self.port}| Bind address - {self.bind_addr}')
 
         self.socket.listen(request_count)
         self.exit_flag = False
@@ -31,21 +34,22 @@ class Server:
         self.exit_flag = True
 
     def listen(self):
-        print_log('Start listen')
+        self.logger.info('Start listen')
         while not self.exit_flag:
             client, addr = self.socket.accept()
-            print_log(f'Connection from {addr}')
-            wrapper(self.listen_client, client)
-            print_log(f'End connection {addr}')
+            self.logger.info(f'Connection from {addr}')
+            wrapper(self.logger, self.listen_client, client)
+            self.logger.info(f'End connection {addr}')
 
     def listen_client(self, client):
         while True:
             request = Request.from_dict(get_data(client))
-            print_log(request)
+            self.logger.info(request)
             if request.action == RequestAction.QUIT:
                 client.close()
                 return
             response = self.generate_response(request)
+            self.logger.info(response)
             send_request(client, response)
 
     def generate_response(self, request):
@@ -63,7 +67,7 @@ class Server:
             self.clients.remove(user)
             return Response(OK)
         elif action == RequestAction.MESSAGE:
-            print_log(f'Message: {body}')
+            self.logger.debug(f'Message: {body}')
             return Response(BASIC)
         return Response(INCORRECT_REQUEST)
 
