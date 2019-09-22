@@ -2,7 +2,7 @@ import argparse
 import random
 from socket import *
 
-from common import *
+from decorators import *
 from jim.classes import *
 from jim.constants import *
 from jim.functions import *
@@ -22,11 +22,15 @@ class Client:
         self.port = port
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
 
+    @log_call_method
     def start(self):
         self.socket = socket(*self.TCP)
         self.logger.info(f'Connect to {self.addr}:{self.port}')
-        wrapper(self.logger, self.connect)
+        self.connect()
+        # wrapper(self.logger, self.connect)
 
+    @try_except_wrapper
+    @log_call_method
     def connect(self):
         self.socket.connect((self.addr, self.port))
         self.connected = True
@@ -35,26 +39,34 @@ class Client:
     def __del__(self):
         self.send_request(Request(RequestAction.QUIT, self.USER))
 
+    @try_except_wrapper
+    @log_call_method
     def send_request(self, request):
         if not self.connected:
             return
         self.logger.info(request)
-        wrapper(self.logger, send_request, self.socket, request)
+        send_request(self.socket, request)
+        # wrapper(self.logger, send_request, self.socket, request)
 
+    @try_except_wrapper
+    @log_call_method
     def get_response(self):
         if not self.connected:
             return
-        response = wrapper(self.logger, get_data, self.socket)
+        response = get_data(self.socket)
+        # response = wrapper(self.logger, get_data, self.socket)
         if response is not None:
             response = Response.from_dict(response)
         self.logger.info(response)
         return response
 
+    @log_call_method
     def presence(self):
         request = Request(RequestAction.PRESENCE, self.USER)
         self.send_request(request)
         response = self.get_response()
 
+    @log_call_method
     def send_msg(self, msg):
         request = Request(RequestAction.MESSAGE, msg)
         self.send_request(request)
