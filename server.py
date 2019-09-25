@@ -1,7 +1,7 @@
 import argparse
 from socket import *
 
-from common import *
+from decorators import *
 from jim.classes import *
 from jim.constants import *
 from jim.functions import *
@@ -21,6 +21,7 @@ class Server:
         self.port = port
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
 
+    @log_call_method
     def start(self, request_count=5):
         self.socket = socket(*self.TCP)
         self.socket.bind((self.bind_addr, self.port))
@@ -33,14 +34,18 @@ class Server:
     def stop(self):
         self.exit_flag = True
 
+    @log_call_method
     def listen(self):
         self.logger.info('Start listen')
         while not self.exit_flag:
             client, addr = self.socket.accept()
             self.logger.info(f'Connection from {addr}')
-            wrapper(self.logger, self.listen_client, client)
+            # wrapper(self.logger, self.listen_client, client)
+            self.listen_client(client)
             self.logger.info(f'End connection {addr}')
 
+    @try_except_wrapper
+    @log_call_method
     def listen_client(self, client):
         while True:
             request = Request.from_dict(get_data(client))
@@ -52,6 +57,8 @@ class Server:
             self.logger.info(response)
             send_request(client, response)
 
+    @try_except_wrapper
+    @log_call_method
     def generate_response(self, request):
         action = request.action
         body = request.body
