@@ -18,7 +18,7 @@ WHEN_INTERVAL = 'D'
 
 server_formatter = logging.Formatter('%(asctime)s | %(levelname)-8s | %(module)s | %(message)s')
 
-stream_hnd = logging.StreamHandler(sys.stderr)
+stream_hnd = logging.StreamHandler(sys.stdout)
 stream_hnd.setFormatter(server_formatter)
 stream_hnd.setLevel(STREAM_LOG_LVL)
 

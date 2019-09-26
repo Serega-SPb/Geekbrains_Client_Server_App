@@ -20,5 +20,7 @@ def try_except_wrapper(func):
             logger.critical(INCORRECT_REQUEST)
         except ConnectionError:
             logger.error(SERVER_ERROR)
+        except Exception as ex:
+            logger.error(ex)
         return None
     return wrapper

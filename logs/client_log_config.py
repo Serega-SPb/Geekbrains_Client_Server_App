@@ -6,7 +6,7 @@ LOGGER_NAME = 'client'
 
 LOGGING_LVL = logging.DEBUG
 FILE_LOG_LVL = logging.WARNING
-STREAM_LOG_LVL = logging.DEBUG
+STREAM_LOG_LVL = logging.INFO
 
 LOG_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 LOG_FILENAME = f'{LOGGER_NAME}.log'
@@ -14,7 +14,7 @@ ENCODING = 'utf-8'
 
 client_formatter = logging.Formatter('%(asctime)s | %(levelname)-8s | %(module)s | %(message)s')
 
-stream_hnd = logging.StreamHandler(sys.stderr)
+stream_hnd = logging.StreamHandler(sys.stdout)
 stream_hnd.setFormatter(client_formatter)
 stream_hnd.setLevel(STREAM_LOG_LVL)
 
