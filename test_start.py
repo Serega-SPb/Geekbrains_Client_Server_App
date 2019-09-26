@@ -28,6 +28,7 @@ def main():
         elif action == 'Q':
             while processes:
                 processes.pop().kill()
+            exit(0)
 
 
 if __name__ == '__main__':
