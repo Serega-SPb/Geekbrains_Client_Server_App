@@ -1,6 +1,5 @@
 from jim.classes import Code
 
-
 # 1xx
 BASIC = Code(100, 'Basic message')
 # 2xx

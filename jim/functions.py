@@ -1,4 +1,5 @@
 import json
+from jim.classes import *
 
 ENCODING = 'utf-8'
 BUFFER = 512
@@ -11,8 +12,13 @@ def send_request(socket, request):
 
 
 def get_data(socket):
-    response = socket.recv(BUFFER)
-    if not isinstance(response, bytes):
+    data = socket.recv(BUFFER)
+    if not isinstance(data, bytes):
         raise ValueError
-    response_data = json.loads(response.decode(ENCODING))
-    return response_data
+    js_data = json.loads(data.decode(ENCODING))
+
+    if js_data[TYPE] == REQUEST:
+        return Request.from_dict(js_data)
+    if js_data[TYPE] == RESPONSE:
+        return Response.from_dict(js_data)
+    raise ValueError

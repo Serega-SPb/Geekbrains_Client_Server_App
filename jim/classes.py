@@ -1,10 +1,20 @@
 from datetime import datetime as dt
+from jim.constants import *
+
+TYPE = 'type'
+REQUEST = 'request'
+RESPONSE = 'response'
 
 ACTION = 'action'
 TIME = 'time'
 BODY = 'body'
 CODE = 'code'
 MESSAGE = 'message'
+
+USERNAME = 'username'
+SENDER = 'sender'
+TO = 'to'
+TEXT = 'text'
 
 
 class Code:
@@ -22,10 +32,10 @@ class Code:
 
 
 class BasePackage:
-
-    __slots__ = (TIME,)
+    __slots__ = (TIME, TYPE)
 
     def __init__(self):
+        super().__init__()
         self.time = dt.timestamp(dt.now())
 
     def get_dict(self):
@@ -33,10 +43,11 @@ class BasePackage:
 
 
 class Request(BasePackage):
-    __slots__ = (ACTION, BODY, TIME)
+    __slots__ = (ACTION, BODY, TIME, TYPE)
 
     def __init__(self, action, body=''):
         super().__init__()
+        self.type = REQUEST
         self.action = action
         self.body = body
 
@@ -46,6 +57,13 @@ class Request(BasePackage):
         if TIME in json_obj:
             ins.time = json_obj[TIME]
         return ins
+
+    def get_dict(self):
+        d = super().get_dict()
+        b = d[BODY]
+        if b and isinstance(b, BaseBody):
+            d[BODY] = (d[BODY]).get_dict()
+        return d
 
     def __str__(self):
         return f'REQUEST  | {str(self.get_dict())}'
@@ -63,10 +81,11 @@ class Request(BasePackage):
 
 
 class Response(BasePackage):
-    __slots__ = (CODE, MESSAGE, TIME)
+    __slots__ = (CODE, MESSAGE, TIME, TYPE)
 
     def __init__(self, code):
         super().__init__()
+        self.type = RESPONSE
         self.code = code.code
         self.message = code.message
 
@@ -90,3 +109,39 @@ class Response(BasePackage):
         elif other.time != self.time:
             return False
         return True
+
+
+class BaseBody:
+
+    def get_dict(self):
+        return {s: str(getattr(self, s, None)) for s in self.__slots__}
+
+
+class User(BaseBody):
+    __slots__ = (USERNAME,)
+
+    def __init__(self, username):
+        self.username = username
+
+    def get_dict(self):
+        return self.username
+
+    def __str__(self):
+        return self.username
+
+
+class Msg(BaseBody):
+    __slots__ = (SENDER, TO, TEXT)
+
+    def __init__(self, text, sender, to='ALL'):
+        self.text = text
+        self.sender = sender
+        self.to = to
+
+    @classmethod
+    def from_dict(cls, json_obj):
+        ins = cls(json_obj[TEXT], json_obj[SENDER], json_obj[TO])
+        return ins
+
+    def __str__(self):
+        return f'{self.sender} to @{self.to}: {self.text}'
