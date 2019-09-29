@@ -1,3 +1,4 @@
+import re
 from datetime import datetime as dt
 from jim.constants import *
 
@@ -71,11 +72,11 @@ class Request(BasePackage):
     def __eq__(self, other):
         if not isinstance(other, Request):
             return False
-        elif other.action != self.action:
+        if other.action != self.action:
             return False
-        elif other.body != self.body:
+        if other.body != self.body:
             return False
-        elif other.time != self.time:
+        if other.time != self.time:
             return False
         return True
 
@@ -102,11 +103,11 @@ class Response(BasePackage):
     def __eq__(self, other):
         if not isinstance(other, Response):
             return False
-        elif other.code != self.code:
+        if other.code != self.code:
             return False
-        elif other.message != self.message:
+        if other.message != self.message:
             return False
-        elif other.time != self.time:
+        if other.time != self.time:
             return False
         return True
 
@@ -126,12 +127,21 @@ class User(BaseBody):
     def get_dict(self):
         return self.username
 
+    def __eq__(self, other):
+        if not isinstance(other, User):
+            return False
+        if other.username != self.username:
+            return False
+        return True
+
     def __str__(self):
         return self.username
 
 
 class Msg(BaseBody):
     __slots__ = (SENDER, TO, TEXT)
+
+    PATTERN = r'@(?P<to>[\w\d]*)?(?P<message>.*)'
 
     def __init__(self, text, sender, to='ALL'):
         self.text = text
@@ -142,6 +152,18 @@ class Msg(BaseBody):
     def from_dict(cls, json_obj):
         ins = cls(json_obj[TEXT], json_obj[SENDER], json_obj[TO])
         return ins
+
+    def parse_msg(self):
+        to_user = 'ALL'
+        msg = self.text
+
+        if '@' in msg:
+            match = re.match(self.PATTERN, msg)
+            to_user = match.group(TO)
+            msg = match.group(MESSAGE)
+
+        self.to = to_user
+        self.text = msg
 
     def __str__(self):
         return f'{self.sender} to @{self.to}: {self.text}'

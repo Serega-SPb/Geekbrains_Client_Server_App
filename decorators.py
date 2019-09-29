@@ -16,9 +16,12 @@ def try_except_wrapper(func):
         logger = args[0].logger
         try:
             return func(*args, **kwargs)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as e:
             logger.critical(INCORRECT_REQUEST)
-        except ConnectionError:
+            logger.critical(e)
+        except ConnectionRefusedError:
+            logger.error(SERVER_UNAVAILABLE)
+        except ConnectionError as e:
             logger.error(SERVER_ERROR)
         except Exception as ex:
             logger.error(ex)
