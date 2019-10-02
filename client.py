@@ -4,6 +4,8 @@ from socket import *
 from threading import Thread
 
 from decorators import *
+from jim.codes import *
+from jim.classes.request_body import *
 from jim.functions import *
 import logging
 import logs.client_log_config as log_config
@@ -27,7 +29,7 @@ class Client:
     __slots__ = ('addr', 'port', 'logger', 'socket', 'connected', 'listener', 'sender')
 
     TCP = (AF_INET, SOCK_STREAM)
-    USER = User(f'Test{random.randint(0,1000)}')
+    USER = User(f'Test{random.randint(0,3)}')
 
     def __init__(self, addr, port):
         self.addr = addr
@@ -67,7 +69,7 @@ class Client:
         if not self.connected:
             return
         self.logger.debug(request)
-        send_request(self.socket, request)
+        send_data(self.socket, request)
 
     @try_except_wrapper
     def __get_response(self):

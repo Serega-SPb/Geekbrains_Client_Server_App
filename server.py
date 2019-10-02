@@ -3,6 +3,8 @@ from socket import *
 from select import select
 
 from decorators import *
+from jim.codes import *
+from jim.classes.request_body import *
 from jim.functions import *
 import logging
 import logs.server_log_config as log_config
@@ -65,7 +67,12 @@ class Server:
                 requests[client] = request
 
                 if request.action == RequestAction.PRESENCE:
-                    self.users[request.body] = client
+                    if request.body in self.users:
+                        requests.pop(client)
+                        send_data(client, Response(CONFLICT))
+                        self.clients.remove(client)
+                    else:
+                        self.users[request.body] = client
                 elif request.action == RequestAction.QUIT:
                     self.users.pop(request.body)
 
@@ -108,7 +115,7 @@ class Server:
     @try_except_wrapper
     def __send_to_client(self, client, req):
         try:
-            send_request(client, req)
+            send_data(client, req)
         except ConnectionError:
             self.__client_disconnect(client)
         except Exception as e:
@@ -136,7 +143,7 @@ class Server:
         self.users.pop(disconnected_user)
         disconnection_request = Request(RequestAction.QUIT, disconnected_user)
         for cl in self.clients:
-            send_request(cl, disconnection_request)
+            send_data(cl, disconnection_request)
 
     def __execute_command(self, command):
         if command == 'get_users':

@@ -53,7 +53,7 @@ class TestJimFunctions(TestCase):
     def test_send_request(self):
         request = Request(RequestAction.MESSAGE)
         socket = self.TestSocket(request.get_dict())
-        send_request(socket, request)
+        send_data(socket, request)
         self.assertEqual(socket.encoded_data, socket.request)
 
     def test_get_data(self):

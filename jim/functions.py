@@ -1,19 +1,19 @@
 import json
-from jim.classes import *
+from jim.classes.package import *
 
 ENCODING = 'utf-8'
 BUFFER = 512
 
 
-def send_request(socket, request):
-    request_dict = request.get_dict()
-    js_str = json.dumps(request_dict)
+def send_data(socket, data):
+    data_dict = data.get_dict()
+    js_str = json.dumps(data_dict)
     socket.send(js_str.encode(ENCODING))
 
 
 def get_data(socket):
     data = socket.recv(BUFFER)
-    if not isinstance(data, bytes):
+    if not isinstance(data, bytes) or len(data) == 0:
         raise ValueError
     js_data = json.loads(data.decode(ENCODING))
 
