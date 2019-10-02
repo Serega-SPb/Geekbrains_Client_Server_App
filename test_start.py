@@ -15,16 +15,13 @@ def main():
     while not exit_flag:
 
         action = input('Select action:\n S - start server\n '
-                       'L - start client listen-mode\n '
-                       'R - start client send-mode \n '
+                       'C - start client\n '
                        'Q - all stop and quit ').upper()
 
         if action == 'S':
             add_subprocess(processes, f'python server.py -p {PORT}')
-        elif action == 'L':
+        elif action == 'C':
             add_subprocess(processes, f'python client.py 127.0.0.1 {PORT}')
-        elif action == 'R':
-            add_subprocess(processes, f'python client.py 127.0.0.1 {PORT} S')
         elif action == 'Q':
             while processes:
                 processes.pop().kill()

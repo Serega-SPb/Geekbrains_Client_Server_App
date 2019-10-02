@@ -10,6 +10,7 @@ INCORRECT_REQUEST = Code(400, 'Incorrect request / json')
 CONFLICT = Code(409, 'User already connected')
 # 5xx
 SERVER_ERROR = Code(500, 'Server error')
+SERVER_UNAVAILABLE = Code(503, 'Service Unavailable ')
 
 
 class RequestAction:

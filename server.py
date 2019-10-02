@@ -10,7 +10,7 @@ import logs.server_log_config as log_config
 
 class Server:
 
-    __slots__ = ('bind_addr', 'port', 'logger', 'socket', 'clients', )
+    __slots__ = ('bind_addr', 'port', 'logger', 'socket', 'clients', 'users')
 
     TCP = (AF_INET, SOCK_STREAM)
     TIMEOUT = 5
@@ -20,6 +20,7 @@ class Server:
         self.port = port
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.clients = []
+        self.users = {}
 
     def start(self, request_count=5):
         self.socket = socket(*self.TCP)
@@ -60,10 +61,16 @@ class Server:
         requests = {}
         for client in i_clients:
             try:
-                requests[client] = get_data(client)
+                request = get_data(client)
+                requests[client] = request
+
+                if request.action == RequestAction.PRESENCE:
+                    self.users[request.body] = client
+                elif request.action == RequestAction.QUIT:
+                    self.users.pop(request.body)
+
             except ConnectionError:
-                self.clients.remove(client)
-                self.logger.info(f'End connection {client}')
+                self.__client_disconnect(client)
             except Exception as e:
                 raise e
         return requests
@@ -71,29 +78,41 @@ class Server:
     @try_except_wrapper
     def __send_responses(self, requests, o_clients):
 
-        for soc, req in requests.items():
-            resp = self.__generate_response(req)
-            self.logger.info(soc)
-            self.logger.info(resp)
-            try:
-                if req.action == RequestAction.QUIT:
-                    raise ConnectionError
-                send_request(soc, resp)
-            except ConnectionError:
-                self.logger.info(f'End connection {soc}')
-                self.clients.remove(soc)
-            except Exception as e:
-                raise e
+        for client, i_req in requests.items():
+            i_resp = self.__generate_response(i_req)
+            self.logger.info(client)
+            self.logger.info(i_resp)
 
-            for client in o_clients:
-                if client == soc:
+            if i_req.action == RequestAction.QUIT:
+                self.__client_disconnect(client)
+            else:
+                self.__send_to_client(client, i_resp)
+
+            if i_req.action == RequestAction.MESSAGE:
+                msg = Msg.from_dict(i_req.body)
+                if msg.to.lower() == 'server':
+                    o_resp = Msg(self.__execute_command(msg.text.strip()), 'server', msg.sender)
+                    o_req = Request(RequestAction.MESSAGE, o_resp)
+                    self.__send_to_client(self.users[msg.sender], o_req)
                     continue
-                try:
-                    send_request(client, req)
-                except ConnectionError:
-                    self.clients.remove(client)
-                except Exception as e:
-                    raise e
+
+                if msg.to.upper() != 'ALL' and msg.to in self.users:
+                    self.__send_to_client(self.users[msg.to], i_req)
+                    continue
+
+            for o_cl in o_clients:
+                if client == o_cl:
+                    continue
+                self.__send_to_client(o_cl, i_req)
+
+    @try_except_wrapper
+    def __send_to_client(self, client, req):
+        try:
+            send_request(client, req)
+        except ConnectionError:
+            self.__client_disconnect(client)
+        except Exception as e:
+            raise e
 
     @try_except_wrapper
     def __generate_response(self, request):
@@ -109,6 +128,22 @@ class Server:
             self.logger.debug(f'Message: {str(msg)}')
             return Response(BASIC)
         return Response(INCORRECT_REQUEST)
+
+    @try_except_wrapper
+    def __client_disconnect(self, client):
+        self.clients.remove(client)
+        disconnected_user = [u for u, c in self.users.items() if c == client].pop()
+        self.users.pop(disconnected_user)
+        disconnection_request = Request(RequestAction.QUIT, disconnected_user)
+        for cl in self.clients:
+            send_request(cl, disconnection_request)
+
+    def __execute_command(self, command):
+        if command == 'get_users':
+            answer = f'Users connected: {", ".join([u for u in self.users.keys()])}'
+        else:
+            answer = 'Command not found'
+        return answer
 
 
 def main():
