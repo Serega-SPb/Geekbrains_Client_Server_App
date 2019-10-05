@@ -1,5 +1,5 @@
 import json
-from jim.constants import *
+from jim.codes import *
 
 
 def log_call_method(func):
