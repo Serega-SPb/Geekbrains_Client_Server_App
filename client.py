@@ -29,7 +29,7 @@ class Client:
     __slots__ = ('addr', 'port', 'logger', 'socket', 'connected', 'listener', 'sender')
 
     TCP = (AF_INET, SOCK_STREAM)
-    USER = User(f'Test{random.randint(0,3)}')
+    USER = User(f'Test{random.randint(0,1000)}')
 
     def __init__(self, addr, port):
         self.addr = addr
