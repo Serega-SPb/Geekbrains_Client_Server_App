@@ -1,26 +1,30 @@
 import argparse
+import logging
 from socket import *
 from select import select
 
+import logs.server_log_config as log_config
 from decorators import *
+from descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import *
 from jim.functions import *
-import logging
-import logs.server_log_config as log_config
+from metaclasses import ServerVerifier
 
 
-class Server:
+class Server(metaclass=ServerVerifier):
 
-    __slots__ = ('bind_addr', 'port', 'logger', 'socket', 'clients', 'users')
+    __slots__ = ('bind_addr', '_port', 'logger', 'socket', 'clients', 'users')
 
     TCP = (AF_INET, SOCK_STREAM)
     TIMEOUT = 5
 
+    port = Port('_port')
+
     def __init__(self, bind_addr, port):
+        self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.bind_addr = bind_addr
         self.port = port
-        self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.clients = []
         self.users = {}
 

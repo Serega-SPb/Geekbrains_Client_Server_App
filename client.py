@@ -1,14 +1,16 @@
 import argparse
+import logging
 import random
 from socket import *
 from threading import Thread
 
+import logs.client_log_config as log_config
 from decorators import *
+from descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import *
 from jim.functions import *
-import logging
-import logs.client_log_config as log_config
+from metaclasses import ClientVerifier
 
 
 class ClientThread(Thread):
@@ -25,16 +27,18 @@ class ClientThread(Thread):
         self.func()
 
 
-class Client:
-    __slots__ = ('addr', 'port', 'logger', 'socket', 'connected', 'listener', 'sender')
+class Client(metaclass=ClientVerifier):
+    __slots__ = ('addr', '_port', 'logger', 'socket', 'connected', 'listener', 'sender')
 
     TCP = (AF_INET, SOCK_STREAM)
     USER = User(f'Test{random.randint(0,1000)}')
 
+    port = Port('_port')
+
     def __init__(self, addr, port):
+        self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.addr = addr
         self.port = port
-        self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.connected = False
 
     def start(self):
