@@ -11,15 +11,20 @@ class Code:
     def __eq__(self, other: int):
         return self.code == other
 
+    def __int__(self):
+        return self.code
+
     def __str__(self):
         return f'{self.code} - {self.message}'
 
 
 # 1xx
 BASIC = Code(100, 'Basic message')
+ANSWER = Code(101, '')
 # 2xx
 OK = Code(200, 'OK')
 CREATED = Code(201, 'Connection created')
+
 # 4xx
 INCORRECT_REQUEST = Code(400, 'Incorrect request / json')
 CONFLICT = Code(409, 'User already connected')

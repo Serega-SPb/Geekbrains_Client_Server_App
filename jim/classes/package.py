@@ -58,11 +58,14 @@ class Request(BasePackage):
 class Response(BasePackage):
     __slots__ = (CODE, MESSAGE, TIME, TYPE)
 
-    def __init__(self, code):
+    def __init__(self, code, message=None):
         super().__init__()
         self.type = RESPONSE
         self.code = code.code
-        self.message = code.message
+        if message:
+            self.message = message
+        else:
+            self.message = code.message
 
     @classmethod
     def from_dict(cls, json_obj):
