@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 from socket import *
 from select import select
 from threading import Thread
@@ -11,6 +12,7 @@ from jim.codes import *
 from jim.classes.request_body import Msg
 from jim.functions import *
 from server_db import ServerStorage
+from ui.server_ui_logic import *
 # from metaclasses import ServerVerifier
 
 
@@ -64,7 +66,7 @@ class Server:
 
         self.listener = ServerThread(self.__listen, self.logger)
         self.listener.start()
-        self.__console()
+        # self.__console()
 
     def __console(self):
         while True:
@@ -143,10 +145,17 @@ class Server:
                 self.__client_disconnect(client)
             elif i_req.action == RequestAction.MESSAGE:
                 msg = Msg.from_dict(i_req.body)
+                self.storage.user_stat_update(msg.sender, ch_sent=1)
                 if msg.to.upper() != 'ALL' and msg.to in self.users:
+                    self.storage.user_stat_update(msg.to, ch_recv=1)
                     self.__send_to_client(self.users[msg.to], Response(BASIC, str(msg)))
                 else:
                     self.__send_to_all(other_clients, Response(BASIC, str(msg)))
+                    for u in self.storage.get_users_online():
+                        if str(u) == msg.sender:
+                            continue
+                        self.storage.user_stat_update(str(u), ch_recv=1)
+
             elif i_req.action == RequestAction.COMMAND:
                 command, *args = i_req.body.split()
                 user = [u for u, c in self.users.items() if c == client].pop()
@@ -196,10 +205,28 @@ class Server:
             return Response(INCORRECT_REQUEST, 'Command not found')
 
 
+def load_config():
+    file = os.path.join(ConfigWindow.DIR, ConfigWindow.CONFIG)
+    if not os.path.isfile(file):
+        return
+    with open(file, 'r', encoding='utf-8') as file:
+        content = yaml.load(file, yaml.FullLoader)
+    return content
+
+
 def main():
+
+    config = load_config()
+
+    port = config['port'] if config and 'port' in config else 7777
+    bind = config['bind'] if config and 'bind' in config else ''
+    db_file = config['database'] if config and 'database' in config else 'server_db.db'
+
+    ServerStorage(db_file)
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--port', default=7777, type=int, nargs='?', help='Port [default=7777]')
-    parser.add_argument('-a', '--addr', default='', type=str, nargs='?', help='Bind address')
+    parser.add_argument('-p', '--port', default=port, type=int, nargs='?', help='Port [default=7777]')
+    parser.add_argument('-a', '--addr', default=bind, type=str, nargs='?', help='Bind address')
 
     args = parser.parse_args()
     addr = args.addr
@@ -207,6 +234,11 @@ def main():
 
     server = Server(addr, port)
     server.start()
+
+    application = QApplication(sys.argv)
+    main_window = MainWindow()
+    main_window.show()
+    application.exec_()
 
 
 if __name__ == '__main__':

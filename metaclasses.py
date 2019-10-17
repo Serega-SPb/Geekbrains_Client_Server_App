@@ -3,7 +3,6 @@ import dis
 
 
 def disassemble(clsdict, black_list):
-
     funcs = [a for a in clsdict.values() if isinstance(a, types.FunctionType)]
     instructions = [list(dis.get_instructions(f)) for f in funcs]
     for instr in instructions:
@@ -24,6 +23,18 @@ def disassemble(clsdict, black_list):
                 if i.argval in black_list:
                     raise TypeError('Call method of socket from black list')
     pass
+
+
+class Singleton(type):
+
+    def __init__(cls, *args, **kwargs):
+        super(Singleton, cls).__init__(*args, **kwargs)
+        cls.instance = None
+
+    def __call__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls.instance
 
 
 class ServerVerifier(type):
