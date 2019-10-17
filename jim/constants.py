@@ -18,6 +18,7 @@ class RequestAction:
     PRESENCE = 'presence'
     MESSAGE = 'msg'
     QUIT = 'quit'
+    COMMAND = 'command'
 
 
 
