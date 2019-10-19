@@ -54,7 +54,7 @@ class Msg(BaseBody):
             msg = match.group(MESSAGE)
 
         self.to = to_user
-        self.text = msg
+        self.text = msg.strip()
 
     def __str__(self):
         return f'{self.sender} to @{self.to}: {self.text}'

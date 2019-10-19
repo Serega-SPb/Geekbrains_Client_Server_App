@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 import logs.server_log_config as log_config
 from decorators import transaction
+from metaclasses import Singleton
 
 Base = declarative_base()
 
@@ -58,18 +59,31 @@ class Contact(Base):
         self.contact_id = contact_id
 
 
-class ServerStorage:
+class UserStat(Base):
+    __tablename__ = 'user_stats'
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    mes_sent = Column(Integer, default=0)
+    mes_recv = Column(Integer, default=0)
+
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.mes_recv = 0
+        self.mes_sent = 0
+
+
+class ServerStorage(metaclass=Singleton):
     DB = 'sqlite:///server_db.db'
     sessions = {}
 
-    def __init__(self):
+    def __init__(self, db_file=None):
+        self.set_database(db_file)
+
+    def set_database(self, db_file):
+        db = f'sqlite:///{db_file}' if db_file else self.DB
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
-        self.database_engine = create_engine(self.DB, echo=False, pool_recycle=7200)
+        self.database_engine = create_engine(db, echo=False, pool_recycle=7200)
         Base.metadata.create_all(self.database_engine)
         self.session_factory = sessionmaker(bind=self.database_engine)
-
-        # self.session = sessionmaker(bind=self.database_engine)()
-        # self.session = self.get_session()
 
         self.session.query(UserOnline).delete()
         self.session.commit()
@@ -90,6 +104,9 @@ class ServerStorage:
         self.session.add(user)
         return user
 
+    def get_users(self):
+        return self.session.query(User).all()
+
     @transaction
     def login_user(self, username, ip):
         print(threading.current_thread())
@@ -107,6 +124,9 @@ class ServerStorage:
         user = self.session.query(User).filter_by(name=username).first()
         if user:
             self.session.query(UserOnline).filter_by(user_id=user.id).delete()
+
+    def get_history(self):
+        return self.session.query(User, LoginHistory).join(LoginHistory, User.id == LoginHistory.user_id).all()
 
     @transaction
     def add_contact(self, username, contactname):
@@ -142,6 +162,24 @@ class ServerStorage:
                 .filter(Contact.user_id == user.id)\
                 .all()
 
+    @transaction
+    def user_stat_update(self, username, ch_sent=0, ch_recv=0):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.user_stat_update: user not found')
+            return False
+
+        stat = self.session.query(UserStat).filter_by(user_id=user.id).first()
+        if not stat:
+            stat = UserStat(user.id)
+            self.session.add(stat)
+
+        stat.mes_sent += ch_sent
+        stat.mes_recv += ch_recv
+
+    def get_user_stats(self):
+        return self.session.query(User, UserStat).join(UserStat, User.id == UserStat.user_id).all()
+
 
 def main():
     import random
@@ -150,6 +188,9 @@ def main():
     ip = '127.0.0.1'
     user1 = f'User{random.randint(0, 100)}'
     user2 = f'User{random.randint(0, 100)}'
+
+    st = storage.get_user_stats()
+    hist = storage.get_history()
 
     storage.login_user(user1, ip)
     storage.login_user(user2, ip)

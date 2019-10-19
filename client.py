@@ -10,6 +10,7 @@ from descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import *
 from jim.functions import *
+from client_db import ClientStorage
 # from metaclasses import ClientVerifier
 
 
@@ -37,7 +38,7 @@ def print_help():
 
 
 class Client:
-    __slots__ = ('addr', '_port', 'logger', 'socket', 'connected', 'listener', 'sender')
+    __slots__ = ('addr', '_port', 'logger', 'socket', 'connected', 'listener', 'sender', 'storage')
 
     TCP = (AF_INET, SOCK_STREAM)
     USER = User(f'Test{random.randint(0, 1000)}')
@@ -49,6 +50,12 @@ class Client:
         self.addr = addr
         self.port = port
         self.connected = False
+
+        name = input('Set name (enter generate name):\n')
+        if len(name) > 0:
+            self.USER.username = name
+
+        self.storage = ClientStorage(self.USER.username)
 
     def start(self):
         self.socket = socket(*self.TCP)
@@ -107,11 +114,20 @@ class Client:
                 continue
             if msg[0] == '#':
                 request = Request(RequestAction.COMMAND, msg[1:])
+                self.parse_command(request.body)
             else:
                 msg = Msg(msg, self.USER)
                 msg.parse_msg()
+                self.storage.add_message(msg.to, msg.text)
                 request = Request(RequestAction.MESSAGE, msg)
             self.__send_request(request)
+
+    def parse_command(self, command):
+        command, *args = command.split(' ')
+        if command == 'add_contact':
+            self.storage.add_contact(args[0])
+        elif command == 'rem_contact':
+            self.storage.remove_contact(args[0])
 
     def __execute_local_command(self, command):
         if command == 'help':
