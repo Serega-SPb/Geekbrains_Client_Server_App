@@ -21,9 +21,12 @@ class Code:
 # 1xx
 BASIC = Code(100, 'Basic message')
 ANSWER = Code(101, '')
+
 # 2xx
 OK = Code(200, 'OK')
-CREATED = Code(201, 'Connection created')
+CONNECTED = Code(201, 'User connected')
+DISCONNECTED = Code(202, 'User disconnected')
+LETTER = Code(203, '')
 
 # 4xx
 INCORRECT_REQUEST = Code(400, 'Incorrect request / json')
