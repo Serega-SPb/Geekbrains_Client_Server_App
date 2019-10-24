@@ -1,5 +1,8 @@
 import subprocess
 
+CLIENT_FILE = 'client\\client.py'
+SERVER_FILE = 'server\\server.py'
+
 
 def add_subprocess(processes, cmd):
     processes.append(subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE))
@@ -19,9 +22,9 @@ def main():
                        'Q - all stop and quit\n').upper()
 
         if action == 'S':
-            add_subprocess(processes, f'python server.py -p {port}')
+            add_subprocess(processes, f'python {SERVER_FILE} -p {port}')
         elif action == 'C':
-            add_subprocess(processes, f'python client.py 127.0.0.1 {port}')
+            add_subprocess(processes, f'python {CLIENT_FILE} 127.0.0.1 {port}')
         elif action == 'P':
             p = input('Enter port: ')
             if not p.isdigit() or not (1024 <= int(p) <= 65535):

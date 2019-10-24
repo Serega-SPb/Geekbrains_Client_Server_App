@@ -1,13 +1,13 @@
 import logging
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 import logs.client_log_config as log_config
-from decorators import transaction
-from metaclasses import Singleton
+from common.decorators import transaction
+from common.metaclasses import Singleton
 
 Base = declarative_base()
 
@@ -60,6 +60,9 @@ class ClientStorage(metaclass=Singleton):
     def remove_contact(self, contact):
         self.session.query(Contact).filter_by(contact=contact).delete()
 
+    def get_contact(self, contact):
+        return self.session.query(Contact).filter_by(contact=contact).first()
+
     def get_contacts(self):
         return self.session.query(Contact).all()
 
@@ -70,6 +73,12 @@ class ClientStorage(metaclass=Singleton):
 
     def get_messages(self):
         return self.session.query(Message).all()
+
+    def append_contact(self, contact):
+        check = self.session.query(Contact).filter_by(contact=contact).first()
+        if check:
+            return
+        self.add_contact(contact)
 
 
 def main():

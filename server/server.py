@@ -1,17 +1,13 @@
 import argparse
-import logging
-import os
 from socket import *
 from select import select
 from threading import Thread
 
-import logs.server_log_config as log_config
-from decorators import try_except_wrapper
-from descriptors import Port
+from common.decorators import try_except_wrapper
+from common.descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import Msg
 from jim.functions import *
-from server_db import ServerStorage
 from ui.server_ui_logic import *
 # from metaclasses import ServerVerifier
 
@@ -53,6 +49,7 @@ class Server:
             'add_contact': self.storage.add_contact,
             'rem_contact': self.storage.remove_contact,
             'get_contacts': self.storage.get_contacts,
+            'get_chat': self.storage.get_chat_str
         }
 
     def start(self, request_count=5):
@@ -140,7 +137,7 @@ class Server:
 
             if i_req.action == RequestAction.PRESENCE:
                 self.__send_to_client(client, Response(OK))
-                self.__send_to_all(other_clients, Response(BASIC, f'{i_req.body} connected'))
+                self.__send_to_all(other_clients, Response(CONNECTED, i_req.body))
             elif i_req.action == RequestAction.QUIT:
                 self.__client_disconnect(client)
             elif i_req.action == RequestAction.MESSAGE:
@@ -148,19 +145,21 @@ class Server:
                 self.storage.user_stat_update(msg.sender, ch_sent=1)
                 if msg.to.upper() != 'ALL' and msg.to in self.users:
                     self.storage.user_stat_update(msg.to, ch_recv=1)
-                    self.__send_to_client(self.users[msg.to], Response(BASIC, str(msg)))
+                    self.storage.add_message(msg.sender, msg.to, msg.text)
+                    self.__send_to_client(self.users[msg.to], Response(LETTER, str(msg)))
                 else:
-                    self.__send_to_all(other_clients, Response(BASIC, str(msg)))
+                    self.__send_to_all(other_clients, Response(LETTER, str(msg)))
                     for u in self.storage.get_users_online():
                         if str(u) == msg.sender:
                             continue
                         self.storage.user_stat_update(str(u), ch_recv=1)
+                        self.storage.add_message(msg.sender, str(u), msg.text)
 
             elif i_req.action == RequestAction.COMMAND:
                 command, *args = i_req.body.split()
                 user = [u for u, c in self.users.items() if c == client].pop()
-                args.insert(0, user)
-                # o_resp = Response(ANSWER, self.__execute_command(command, *args))
+                if len(args) < 1 or args[0] != user:
+                    args.insert(0, user)
                 o_resp = self.__execute_command(command, *args)
                 self.__send_to_client(client, o_resp)
             else:
@@ -170,6 +169,7 @@ class Server:
     @try_except_wrapper
     def __send_to_client(self, client, resp):
         try:
+            self.logger.debug(resp)
             send_data(client, resp)
         except ConnectionError:
             self.__client_disconnect(client)
@@ -186,7 +186,8 @@ class Server:
         disconnected_user = [u for u, c in self.users.items() if c == client].pop()
         self.users.pop(disconnected_user)
         self.storage.logout_user(disconnected_user)
-        disconnection_response = Response(BASIC, f'{disconnected_user} disconnected')
+        disconnection_response = Response(DISCONNECTED, disconnected_user)
+        self.logger.debug(disconnection_response)
         for cl in self.clients:
             send_data(cl, disconnection_response)
 

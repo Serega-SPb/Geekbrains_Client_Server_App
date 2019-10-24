@@ -1,17 +1,19 @@
 import argparse
 import logging
+import queue
 import random
 from socket import *
 from threading import Thread
 
 import logs.client_log_config as log_config
-from decorators import *
-from descriptors import Port
+from common.decorators import *
+from common.descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import *
 from jim.functions import *
 from client_db import ClientStorage
 # from metaclasses import ClientVerifier
+from ui.client_ui_logic import *
 
 
 class ClientThread(Thread):
@@ -38,7 +40,7 @@ def print_help():
 
 
 class Client:
-    __slots__ = ('addr', '_port', 'logger', 'socket', 'connected', 'listener', 'sender', 'storage')
+    __slots__ = ('addr', '_port', 'logger', 'socket', 'connected', 'listener', 'sender', 'storage', 'subs', 'answers')
 
     TCP = (AF_INET, SOCK_STREAM)
     USER = User(f'Test{random.randint(0, 1000)}')
@@ -50,11 +52,21 @@ class Client:
         self.addr = addr
         self.port = port
         self.connected = False
+        self.subs = {201: [], 202: [], 203: []}
+        self.answers = queue.Queue()
+        self.__reg_resp_console()
+        # name = input('Set name (enter generate name):\n')
+        # if len(name) > 0:
+        #     self.USER.username = name
+        # self.storage = ClientStorage(self.USER.username)
 
-        name = input('Set name (enter generate name):\n')
-        if len(name) > 0:
-            self.USER.username = name
+    @property
+    def username(self):
+        return self.USER.username
 
+    @username.setter
+    def username(self, value):
+        self.USER.username = value
         self.storage = ClientStorage(self.USER.username)
 
     def start(self):
@@ -63,6 +75,11 @@ class Client:
         self.logger.debug(start_txt)
         print(start_txt)
         self.__connect()
+
+    def __reg_resp_console(self):
+        self.subscribe(201, lambda m: print(f'{m} connected'))
+        self.subscribe(202, lambda m: print(f'{m} disconnected'))
+        self.subscribe(203, lambda m: print(m))
 
     @try_except_wrapper
     def __connect(self):
@@ -78,7 +95,7 @@ class Client:
         self.listener = ClientThread(self.__listen_server, self.logger)
         self.listener.start()
 
-        self.send_msg()
+        # self.__console()
 
         # self.sender = ClientThread(self.send_msg, self.logger)
         # self.sender.start()
@@ -104,7 +121,7 @@ class Client:
         self.__send_request(request)
         return self.__get_response()
 
-    def send_msg(self):
+    def __console(self):
         while self.connected:
             msg = input('Enter message:\n')
             if msg.upper() == 'Q':
@@ -121,6 +138,38 @@ class Client:
                 self.storage.add_message(msg.to, msg.text)
                 request = Request(RequestAction.MESSAGE, msg)
             self.__send_request(request)
+
+    def get_chat_req(self, contact):
+        req = Request(RequestAction.COMMAND, f'get_chat {self.USER.username} {contact}')
+        self.__send_request(req)
+
+    def get_users_req(self):
+        self.__send_request(Request(RequestAction.COMMAND, 'get_users'))
+
+    def get_contacts_req(self):
+        self.__send_request(Request(RequestAction.COMMAND, 'get_contacts'))
+
+    def add_contact(self, contact):
+        if self.storage.get_contact(contact):
+            return False
+        self.storage.add_contact(contact)
+        req = Request(RequestAction.COMMAND, f'add_contact {contact}')
+        self.__send_request(req)
+
+    def rem_contact(self, contact):
+        self.storage.remove_contact(contact)
+        req = Request(RequestAction.COMMAND, f'rem_contact {contact}')
+        self.__send_request(req)
+
+    def sync_contacts(self, contacts):
+        for c in contacts:
+            self.storage.append_contact(c)
+
+    def send_msg(self, text, to):
+        msg = Msg(text, self.USER, to)
+        self.storage.add_message(msg.to, msg.text)
+        request = Request(RequestAction.MESSAGE, msg)
+        self.__send_request(request)
 
     def parse_command(self, command):
         command, *args = command.split(' ')
@@ -149,9 +198,19 @@ class Client:
                 self.logger.warning(f'Received not RESPONSE:\n {resp}')
                 continue
             if resp.code == 101:
+                self.answers.put(resp.message)
                 print(f'server: {resp.message}')
+            elif resp.code in self.subs.keys():
+                for s in self.subs[resp.code]:
+                    s(resp.message)
             else:
                 print(resp.message)
+
+    def subscribe(self, code, func):
+        if code in self.subs.keys():
+            self.subs[code].append(func)
+        else:
+            self[code] = [func]
 
 
 def main():
@@ -164,8 +223,22 @@ def main():
     addr = args.addr
     port = args.port
 
+    app = QApplication(sys.argv)
+    login = LoginWindow()
+    login.show()
+    app.exec_()
+
+    if not login.start:
+        return
+    login.close()
+
     client = Client(addr, port)
+    client.username = login.username
     client.start()
+    win = MainWindow(client)
+    win.setWindowTitle(client.username)
+    win.show()
+    app.exec_()
 
 
 if __name__ == '__main__':

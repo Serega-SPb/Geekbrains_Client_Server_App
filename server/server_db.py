@@ -2,13 +2,13 @@ import logging
 import threading
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, or_, and_
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 
 import logs.server_log_config as log_config
-from decorators import transaction
-from metaclasses import Singleton
+from common.decorators import transaction
+from common.metaclasses import Singleton
 
 Base = declarative_base()
 
@@ -69,6 +69,24 @@ class UserStat(Base):
         self.user_id = user_id
         self.mes_recv = 0
         self.mes_sent = 0
+
+
+class UserMessage(Base):
+    __tablename__ = 'user_messages'
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey('users.id'))
+    recipient_id = Column(Integer, ForeignKey('users.id'))
+    text = Column(String)
+    time = Column(DateTime)
+
+    def __init__(self, sender_id, recipient_id, text, time):
+        self.sender_id = sender_id
+        self.recipient_id = recipient_id
+        self.text = text
+        self.time = time
+
+    def __str__(self):
+        return f'{self.time}__{self.text}'
 
 
 class ServerStorage(metaclass=Singleton):
@@ -180,6 +198,53 @@ class ServerStorage(metaclass=Singleton):
     def get_user_stats(self):
         return self.session.query(User, UserStat).join(UserStat, User.id == UserStat.user_id).all()
 
+    @transaction
+    def add_message(self, sender_name, recipient_name, text):
+
+        sender = self.session.query(User).filter_by(name=sender_name).first()
+        recipient = self.session.query(User).filter_by(name=recipient_name).first()
+
+        if not sender or not recipient:
+            self.logger.error('DB.add_message: user not found')
+            return False
+
+        msg = UserMessage(sender.id, recipient.id, text, datetime.now())
+        self.session.add(msg)
+
+    def get_user_messages(self):
+        senders = aliased(User)
+        recipients = aliased(User)
+
+        return self.session.query(senders, UserMessage, recipients)\
+            .join(senders, UserMessage.sender_id == senders.id) \
+            .join(recipients, UserMessage.recipient_id == recipients.id) \
+            .all()
+
+    def get_chat(self, username_1, username_2):
+
+        user_1 = self.session.query(User).filter_by(name=username_1).first()
+        user_2 = self.session.query(User).filter_by(name=username_2).first()
+
+        if not user_1 or not user_2:
+            self.logger.error('DB.get_chat: user not found')
+            return False
+
+        senders = aliased(User)
+        recipients = aliased(User)
+
+        msgs = self.session.query(senders, UserMessage, recipients)\
+            .join(senders, UserMessage.sender_id == senders.id) \
+            .join(recipients, UserMessage.recipient_id == recipients.id) \
+            .filter(or_(
+                and_(UserMessage.sender_id == user_1.id, UserMessage.recipient_id == user_2.id),
+                and_(UserMessage.sender_id == user_2.id, UserMessage.recipient_id == user_1.id)
+            )).all()
+        return msgs
+
+    def get_chat_str(self, username_1, username_2):
+        msgs = self.get_chat(username_1, username_2)
+        return list(['__'.join(tuple(str(m) for m in msg)) for msg in msgs])
+
 
 def main():
     import random
@@ -189,11 +254,18 @@ def main():
     user1 = f'User{random.randint(0, 100)}'
     user2 = f'User{random.randint(0, 100)}'
 
-    st = storage.get_user_stats()
-    hist = storage.get_history()
+    # st = storage.get_user_stats()
+    # hist = storage.get_history()
 
     storage.login_user(user1, ip)
     storage.login_user(user2, ip)
+
+    storage.add_message(user1, user2, 'U1 send to U2')
+    storage.add_message(user2, user1, 'U2 send to U1')
+
+    msgs = storage.get_user_messages()
+    chat = storage.get_chat_str(user1, user2)
+
     print(f'Users online: {storage.get_users_online()}')
 
     storage.add_contact(user1, user2)

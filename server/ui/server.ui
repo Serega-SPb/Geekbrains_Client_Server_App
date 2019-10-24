@@ -7,18 +7,24 @@
     <x>0</x>
     <y>0</y>
     <width>842</width>
-    <height>686</height>
+    <height>713</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
+   <property name="minimumSize">
+    <size>
+     <width>800</width>
+     <height>600</height>
+    </size>
+   </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="users">
        <attribute name="title">
@@ -49,8 +55,8 @@
          <widget class="QTableView" name="user_stats_tbl">
           <property name="minimumSize">
            <size>
-            <width>800</width>
-            <height>600</height>
+            <width>0</width>
+            <height>0</height>
            </size>
           </property>
          </widget>
@@ -67,6 +73,38 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="messages">
+       <attribute name="title">
+        <string>Messages</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QTableView" name="messages_tbl"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPlainTextEdit" name="logPtx">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>200</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>200</height>
+       </size>
+      </property>
      </widget>
     </item>
    </layout>
