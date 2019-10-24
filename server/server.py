@@ -1,15 +1,19 @@
 import argparse
+import sys
 from socket import *
 from select import select
 from threading import Thread
 
+sys.path.append('../')
+
+import logs.server_log_config as log_config
 from common.decorators import try_except_wrapper
 from common.descriptors import Port
 from jim.codes import *
 from jim.classes.request_body import Msg
 from jim.functions import *
+from server_crypt import *
 from ui.server_ui_logic import *
-# from metaclasses import ServerVerifier
 
 
 class ServerThread(Thread):
@@ -27,7 +31,9 @@ class ServerThread(Thread):
 
 
 class Server:
-    __slots__ = ('bind_addr', '_port', 'logger', 'socket', 'clients', 'users', 'storage', 'commands', 'listener')
+    __slots__ = ('bind_addr', '_port', 'logger', 'socket',
+                 'clients', 'users', 'client_keys',
+                 'storage', 'commands', 'listener')
 
     TCP = (AF_INET, SOCK_STREAM)
     TIMEOUT = 5
@@ -39,6 +45,7 @@ class Server:
         self.bind_addr = bind_addr
         self.port = port
         self.clients = []
+        self.client_keys = {}
         self.users = {}
         self.storage = ServerStorage()
         self.__init_commands()
@@ -118,7 +125,8 @@ class Server:
                         self.clients.remove(client)
                     else:
                         self.users[request.body] = client
-                        self.storage.login_user(request.body, client.getpeername()[0])
+                        # TODO ??
+                        # self.storage.login_user(request.body, client.getpeername()[0])
                 elif request.action == RequestAction.QUIT:
                     self.__client_disconnect(client)
             except (ConnectionError, ValueError):
@@ -136,10 +144,50 @@ class Server:
             self.logger.info(i_req)
 
             if i_req.action == RequestAction.PRESENCE:
+                prv, pub = gen_keys()
+                self.client_keys[i_req.body] = (client, prv)
+                self.__send_to_client(client, Response(AUTH, pub.export_key().decode()))
+            elif i_req.action == RequestAction.AUTH:
+                user = [u for u, c in self.users.items() if c == client]
+                if len(user) == 0:
+                    self.logger.warning(f'AUTH: user not found')
+                    continue
+                user = user[0]
+                cl, key = self.client_keys[user]
+                if cl != client:
+                    self.logger.warning('AUTH: connection sockets not equals')
+                    continue
+                try:
+                    password = decrypt_password(key, i_req.body)
+                except Exception as e:
+                    self.logger.error(e)
+                    password = None
+                if password is None:
+                    self.logger.warning('AUTH: decrypt error')
+                    continue
+                if not self.storage.authorization_user(user, get_hash_password(password, user.encode())):
+                    self.__send_to_client(client, Response(UNAUTHORIZED))
+                    self.clients.remove(client)
+                    self.users.pop(user)
+                    continue
+                self.storage.login_user(user, client.getpeername()[0])
                 self.__send_to_client(client, Response(OK))
-                self.__send_to_all(other_clients, Response(CONNECTED, i_req.body))
+                self.__send_to_all(other_clients, Response(CONNECTED, user))
+                pass
             elif i_req.action == RequestAction.QUIT:
                 self.__client_disconnect(client)
+            elif i_req.action == RequestAction.START_CHAT:
+                msg = Msg.from_dict(i_req.body)
+                if msg.to not in self.users:
+                    self.logger.warning(f'{msg.to} not found')
+                    continue
+                self.__send_to_client(self.users[msg.to], Response(START_CHAT, str(msg)))
+            elif i_req.action == RequestAction.ACCEPT_CHAT:
+                msg = Msg.from_dict(i_req.body)
+                if msg.to not in self.users:
+                    self.logger.warning(f'{msg.to} not found')
+                    continue
+                self.__send_to_client(self.users[msg.to], Response(ACCEPT_CHAT, str(msg)))
             elif i_req.action == RequestAction.MESSAGE:
                 msg = Msg.from_dict(i_req.body)
                 self.storage.user_stat_update(msg.sender, ch_sent=1)
@@ -154,7 +202,6 @@ class Server:
                             continue
                         self.storage.user_stat_update(str(u), ch_recv=1)
                         self.storage.add_message(msg.sender, str(u), msg.text)
-
             elif i_req.action == RequestAction.COMMAND:
                 command, *args = i_req.body.split()
                 user = [u for u, c in self.users.items() if c == client].pop()

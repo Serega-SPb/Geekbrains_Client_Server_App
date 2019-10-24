@@ -150,7 +150,7 @@ class MainWindow(QMainWindow):
     def load_users(self):
         users = self.storage.get_users()  # temp
         tbl = self.users_tbl
-        fill_table(tbl, users, ['id', 'name'], ['id', 'name'])
+        fill_table(tbl, users, ['id', 'name', 'password'], ['id', 'name', 'password'])
 
     def load_users_online(self):
         online = self.storage.get_users_online()

@@ -21,15 +21,20 @@ class Code:
 # 1xx
 BASIC = Code(100, 'Basic message')
 ANSWER = Code(101, '')
+AUTH = Code(110, 'pub key')
 
 # 2xx
 OK = Code(200, 'OK')
 CONNECTED = Code(201, 'User connected')
 DISCONNECTED = Code(202, 'User disconnected')
 LETTER = Code(203, '')
+START_CHAT = Code(204, '')
+ACCEPT_CHAT = Code(205, '')
 
 # 4xx
 INCORRECT_REQUEST = Code(400, 'Incorrect request / json')
+UNAUTHORIZED = Code(401, 'Unauthorized')
+FORBIDDEN = Code(403, 'Forbidden')
 CONFLICT = Code(409, 'User already connected')
 # 5xx
 SERVER_ERROR = Code(500, 'Server error')
