@@ -10,13 +10,14 @@ class BaseBody:
 
 
 class User(BaseBody):
-    __slots__ = (USERNAME,)
+    __slots__ = (USERNAME, PASSWORD)
 
-    def __init__(self, username):
+    def __init__(self, username, password):
         self.username = username
+        self.password = password
 
     def get_dict(self):
-        return self.username
+        return f'{self.username}:{self.password}'
 
     def __eq__(self, other):
         if not isinstance(other, User):
@@ -34,6 +35,8 @@ class Msg(BaseBody):
 
     PATTERN = r'@(?P<to>[\w\d]*)?(?P<message>.*)'
 
+    recv_pat = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{TO}>[\w]*): (?P<{TEXT}>(.|\n)*)'
+
     def __init__(self, text, sender, to='ALL'):
         self.text = text
         self.sender = sender
@@ -43,6 +46,14 @@ class Msg(BaseBody):
     def from_dict(cls, json_obj):
         ins = cls(json_obj[TEXT], json_obj[SENDER], json_obj[TO])
         return ins
+
+    @classmethod
+    def from_formated(cls, formated_text):
+        match = re.match(cls.recv_pat, formated_text, re.MULTILINE)
+        sender = match.group(SENDER)
+        to = match.group(TO)
+        msg = match.group(TEXT)
+        return cls(msg, sender, to)
 
     def parse_msg(self):
         to_user = 'ALL'

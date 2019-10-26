@@ -81,6 +81,10 @@ class LoginWindow(QDialog):
     def username(self):
         return self.usernameTxb.text()
 
+    @property
+    def password(self):
+        return self.passwordTxb.text()
+
     def username_text_changed(self):
         if len(self.username) > 2:
             self.loginBtn.setEnabled(True)
@@ -92,6 +96,24 @@ class LoginWindow(QDialog):
         self.close()
 
 
+class MessageBox(QDialog):
+    def __init__(self, messge, parent=None):
+        super().__init__(parent)
+        self.ui()
+        self.errorLbl.setText(messge)
+
+    def ui(self):
+        self.resize(250, 125)
+        self.setFixedSize(self.size())
+        self.setWindowTitle('Error')
+
+        grid = QGridLayout(self)
+        self.setLayout(grid)
+
+        self.errorLbl = QLabel()
+        grid.addWidget(self.errorLbl)
+
+
 class SignalStorage(QObject):
 
     user_connected = pyqtSignal(str)
@@ -100,6 +122,8 @@ class SignalStorage(QObject):
     contact_added = pyqtSignal(str)
     contact_removed = pyqtSignal(str)
 
+    starting_chat = pyqtSignal(str)
+    accepted_chat = pyqtSignal(str)
     got_message = pyqtSignal(str)
 
     def __init__(self, parent=None):
@@ -126,17 +150,22 @@ class MainWindow(QMainWindow):
         self.load_users()
         self.load_contacts()
 
-        self.usersList.doubleClicked.connect(self.load_chat)
-        self.contactsList.doubleClicked.connect(self.load_chat)
+        self.usersList.doubleClicked.connect(self.start_chat)
+        self.contactsList.doubleClicked.connect(self.start_chat)
         self.sendMsgBtn.clicked.connect(self.send_message)
 
         self.storage.user_connected.connect(self.add_online_user)
         self.storage.user_disconnected.connect(self.rem_online_user)
         self.storage.got_message.connect(self.recieve_message)
 
+        self.storage.starting_chat.connect(self.starting_chat)
+        self.storage.accepted_chat.connect(self.accepted_chat)
+
         self.client.subscribe(201, self.storage.user_connected.emit)
         self.client.subscribe(202, self.storage.user_disconnected.emit)
         self.client.subscribe(203, self.storage.got_message.emit)
+        self.client.subscribe(204, self.storage.starting_chat.emit)
+        self.client.subscribe(205, self.storage.accepted_chat.emit)
 
     @property
     def message(self):
@@ -203,7 +232,7 @@ class MainWindow(QMainWindow):
         self.client.answers.get()
         self.__rem_user_from_list(self.contactsList, username)
 
-    def load_chat(self):
+    def start_chat(self):
         self.chatList.clear()
         sender = self.sender()
         items = sender.selectedItems()
@@ -211,31 +240,38 @@ class MainWindow(QMainWindow):
             return
         widget = sender.selectedItems()[0]
         username = widget.user
-        self.set_chat_active(True)
         self.curr_chat_user = username
+        if self.client.start_chat(username) is True:
+            self.load_chat()
+
+    def starting_chat(self, resp):
+        # self.curr_chat_user =
+        self.client.accepting_chat(resp)
+        # self.load_chat()
+
+    def accepted_chat(self, resp):
+        self.client.accepted_chat(resp)
+        self.load_chat()
+
+    def load_chat(self):
+        self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
         chat = self.client.answers.get()
         for msg in chat:
             self.parse_message(msg)
 
-    SENDER = 'sender'
-    RECV = 'recv'
-    MSG = 'msg'
-    recv_pat = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{RECV}>[\w]*): (?P<{MSG}>.*)'
     TIME_FMT = '%Y-%m-%d %H:%M:%S.%f'
 
     def recieve_message(self, msg):
-        match = re.match(self.recv_pat, msg)
-        sender = match.group(self.SENDER)
-        recv = match.group(self.RECV)
-        msg = match.group(self.MSG)
+        sender, msg = self.client.parse_recv_message(msg)
         time = time = datetime.datetime.now().strftime('%H:%M')  # TODO get from resp
         self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
 
-    def parse_message(self, msg):
+    def parse_message(self, msg):  # TODO not UI logic
         sender, time, message, recv = msg.split('__')
         time = datetime.datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
-        side = self.SELF_SIDE if sender == self.client.username else self. OTHER_SIDE
+        side = self.SELF_SIDE if sender == self.client.username else self.OTHER_SIDE
+        message = self.client.get_encryptor(self.curr_chat_user).decrypt_msg(message).decode()
         self.add_message_in_chat(side, sender, message, time)
 
     def send_message(self):

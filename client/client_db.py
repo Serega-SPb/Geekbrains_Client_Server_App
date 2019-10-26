@@ -24,6 +24,17 @@ class Contact(Base):
         return f'<Contact({self.contact})>'
 
 
+class ChatKey(Base):
+    __tablename__ = 'chat_keys'
+    id = Column(Integer, primary_key=True)
+    user = Column(String)
+    key = Column(String)
+
+    def __init__(self, user, key):
+        self.user = user
+        self.key = key
+
+
 class Message(Base):
     __tablename__ = 'messages'
     id = Column(Integer, primary_key=True)
@@ -79,6 +90,15 @@ class ClientStorage(metaclass=Singleton):
         if check:
             return
         self.add_contact(contact)
+
+    @transaction
+    def add_chat_key(self, user, key):
+        chat_key = ChatKey(user, key)
+        self.session.add(chat_key)
+
+    def get_key(self, user):
+        key = self.session.query(ChatKey).filter_by(user=user).first()
+        return key.key if key else None
 
 
 def main():

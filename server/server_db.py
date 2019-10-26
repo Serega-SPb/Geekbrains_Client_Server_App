@@ -17,9 +17,11 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
+    password = Column(String)
 
-    def __init__(self, name):
+    def __init__(self, name, password):
         self.name = name
+        self.password = password
 
     def __repr__(self):
         return f'<User({self.name})>'
@@ -117,20 +119,28 @@ class ServerStorage(metaclass=Singleton):
             return session
 
     @transaction
-    def register_user(self, username):
-        user = User(username)
+    def register_user(self, username, password):
+        user = User(username, password)
         self.session.add(user)
         return user
 
     def get_users(self):
         return self.session.query(User).all()
 
+    def authorization_user(self, username, password):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.register_user(username, password)
+            return True
+        return user.password == password
+
     @transaction
     def login_user(self, username, ip):
         print(threading.current_thread())
         user = self.session.query(User).filter_by(name=username).first()
         if not user:
-            user = self.register_user(username)
+            self.logger.error('Unregistered user')
+            return
 
         online = UserOnline(user.id)
         self.session.add(online)
