@@ -1,8 +1,10 @@
 import argparse
 import sys
 
+from PyQt5.QtWidgets import QApplication
+
 from client import Client
-from ui.client_ui_logic import LoginWindow, MainWindow
+from ui.client_ui_logic import LoginWindow, MainWindow, MessageBox
 
 
 def show_error(mes):
@@ -13,8 +15,10 @@ def show_error(mes):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('addr', default='localhost', type=str, nargs='?', help='Server address [default=localhost]')
-    parser.add_argument('port', default=7777, type=int, nargs='?', help='Server port [default=7777]')
+    parser.add_argument('addr', default='localhost', type=str, nargs='?',
+                        help='Server address [default=localhost]')
+    parser.add_argument('port', default=7777, type=int, nargs='?',
+                        help='Server port [default=7777]')
 
     args = parser.parse_args()
 
