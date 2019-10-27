@@ -1,0 +1,43 @@
+import argparse
+import sys
+
+from client import Client
+from ui.client_ui_logic import LoginWindow, MainWindow
+
+
+def show_error(mes):
+    msb = MessageBox(mes)
+    msb.show()
+    msb.exec_()
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('addr', default='localhost', type=str, nargs='?', help='Server address [default=localhost]')
+    parser.add_argument('port', default=7777, type=int, nargs='?', help='Server port [default=7777]')
+
+    args = parser.parse_args()
+
+    addr = args.addr
+    port = args.port
+
+    app = QApplication(sys.argv)
+    login = LoginWindow()
+    login.show()
+    app.exec_()
+
+    if not login.start:
+        return
+    login.close()
+
+    client = Client(addr, port)
+    client.set_user(login.username, login.password)
+    client.start()
+    win = MainWindow(client)
+    win.setWindowTitle(client.username)
+    win.show()
+    app.exec_()
+
+
+if __name__ == '__main__':
+    main()

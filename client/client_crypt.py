@@ -54,7 +54,8 @@ class ClientCrypt:
 
     def encript_msg(self, message):
         aes_encryptor = AES.new(self.secret, self.CRYPT_MODE)
-        return b64encode(aes_encryptor.iv + aes_encryptor.encrypt(self.__padding(message)))
+        return b64encode(aes_encryptor.iv +
+                         aes_encryptor.encrypt(self.__padding(message)))
 
     def decrypt_msg(self, message):
         message = b64decode(message)

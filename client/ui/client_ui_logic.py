@@ -1,13 +1,11 @@
-import datetime
+from datetime import datetime
 import os
-import re
-import sys
-
 
 from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtWidgets import QWidget, QMainWindow, QDialog, \
+                            QGridLayout, QHBoxLayout, QListWidgetItem, \
+                            QLabel, QPushButton
 
 
 UI_DIR = os.path.dirname(__file__)
@@ -211,18 +209,19 @@ class MainWindow(QMainWindow):
         self.client.get_contacts_req()
         contacts = self.client.answers.get()
         self.client.sync_contacts(contacts)
-        for c in contacts:
-            self.__add_user_in_list(self.contactsList, c, 'Del', self.remove_contact)
+        for contact in contacts:
+            self.__add_user_in_list(self.contactsList, contact,
+                                    'Del', self.remove_contact)
 
     def add_contact(self):
         sender = self.sender()
         widget = sender.parent()
         username = widget.username
-        r = self.client.add_contact(username)
-        if r == False:
+        if not self.client.add_contact(username):
             return
         self.client.answers.get()
-        self.__add_user_in_list(self.contactsList, username, 'Del', self.remove_contact)
+        self.__add_user_in_list(self.contactsList, username,
+                                'Del', self.remove_contact)
 
     def remove_contact(self):
         sender = self.sender()
@@ -264,22 +263,27 @@ class MainWindow(QMainWindow):
 
     def recieve_message(self, msg):
         sender, msg = self.client.parse_recv_message(msg)
-        time = time = datetime.datetime.now().strftime('%H:%M')  # TODO get from resp
+        # TODO get from resp
+        time = time = datetime.datetime.now().strftime('%H:%M')
         self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
 
     def parse_message(self, msg):  # TODO not UI logic
         sender, time, message, recv = msg.split('__')
-        time = datetime.datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
-        side = self.SELF_SIDE if sender == self.client.username else self.OTHER_SIDE
-        message = self.client.get_encryptor(self.curr_chat_user).decrypt_msg(message).decode()
+        time = datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
+        side = self.SELF_SIDE \
+            if sender == self.client.username \
+            else self.OTHER_SIDE
+        message = self.client.get_encryptor(self.curr_chat_user)\
+                             .decrypt_msg(message).decode()
         self.add_message_in_chat(side, sender, message, time)
 
     def send_message(self):
         user = self.curr_chat_user
         msg = self.message
-        time = datetime.datetime.now().strftime('%H:%M')
+        time = datetime.now().strftime('%H:%M')
         self.client.send_msg(msg, user)
-        self.add_message_in_chat(self.SELF_SIDE, self.client.username, msg, time)
+        self.add_message_in_chat(self.SELF_SIDE,
+                                 self.client.username, msg, time)
         self.message = ''
 
     def add_message_in_chat(self, side, user, msg, time):
@@ -287,7 +291,9 @@ class MainWindow(QMainWindow):
             return
 
         item = QListWidgetItem()
-        item.setTextAlignment(Qt.AlignLeft if side == self.SELF_SIDE else Qt.AlignRight)
+        item.setTextAlignment(Qt.AlignLeft
+                              if side == self.SELF_SIDE
+                              else Qt.AlignRight)
         widget = Message(user, msg, time)
 
         item.setSizeHint(widget.sizeHint())

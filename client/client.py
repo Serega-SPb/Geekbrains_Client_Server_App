@@ -1,22 +1,20 @@
-import argparse
 import logging
 import queue
-import random
-import sys
-from socket import *
+from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
-sys.path.append('../')
-
 import logs.client_log_config as log_config
-from common.decorators import *
+from common.decorators import try_except_wrapper
 from common.descriptors import Port
-from jim.codes import *
-from jim.classes.request_body import *
-from jim.functions import *
-from client_crypt import *
+from jim.constants import RequestAction, RESPONSE
+from jim.codes import OK, ANSWER, SERVER_ERROR, AUTH
+from jim.classes.package import Request, Response
+from jim.classes.request_body import User, Msg
+from jim.functions import get_data, send_data
+from client_crypt import encrypt_rsa, decrypt_rsa, \
+                         import_pub_key, gen_keys, ClientCrypt
 from client_db import ClientStorage
-from ui.client_ui_logic import *
+from ui.client_ui_logic import MessageBox
 
 
 class ClientThread(Thread):
@@ -53,7 +51,8 @@ class Client:
         self.addr = addr
         self.port = port
         self.connected = False
-        self.subs = {201: [], 202: [], 203: [], 204: [], 205: []}
+        self.subs = {}
+        # self.subs = {201: [], 202: [], 203: [], 204: [], 205: []}
         self.answers = queue.Queue()
         self.encryptors = {}
 
@@ -73,7 +72,7 @@ class Client:
 
     def start(self):
         self.socket = socket(*self.TCP)
-        start_txt = f'Connect to {self.addr}:{self.port} as {self.user.username}...'
+        start_txt = f'Connect to {self.addr}:{self.port} as {self.username}'
         self.logger.debug(start_txt)
         print(start_txt)
         self.__connect()
@@ -102,7 +101,7 @@ class Client:
     @try_except_wrapper
     def __get_response(self):
         if not self.connected:
-            return
+            return None
         response = get_data(self.socket)
         self.logger.debug(response)
         return response
@@ -116,13 +115,16 @@ class Client:
             return Response(SERVER_ERROR)
         if resp.code != AUTH:
             return resp
-        enc_pass = encrypt_rsa(import_pub_key(resp.message.encode()), self.user.password)
+        enc_pass = encrypt_rsa(
+            import_pub_key(resp.message.encode()),
+            self.user.password)
         auth_req = Request(RequestAction.AUTH, enc_pass.decode())
         self.__send_request(auth_req)
         return self.__get_response()
 
     def get_chat_req(self, contact):
-        req = Request(RequestAction.COMMAND, f'get_chat {self.user.username} {contact}')
+        req = Request(RequestAction.COMMAND,
+                      f'get_chat {self.user.username} {contact}')
         self.__send_request(req)
 
     def get_users_req(self):
@@ -136,7 +138,6 @@ class Client:
         key = self.storage.get_key(contact)
         if key is not None:
             self.set_encryptor(contact, ClientCrypt(key))
-            # self.encryptor = ClientCrypt(key)
 
         prv, pub = gen_keys()
         self.priv_key = prv
@@ -152,9 +153,7 @@ class Client:
         key = self.storage.get_key(r_msg.sender)
         if key is not None:
             encryptor = ClientCrypt(key)
-            # self.encryptor = ClientCrypt(key)
         else:
-            # self.encryptor = ClientCrypt.gen_secret(self.username, r_msg.sender)
             encryptor = ClientCrypt.gen_secret(self.username, r_msg.sender)
             self.storage.add_chat_key(r_msg.sender, encryptor.secret)
         self.set_encryptor(r_msg.sender, encryptor)
@@ -169,7 +168,6 @@ class Client:
         encryptor = self.get_encryptor(msg.sender)
         if encryptor is not None:
             return
-
         secret = decrypt_rsa(self.priv_key, msg.text.encode())
         self.set_encryptor(msg.sender, ClientCrypt(secret))
         self.storage.add_chat_key(msg.sender, secret)
@@ -180,6 +178,7 @@ class Client:
         self.storage.add_contact(contact)
         req = Request(RequestAction.COMMAND, f'add_contact {contact}')
         self.__send_request(req)
+        return True
 
     def rem_contact(self, contact):
         self.storage.remove_contact(contact)
@@ -187,8 +186,8 @@ class Client:
         self.__send_request(req)
 
     def sync_contacts(self, contacts):
-        for c in contacts:
-            self.storage.append_contact(c)
+        for contact in contacts:
+            self.storage.append_contact(contact)
 
     @try_except_wrapper
     def send_msg(self, text, to):
@@ -210,8 +209,8 @@ class Client:
                 self.answers.put(resp.message)
                 print(f'server: {resp.message}')
             elif resp.code in self.subs.keys():
-                for s in self.subs[resp.code]:
-                    s(resp.message)
+                for sub in self.subs[resp.code]:
+                    sub(resp.message)
             else:
                 print(resp.message)
 
@@ -226,35 +225,3 @@ class Client:
         encryptor = self.get_encryptor(msg.sender)
         msg.text = encryptor.decrypt_msg(msg.text.encode()).decode()
         return msg.sender, msg.text
-
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('addr', default='localhost', type=str, nargs='?', help='Server address [default=localhost]')
-    parser.add_argument('port', default=7777, type=int, nargs='?', help='Server port [default=7777]')
-
-    args = parser.parse_args()
-
-    addr = args.addr
-    port = args.port
-
-    app = QApplication(sys.argv)
-    login = LoginWindow()
-    login.show()
-    app.exec_()
-
-    if not login.start:
-        return
-    login.close()
-
-    client = Client(addr, port)
-    client.set_user(login.username, login.password)
-    client.start()
-    win = MainWindow(client)
-    win.setWindowTitle(client.username)
-    win.show()
-    app.exec_()
-
-
-if __name__ == '__main__':
-    main()
