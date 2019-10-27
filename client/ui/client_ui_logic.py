@@ -1,12 +1,13 @@
 from datetime import datetime
 import os
 
-from PyQt5 import uic
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget, QMainWindow, QDialog, \
                             QGridLayout, QHBoxLayout, QListWidgetItem, \
                             QLabel, QPushButton
 
+from .client_ui import Ui_MainWindow as ClientMainWindow
+from .login_ui import Ui_Dialog as LoginDialog
 
 UI_DIR = os.path.dirname(__file__)
 
@@ -66,28 +67,30 @@ class Message(QWidget):
 class LoginWindow(QDialog):
 
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
-        uic.loadUi(os.path.join(UI_DIR, 'login.ui'), self)
+        super().__init__(parent)
+        # uic.loadUi(os.path.join(UI_DIR, 'login.ui'), self)
+        self.ui = LoginDialog()
+        self.ui.setupUi(self)
         self.start = False
 
-        self.loginBtn.setEnabled(False)
-        self.usernameTxb.textChanged.connect(self.username_text_changed)
-        self.loginBtn.clicked.connect(self.login)
-        self.exitBtn.clicked.connect(self.close)
+        self.ui.loginBtn.setEnabled(False)
+        self.ui.usernameTxb.textChanged.connect(self.username_text_changed)
+        self.ui.loginBtn.clicked.connect(self.login)
+        self.ui.exitBtn.clicked.connect(self.close)
 
     @property
     def username(self):
-        return self.usernameTxb.text()
+        return self.ui.usernameTxb.text()
 
     @property
     def password(self):
-        return self.passwordTxb.text()
+        return self.ui.passwordTxb.text()
 
     def username_text_changed(self):
         if len(self.username) > 2:
-            self.loginBtn.setEnabled(True)
+            self.ui.loginBtn.setEnabled(True)
         else:
-            self.loginBtn.setEnabled(False)
+            self.ui.loginBtn.setEnabled(False)
 
     def login(self):
         self.start = True
@@ -138,7 +141,9 @@ class MainWindow(QMainWindow):
         self.client = client
         self.setWindowTitle(self.client.username)
         self.curr_chat_user = None
-        uic.loadUi(os.path.join(UI_DIR, 'client.ui'), self)
+        # uic.loadUi(os.path.join(UI_DIR, 'client.ui'), self)
+        self.ui = ClientMainWindow()
+        self.ui.setupUi(self)
         self.init_ui()
 
     def init_ui(self):
@@ -148,9 +153,9 @@ class MainWindow(QMainWindow):
         self.load_users()
         self.load_contacts()
 
-        self.usersList.doubleClicked.connect(self.start_chat)
-        self.contactsList.doubleClicked.connect(self.start_chat)
-        self.sendMsgBtn.clicked.connect(self.send_message)
+        self.ui.usersList.doubleClicked.connect(self.start_chat)
+        self.ui.contactsList.doubleClicked.connect(self.start_chat)
+        self.ui.sendMsgBtn.clicked.connect(self.send_message)
 
         self.storage.user_connected.connect(self.add_online_user)
         self.storage.user_disconnected.connect(self.rem_online_user)
@@ -167,11 +172,11 @@ class MainWindow(QMainWindow):
 
     @property
     def message(self):
-        return self.messageTxa.toPlainText()
+        return self.ui.messageTxa.toPlainText()
 
     @message.setter
     def message(self, value):
-        self.messageTxa.setText(value)
+        self.ui.messageTxa.setText(value)
 
     @staticmethod
     def __add_user_in_list(list_view, user, action_name, action):
@@ -194,23 +199,24 @@ class MainWindow(QMainWindow):
     def load_users(self):
         self.client.get_users_req()
         users = self.client.answers.get()
-        for u in users:
-            if u == self.client.username:
+        for user in users:
+            if user == self.client.username:
                 continue
-            self.add_online_user(u)
+            self.add_online_user(user)
 
     def add_online_user(self, user):
-        self.__add_user_in_list(self.usersList, user, 'Add', self.add_contact)
+        self.__add_user_in_list(self.ui.usersList, user,
+                                'Add', self.add_contact)
 
     def rem_online_user(self, user):
-        self.__rem_user_from_list(self.usersList, user)
+        self.__rem_user_from_list(self.ui.usersList, user)
 
     def load_contacts(self):
         self.client.get_contacts_req()
         contacts = self.client.answers.get()
         self.client.sync_contacts(contacts)
         for contact in contacts:
-            self.__add_user_in_list(self.contactsList, contact,
+            self.__add_user_in_list(self.ui.contactsList, contact,
                                     'Del', self.remove_contact)
 
     def add_contact(self):
@@ -220,7 +226,7 @@ class MainWindow(QMainWindow):
         if not self.client.add_contact(username):
             return
         self.client.answers.get()
-        self.__add_user_in_list(self.contactsList, username,
+        self.__add_user_in_list(self.ui.contactsList, username,
                                 'Del', self.remove_contact)
 
     def remove_contact(self):
@@ -229,10 +235,10 @@ class MainWindow(QMainWindow):
         username = widget.username
         self.client.rem_contact(username)
         self.client.answers.get()
-        self.__rem_user_from_list(self.contactsList, username)
+        self.__rem_user_from_list(self.ui.contactsList, username)
 
     def start_chat(self):
-        self.chatList.clear()
+        self.ui.chatList.clear()
         sender = self.sender()
         items = sender.selectedItems()
         if len(items) == 0:
@@ -264,11 +270,11 @@ class MainWindow(QMainWindow):
     def recieve_message(self, msg):
         sender, msg = self.client.parse_recv_message(msg)
         # TODO get from resp
-        time = time = datetime.datetime.now().strftime('%H:%M')
+        time = time = datetime.now().strftime('%H:%M')
         self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
 
     def parse_message(self, msg):  # TODO not UI logic
-        sender, time, message, recv = msg.split('__')
+        sender, time, message, _ = msg.split('__')
         time = datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
         side = self.SELF_SIDE \
             if sender == self.client.username \
@@ -297,10 +303,10 @@ class MainWindow(QMainWindow):
         widget = Message(user, msg, time)
 
         item.setSizeHint(widget.sizeHint())
-        self.chatList.addItem(item)
-        self.chatList.setItemWidget(item, widget)
+        self.ui.chatList.addItem(item)
+        self.ui.chatList.setItemWidget(item, widget)
 
     def set_chat_active(self, flag):
-        self.chatList.setEnabled(flag)
-        self.messageTxa.setEnabled(flag)
-        self.sendMsgBtn.setEnabled(flag)
+        self.ui.chatList.setEnabled(flag)
+        self.ui.messageTxa.setEnabled(flag)
+        self.ui.sendMsgBtn.setEnabled(flag)

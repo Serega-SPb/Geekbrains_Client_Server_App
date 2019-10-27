@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'D:\Repositories\Geekbrains_Client_Server_App\server\ui\server.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.0
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(842, 713)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setMinimumSize(QtCore.QSize(800, 600))
+        self.centralwidget.setObjectName("centralwidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout.setObjectName("gridLayout")
+        self.tabWidget = QtWidgets.QTabWidget(self.centralwidget)
+        self.tabWidget.setObjectName("tabWidget")
+        self.users = QtWidgets.QWidget()
+        self.users.setObjectName("users")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.users)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.users_tbl = QtWidgets.QTableView(self.users)
+        self.users_tbl.setObjectName("users_tbl")
+        self.gridLayout_2.addWidget(self.users_tbl, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.users, "")
+        self.online_users = QtWidgets.QWidget()
+        self.online_users.setObjectName("online_users")
+        self.gridLayout_3 = QtWidgets.QGridLayout(self.online_users)
+        self.gridLayout_3.setObjectName("gridLayout_3")
+        self.users_online_tbl = QtWidgets.QTableView(self.online_users)
+        self.users_online_tbl.setObjectName("users_online_tbl")
+        self.gridLayout_3.addWidget(self.users_online_tbl, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.online_users, "")
+        self.user_stats = QtWidgets.QWidget()
+        self.user_stats.setObjectName("user_stats")
+        self.gridLayout_4 = QtWidgets.QGridLayout(self.user_stats)
+        self.gridLayout_4.setObjectName("gridLayout_4")
+        self.user_stats_tbl = QtWidgets.QTableView(self.user_stats)
+        self.user_stats_tbl.setMinimumSize(QtCore.QSize(0, 0))
+        self.user_stats_tbl.setObjectName("user_stats_tbl")
+        self.gridLayout_4.addWidget(self.user_stats_tbl, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.user_stats, "")
+        self.history = QtWidgets.QWidget()
+        self.history.setObjectName("history")
+        self.gridLayout_5 = QtWidgets.QGridLayout(self.history)
+        self.gridLayout_5.setObjectName("gridLayout_5")
+        self.history_tbl = QtWidgets.QTableView(self.history)
+        self.history_tbl.setObjectName("history_tbl")
+        self.gridLayout_5.addWidget(self.history_tbl, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.history, "")
+        self.messages = QtWidgets.QWidget()
+        self.messages.setObjectName("messages")
+        self.gridLayout_6 = QtWidgets.QGridLayout(self.messages)
+        self.gridLayout_6.setObjectName("gridLayout_6")
+        self.messages_tbl = QtWidgets.QTableView(self.messages)
+        self.messages_tbl.setObjectName("messages_tbl")
+        self.gridLayout_6.addWidget(self.messages_tbl, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.messages, "")
+        self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
+        self.logPtx = QtWidgets.QPlainTextEdit(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.logPtx.sizePolicy().hasHeightForWidth())
+        self.logPtx.setSizePolicy(sizePolicy)
+        self.logPtx.setMinimumSize(QtCore.QSize(0, 200))
+        self.logPtx.setMaximumSize(QtCore.QSize(16777215, 200))
+        self.logPtx.setObjectName("logPtx")
+        self.gridLayout.addWidget(self.logPtx, 1, 0, 1, 1)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.toolBar = QtWidgets.QToolBar(MainWindow)
+        self.toolBar.setMovable(False)
+        self.toolBar.setAllowedAreas(QtCore.Qt.LeftToolBarArea|QtCore.Qt.TopToolBarArea)
+        self.toolBar.setOrientation(QtCore.Qt.Horizontal)
+        self.toolBar.setFloatable(True)
+        self.toolBar.setObjectName("toolBar")
+        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
+        self.open_config = QtWidgets.QAction(MainWindow)
+        self.open_config.setObjectName("open_config")
+        self.action_refresh = QtWidgets.QAction(MainWindow)
+        self.action_refresh.setCheckable(True)
+        self.action_refresh.setObjectName("action_refresh")
+        self.toolBar.addAction(self.open_config)
+        self.toolBar.addAction(self.action_refresh)
+
+        self.retranslateUi(MainWindow)
+        self.tabWidget.setCurrentIndex(1)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "Server Monitor"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.users), _translate("MainWindow", "Users"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.online_users), _translate("MainWindow", "Users online"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.user_stats), _translate("MainWindow", "User stats"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.history), _translate("MainWindow", "History"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.messages), _translate("MainWindow", "Messages"))
+        self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar"))
+        self.open_config.setText(_translate("MainWindow", "Config"))
+        self.action_refresh.setText(_translate("MainWindow", "Refresh"))
+        self.action_refresh.setToolTip(_translate("MainWindow", "Refresh interval 10 sec"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
