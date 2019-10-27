@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 
-
-from jim.constants import *
+from jim.constants import REQUEST, RESPONSE, \
+                          ACTION, BODY, TIME, TYPE, CODE, MESSAGE
 from jim.codes import Code
 from jim.classes.request_body import BaseBody
 
@@ -41,7 +41,7 @@ class Request(BasePackage):
         return d
 
     def __str__(self):
-        return f'REQUEST  | {str(self.get_dict())}'
+        return f'{REQUEST.upper()}  | {str(self.get_dict())}'
 
     def __eq__(self, other):
         if not isinstance(other, Request):
@@ -75,7 +75,7 @@ class Response(BasePackage):
         return ins
 
     def __str__(self):
-        return f'RESPONSE | {str(self.get_dict())}'
+        return f'{RESPONSE.upper()} | {str(self.get_dict())}'
 
     def __eq__(self, other):
         if not isinstance(other, Response):

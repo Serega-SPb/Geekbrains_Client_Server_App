@@ -1,13 +1,5 @@
 import json
-from jim.codes import *
-
-
-def log_call_method(func):
-    def wrapper(*args, **kwargs):
-        logger = args[0].logger
-        logger.debug(f'Func {func.__name__} with args {args}, {kwargs} is called from {func.__module__} ')
-        return func(*args, **kwargs)
-    return wrapper
+from jim.codes import SERVER_ERROR, SERVER_UNAVAILABLE, INCORRECT_REQUEST
 
 
 def try_except_wrapper(func):
@@ -21,7 +13,7 @@ def try_except_wrapper(func):
             logger.critical(e)
         except ConnectionRefusedError:
             logger.error(SERVER_UNAVAILABLE)
-        except ConnectionError as e:
+        except ConnectionError:
             logger.error(SERVER_ERROR)
         except Exception as ex:
             logger.error(ex)

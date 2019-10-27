@@ -1,6 +1,6 @@
 import re
 
-from jim.constants import *
+from jim.constants import USERNAME, PASSWORD, SENDER, TO, TEXT, MESSAGE
 
 
 class BaseBody:
