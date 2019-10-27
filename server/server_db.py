@@ -2,7 +2,8 @@ import logging
 import threading
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, or_, and_
+from sqlalchemy import create_engine, or_, and_, \
+                       Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 
@@ -154,7 +155,8 @@ class ServerStorage(metaclass=Singleton):
             self.session.query(UserOnline).filter_by(user_id=user.id).delete()
 
     def get_history(self):
-        return self.session.query(User, LoginHistory).join(LoginHistory, User.id == LoginHistory.user_id).all()
+        return self.session.query(User, LoginHistory)\
+            .join(LoginHistory, User.id == LoginHistory.user_id).all()
 
     @transaction
     def add_contact(self, username, contactname):
@@ -177,7 +179,8 @@ class ServerStorage(metaclass=Singleton):
             self.logger.error('DB.remove_contact: user or contact not found')
             return False
 
-        self.session.query(Contact).filter_by(user_id=user.id, contact_id=contact.id).delete()
+        self.session.query(Contact)\
+            .filter_by(user_id=user.id, contact_id=contact.id).delete()
 
     def get_users_online(self, *args):
         return self.session.query(User).join(UserOnline).all()
@@ -206,19 +209,20 @@ class ServerStorage(metaclass=Singleton):
         stat.mes_recv += ch_recv
 
     def get_user_stats(self):
-        return self.session.query(User, UserStat).join(UserStat, User.id == UserStat.user_id).all()
+        return self.session.query(User, UserStat)\
+            .join(UserStat, User.id == UserStat.user_id).all()
 
     @transaction
     def add_message(self, sender_name, recipient_name, text):
 
         sender = self.session.query(User).filter_by(name=sender_name).first()
-        recipient = self.session.query(User).filter_by(name=recipient_name).first()
+        recp = self.session.query(User).filter_by(name=recipient_name).first()
 
-        if not sender or not recipient:
+        if not sender or not recp:
             self.logger.error('DB.add_message: user not found')
             return False
 
-        msg = UserMessage(sender.id, recipient.id, text, datetime.now())
+        msg = UserMessage(sender.id, recp.id, text, datetime.now())
         self.session.add(msg)
 
     def get_user_messages(self):
@@ -246,8 +250,10 @@ class ServerStorage(metaclass=Singleton):
             .join(senders, UserMessage.sender_id == senders.id) \
             .join(recipients, UserMessage.recipient_id == recipients.id) \
             .filter(or_(
-                and_(UserMessage.sender_id == user_1.id, UserMessage.recipient_id == user_2.id),
-                and_(UserMessage.sender_id == user_2.id, UserMessage.recipient_id == user_1.id)
+                and_(UserMessage.sender_id == user_1.id,
+                     UserMessage.recipient_id == user_2.id),
+                and_(UserMessage.sender_id == user_2.id,
+                     UserMessage.recipient_id == user_1.id)
             )).all()
         return msgs
 
@@ -274,7 +280,9 @@ def main():
     storage.add_message(user2, user1, 'U2 send to U1')
 
     msgs = storage.get_user_messages()
+    print(msgs)
     chat = storage.get_chat_str(user1, user2)
+    print(chat)
 
     print(f'Users online: {storage.get_users_online()}')
 
