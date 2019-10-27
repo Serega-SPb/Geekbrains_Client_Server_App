@@ -1,0 +1,226 @@
+2019-10-17 16:18:23,127 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 16:18:23,130 | INFO     | server | Start listen
+2019-10-17 16:18:27,919 | INFO     | server | Connection from ('127.0.0.1', 51984)
+2019-10-17 16:18:28,627 | INFO     | server | <socket.socket fd=500, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 51984)>
+2019-10-17 16:18:28,629 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test552', 'time': 1571318307.919519, 'type': 'request'}
+2019-10-17 16:18:49,153 | INFO     | server | <socket.socket fd=500, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 51984)>
+2019-10-17 16:18:49,156 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test552', 'to': 'User1', 'text': ' test msg'}, 'time': 1571318328.739642, 'type': 'request'}
+2019-10-17 16:20:37,812 | INFO     | server | Connection from ('127.0.0.1', 52054)
+2019-10-17 16:20:38,480 | INFO     | server | <socket.socket fd=636, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52054)>
+2019-10-17 16:20:38,481 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test923', 'time': 1571318437.814684, 'type': 'request'}
+2019-10-17 16:20:49,493 | INFO     | server | <socket.socket fd=636, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52054)>
+2019-10-17 16:20:49,495 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test923', 'to': 'Serega', 'text': 'hi'}, 'time': 1571318449.256469, 'type': 'request'}
+2019-10-17 16:47:00,466 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 16:47:00,467 | INFO     | server | Start listen
+2019-10-17 16:47:03,659 | INFO     | server | Connection from ('127.0.0.1', 52147)
+2019-10-17 16:47:04,164 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:47:04,164 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:47:04,165 | INFO     | server | <socket.socket fd=620, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52147)>
+2019-10-17 16:47:04,165 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test542', 'time': 1571320023.660687, 'type': 'request'}
+2019-10-17 16:47:07,379 | INFO     | server | Connection from ('127.0.0.1', 52148)
+2019-10-17 16:47:07,882 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:47:07,882 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:47:07,883 | INFO     | server | <socket.socket fd=692, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52148)>
+2019-10-17 16:47:07,883 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test737', 'time': 1571320027.379569, 'type': 'request'}
+2019-10-17 16:47:23,869 | INFO     | server | Connection from ('127.0.0.1', 52149)
+2019-10-17 16:47:24,374 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:47:24,374 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:47:24,374 | INFO     | server | <socket.socket fd=728, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52149)>
+2019-10-17 16:47:24,375 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test588', 'time': 1571320043.871698, 'type': 'request'}
+2019-10-17 16:47:36,493 | INFO     | server | <socket.socket fd=728, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52149)>
+2019-10-17 16:47:36,494 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571320056.322034, 'type': 'request'}
+2019-10-17 16:48:08,527 | INFO     | server | <socket.socket fd=728, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52149)>
+2019-10-17 16:48:08,528 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Serega', 'to': 'Test737', 'text': 'hi'}, 'time': 1571320088.159463, 'type': 'request'}
+2019-10-17 16:48:08,539 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 16:48:08,542 | ERROR    | server_db | DB.user_stat_update: user not found
+2019-10-17 16:58:06,838 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 16:58:06,842 | INFO     | server | Start listen
+2019-10-17 16:58:11,985 | INFO     | server | Connection from ('127.0.0.1', 52241)
+2019-10-17 16:58:12,492 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:58:12,492 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:58:12,493 | INFO     | server | <socket.socket fd=908, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52241)>
+2019-10-17 16:58:12,493 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test442', 'time': 1571320691.986884, 'type': 'request'}
+2019-10-17 16:58:13,451 | INFO     | server | Connection from ('127.0.0.1', 52242)
+2019-10-17 16:58:13,955 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:58:13,955 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:58:13,955 | INFO     | server | <socket.socket fd=836, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52242)>
+2019-10-17 16:58:13,956 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test775', 'time': 1571320693.451725, 'type': 'request'}
+2019-10-17 16:58:14,798 | INFO     | server | Connection from ('127.0.0.1', 52243)
+2019-10-17 16:58:15,303 | ERROR    | decorators | name 'UserStats' is not defined
+2019-10-17 16:58:15,303 | ERROR    | decorators | 'bool' object has no attribute 'id'
+2019-10-17 16:58:15,304 | INFO     | server | <socket.socket fd=916, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52243)>
+2019-10-17 16:58:15,304 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test831', 'time': 1571320694.798327, 'type': 'request'}
+2019-10-17 17:00:09,176 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 17:00:09,178 | INFO     | server | Start listen
+2019-10-17 17:00:14,764 | INFO     | server | Connection from ('127.0.0.1', 52250)
+2019-10-17 17:00:15,280 | ERROR    | decorators | Instance <UserStat at 0x179e44659e8> has a NULL identity key.  If this is an auto-generated value, check that the database table allows generation of new primary key values, and that the mapped Column object is configured to expect these generated values.  Ensure also that this flush() is not occurring at an inappropriate time, such as within a load() event.
+2019-10-17 17:00:15,280 | INFO     | server | <socket.socket fd=1068, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52250)>
+2019-10-17 17:00:15,280 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test726', 'time': 1571320814.764724, 'type': 'request'}
+2019-10-17 17:00:18,293 | INFO     | server | Connection from ('127.0.0.1', 52251)
+2019-10-17 17:00:18,801 | ERROR    | decorators | Instance <UserStat at 0x179e4465c88> has a NULL identity key.  If this is an auto-generated value, check that the database table allows generation of new primary key values, and that the mapped Column object is configured to expect these generated values.  Ensure also that this flush() is not occurring at an inappropriate time, such as within a load() event.
+2019-10-17 17:00:18,801 | INFO     | server | <socket.socket fd=1100, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52251)>
+2019-10-17 17:00:18,802 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test523', 'time': 1571320818.294554, 'type': 'request'}
+2019-10-17 17:00:19,945 | INFO     | server | Connection from ('127.0.0.1', 52252)
+2019-10-17 17:00:20,452 | ERROR    | decorators | Instance <UserStat at 0x179e4527390> has a NULL identity key.  If this is an auto-generated value, check that the database table allows generation of new primary key values, and that the mapped Column object is configured to expect these generated values.  Ensure also that this flush() is not occurring at an inappropriate time, such as within a load() event.
+2019-10-17 17:00:20,453 | INFO     | server | <socket.socket fd=920, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52252)>
+2019-10-17 17:00:20,453 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test192', 'time': 1571320819.94584, 'type': 'request'}
+2019-10-17 17:00:46,810 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 17:00:46,811 | INFO     | server | Start listen
+2019-10-17 17:00:54,574 | INFO     | server | Connection from ('127.0.0.1', 52257)
+2019-10-17 17:00:55,330 | INFO     | server | <socket.socket fd=920, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52257)>
+2019-10-17 17:00:55,331 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test192', 'time': 1571320854.575958, 'type': 'request'}
+2019-10-17 17:01:02,559 | INFO     | server | Connection from ('127.0.0.1', 52258)
+2019-10-17 17:01:03,264 | INFO     | server | <socket.socket fd=836, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52258)>
+2019-10-17 17:01:03,264 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test523', 'time': 1571320862.560134, 'type': 'request'}
+2019-10-17 17:01:06,494 | INFO     | server | Connection from ('127.0.0.1', 52259)
+2019-10-17 17:01:07,188 | INFO     | server | <socket.socket fd=940, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52259)>
+2019-10-17 17:01:07,189 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test726', 'time': 1571320866.494453, 'type': 'request'}
+2019-10-17 17:01:36,804 | INFO     | server | <socket.socket fd=920, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52257)>
+2019-10-17 17:01:36,805 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571320896.701243, 'type': 'request'}
+2019-10-17 17:01:42,811 | INFO     | server | <socket.socket fd=920, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52257)>
+2019-10-17 17:01:42,811 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Serega', 'to': 'ALL', 'text': 'Hi all'}, 'time': 1571320902.514212, 'type': 'request'}
+2019-10-17 17:01:42,822 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 17:01:42,834 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 17:01:42,840 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 17:01:42,845 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 17:01:42,850 | ERROR    | decorators | unsupported operand type(s) for +=: 'NoneType' and 'int'
+2019-10-17 17:02:10,378 | INFO     | server | <socket.socket fd=920, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52257)>
+2019-10-17 17:02:10,378 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Serega', 'to': 'ALL', 'text': 'zzz'}, 'time': 1571320929.987096, 'type': 'request'}
+2019-10-17 17:03:10,898 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 17:03:10,900 | INFO     | server | Start listen
+2019-10-17 17:03:13,875 | INFO     | server | Connection from ('127.0.0.1', 52268)
+2019-10-17 17:03:14,520 | INFO     | server | <socket.socket fd=976, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52268)>
+2019-10-17 17:03:14,520 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test726', 'time': 1571320993.877778, 'type': 'request'}
+2019-10-17 17:03:17,837 | INFO     | server | Connection from ('127.0.0.1', 52270)
+2019-10-17 17:03:18,428 | INFO     | server | <socket.socket fd=928, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52270)>
+2019-10-17 17:03:18,429 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571320997.840455, 'type': 'request'}
+2019-10-17 17:03:22,091 | INFO     | server | Connection from ('127.0.0.1', 52271)
+2019-10-17 17:03:22,695 | INFO     | server | <socket.socket fd=944, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52271)>
+2019-10-17 17:03:22,695 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test523', 'time': 1571321002.093448, 'type': 'request'}
+2019-10-17 17:03:46,722 | INFO     | server | <socket.socket fd=944, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52271)>
+2019-10-17 17:03:46,722 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test523', 'to': 'ALL', 'text': 'Hi all'}, 'time': 1571321026.578087, 'type': 'request'}
+2019-10-17 17:05:27,730 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-17 17:05:27,732 | INFO     | server | Start listen
+2019-10-17 17:05:32,157 | INFO     | server | Connection from ('127.0.0.1', 52277)
+2019-10-17 17:05:32,767 | INFO     | server | <socket.socket fd=524, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52277)>
+2019-10-17 17:05:32,767 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test726', 'time': 1571321132.162729, 'type': 'request'}
+2019-10-17 17:05:36,109 | INFO     | server | Connection from ('127.0.0.1', 52278)
+2019-10-17 17:05:36,706 | INFO     | server | <socket.socket fd=976, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52278)>
+2019-10-17 17:05:36,709 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test523', 'time': 1571321136.111144, 'type': 'request'}
+2019-10-17 17:05:39,016 | INFO     | server | Connection from ('127.0.0.1', 52279)
+2019-10-17 17:05:39,628 | INFO     | server | <socket.socket fd=1004, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52279)>
+2019-10-17 17:05:39,628 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571321139.020728, 'type': 'request'}
+2019-10-17 17:05:43,632 | INFO     | server | <socket.socket fd=976, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52278)>
+2019-10-17 17:05:43,632 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test523', 'to': 'ALL', 'text': 'zzz'}, 'time': 1571321143.375281, 'type': 'request'}
+2019-10-17 17:06:32,976 | INFO     | server | <socket.socket fd=1004, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 52279)>
+2019-10-17 17:06:32,976 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Serega', 'to': 'Test523', 'text': 'hi 523'}, 'time': 1571321192.607907, 'type': 'request'}
+2019-10-18 01:09:07,040 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:09:07,047 | INFO     | server | Start listen
+2019-10-18 01:09:15,039 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:09:15,040 | INFO     | server | Start listen
+2019-10-18 01:15:50,675 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:15:50,676 | INFO     | server | Start listen
+2019-10-18 01:17:57,806 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:17:57,807 | INFO     | server | Start listen
+2019-10-18 01:18:14,106 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:18:14,107 | INFO     | server | Start listen
+2019-10-18 01:18:22,364 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:18:22,369 | INFO     | server | Start listen
+2019-10-18 01:19:56,920 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:19:56,923 | INFO     | server | Start listen
+2019-10-18 01:22:41,951 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:22:41,952 | INFO     | server | Start listen
+2019-10-18 01:24:35,483 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:24:35,484 | INFO     | server | Start listen
+2019-10-18 01:25:18,629 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:25:18,630 | INFO     | server | Start listen
+2019-10-18 01:25:36,556 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:25:36,558 | INFO     | server | Start listen
+2019-10-18 01:27:11,729 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:27:11,730 | INFO     | server | Start listen
+2019-10-18 01:27:39,586 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:27:39,588 | INFO     | server | Start listen
+2019-10-18 01:27:52,006 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:27:52,007 | INFO     | server | Start listen
+2019-10-18 01:28:56,905 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:28:56,906 | INFO     | server | Start listen
+2019-10-18 01:30:13,179 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:30:13,180 | INFO     | server | Start listen
+2019-10-18 01:31:00,377 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:31:00,379 | INFO     | server | Start listen
+2019-10-18 01:31:29,198 | INFO     | server | Connection from ('127.0.0.1', 57679)
+2019-10-18 01:31:29,904 | INFO     | server | <socket.socket fd=1036, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57679)>
+2019-10-18 01:31:29,904 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test392', 'time': 1571351489.199752, 'type': 'request'}
+2019-10-18 01:31:34,134 | INFO     | server | Connection from ('127.0.0.1', 57680)
+2019-10-18 01:31:34,812 | INFO     | server | <socket.socket fd=1640, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57680)>
+2019-10-18 01:31:34,812 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test924', 'time': 1571351494.135888, 'type': 'request'}
+2019-10-18 01:31:59,337 | INFO     | server | <socket.socket fd=1640, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57680)>
+2019-10-18 01:31:59,337 | INFO     | server | REQUEST  | {'action': 'command', 'body': 'get_users', 'time': 1571351519.144719, 'type': 'request'}
+2019-10-18 01:32:28,872 | INFO     | server | <socket.socket fd=1640, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57680)>
+2019-10-18 01:32:28,872 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test924', 'to': 'Test392', 'text': 'Hi'}, 'time': 1571351548.719358, 'type': 'request'}
+2019-10-18 01:33:10,117 | INFO     | server | <socket.socket fd=1640, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57680)>
+2019-10-18 01:33:10,117 | INFO     | server | REQUEST  | {'action': 'command', 'body': 'add_contact Test392', 'time': 1571351589.550285, 'type': 'request'}
+2019-10-18 01:34:06,902 | INFO     | server | <socket.socket fd=1640, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 7878), raddr=('127.0.0.1', 57680)>
+2019-10-18 01:34:06,903 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571351646.757101, 'type': 'request'}
+2019-10-18 01:55:11,870 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:55:11,872 | INFO     | server | Start listen
+2019-10-18 01:55:31,885 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:55:31,887 | INFO     | server | Start listen
+2019-10-18 01:56:06,877 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:56:06,878 | INFO     | server | Start listen
+2019-10-18 01:56:39,801 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:56:39,803 | INFO     | server | Start listen
+2019-10-18 01:59:28,248 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:59:28,249 | INFO     | server | Start listen
+2019-10-18 01:59:55,164 | INFO     | server | Config server port - 7878| Bind address - 
+2019-10-18 01:59:55,166 | INFO     | server | Start listen
+2019-10-18 02:00:25,689 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:00:25,691 | INFO     | server | Start listen
+2019-10-18 02:02:15,204 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:02:15,206 | INFO     | server | Start listen
+2019-10-18 02:02:51,085 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:02:51,087 | INFO     | server | Start listen
+2019-10-18 02:03:33,143 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:03:33,144 | INFO     | server | Start listen
+2019-10-18 02:04:30,184 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:04:30,185 | INFO     | server | Start listen
+2019-10-18 02:04:42,834 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:04:42,835 | INFO     | server | Start listen
+2019-10-18 02:10:23,136 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:10:23,138 | INFO     | server | Start listen
+2019-10-18 02:11:20,268 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:11:20,270 | INFO     | server | Start listen
+2019-10-18 02:11:55,943 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:11:55,945 | INFO     | server | Start listen
+2019-10-18 02:12:13,909 | INFO     | server | Connection from ('127.0.0.1', 58057)
+2019-10-18 02:12:14,637 | INFO     | server | <socket.socket fd=1264, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58057)>
+2019-10-18 02:12:14,637 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test895', 'time': 1571353933.909846, 'type': 'request'}
+2019-10-18 02:12:19,338 | INFO     | server | Connection from ('127.0.0.1', 58058)
+2019-10-18 02:12:20,027 | INFO     | server | <socket.socket fd=1576, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58058)>
+2019-10-18 02:12:20,028 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test674', 'time': 1571353939.338841, 'type': 'request'}
+2019-10-18 02:16:45,963 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:16:45,964 | INFO     | server | Start listen
+2019-10-18 02:17:44,308 | INFO     | server | Connection from ('127.0.0.1', 58088)
+2019-10-18 02:17:45,015 | INFO     | server | <socket.socket fd=1796, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58088)>
+2019-10-18 02:17:45,016 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test589', 'time': 1571354264.308092, 'type': 'request'}
+2019-10-18 02:18:36,567 | INFO     | server | <socket.socket fd=1796, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58088)>
+2019-10-18 02:18:36,567 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Test589', 'to': 'Serega', 'text': 'hi'}, 'time': 1571354316.139274, 'type': 'request'}
+2019-10-18 02:18:55,180 | INFO     | server | <socket.socket fd=1796, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58088)>
+2019-10-18 02:18:55,180 | INFO     | server | REQUEST  | {'action': 'command', 'body': 'add_contact Serega', 'time': 1571354334.849168, 'type': 'request'}
+2019-10-18 02:21:14,795 | INFO     | server | Connection from ('127.0.0.1', 58097)
+2019-10-18 02:21:15,396 | INFO     | server | <socket.socket fd=1264, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58097)>
+2019-10-18 02:21:15,397 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571354474.795932, 'type': 'request'}
+2019-10-18 02:22:45,246 | INFO     | server | Connection from ('127.0.0.1', 58103)
+2019-10-18 02:23:01,564 | INFO     | server | Config server port - 9977| Bind address - 
+2019-10-18 02:23:01,565 | INFO     | server | Start listen
+2019-10-18 02:23:09,422 | INFO     | server | Connection from ('127.0.0.1', 58108)
+2019-10-18 02:23:10,026 | INFO     | server | <socket.socket fd=1280, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58108)>
+2019-10-18 02:23:10,026 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Serega', 'time': 1571354589.423011, 'type': 'request'}
+2019-10-18 02:23:20,987 | INFO     | server | Connection from ('127.0.0.1', 58109)
+2019-10-18 02:23:21,700 | INFO     | server | <socket.socket fd=1676, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58109)>
+2019-10-18 02:23:21,700 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test583', 'time': 1571354600.988816, 'type': 'request'}
+2019-10-18 02:23:23,871 | INFO     | server | Connection from ('127.0.0.1', 58110)
+2019-10-18 02:23:24,566 | INFO     | server | <socket.socket fd=1728, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58110)>
+2019-10-18 02:23:24,566 | INFO     | server | REQUEST  | {'action': 'presence', 'body': 'Test574', 'time': 1571354603.873449, 'type': 'request'}
+2019-10-18 02:23:36,580 | INFO     | server | <socket.socket fd=1280, family=AddressFamily.AF_INET, type=SocketKind.SOCK_STREAM, proto=0, laddr=('127.0.0.1', 9977), raddr=('127.0.0.1', 58108)>
+2019-10-18 02:23:36,580 | INFO     | server | REQUEST  | {'action': 'msg', 'body': {'sender': 'Serega', 'to': 'ALL', 'text': 'TEST MSG'}, 'time': 1571354616.1882, 'type': 'request'}

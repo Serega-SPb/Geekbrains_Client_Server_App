@@ -6,8 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 import logs.client_log_config as log_config
-from common.decorators import transaction
-from common.metaclasses import Singleton
+from decorators import transaction
+from metaclasses import Singleton
 
 Base = declarative_base()
 

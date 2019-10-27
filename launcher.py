@@ -1,7 +1,7 @@
 import subprocess
 
-CLIENT_FILE = 'client\\client.py'
-SERVER_FILE = 'server\\server.py'
+CLIENT_FILE = 'client\\start_client.py'
+SERVER_FILE = 'server\\start_server.py'
 
 
 def add_subprocess(processes, cmd):

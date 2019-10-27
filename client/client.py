@@ -4,8 +4,8 @@ from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
 import logs.client_log_config as log_config
-from common.decorators import try_except_wrapper
-from common.descriptors import Port
+from decorators import try_except_wrapper
+from descriptors import Port
 from jim.constants import RequestAction, RESPONSE
 from jim.codes import OK, ANSWER, SERVER_ERROR, AUTH
 from jim.classes.package import Request, Response

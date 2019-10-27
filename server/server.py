@@ -4,8 +4,8 @@ from select import select
 from threading import Thread
 
 import logs.server_log_config as log_config
-from common.decorators import try_except_wrapper
-from common.descriptors import Port
+from decorators import try_except_wrapper
+from descriptors import Port
 from jim.classes.package import Response
 from jim.codes import ANSWER, AUTH, START_CHAT, ACCEPT_CHAT, \
                       OK, CONNECTED, DISCONNECTED, LETTER, \
