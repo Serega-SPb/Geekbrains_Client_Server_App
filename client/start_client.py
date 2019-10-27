@@ -1,4 +1,5 @@
 import argparse
+import os
 import sys
 
 from PyQt5.QtWidgets import QApplication
@@ -13,6 +14,13 @@ def show_error(mes):
     msb.exec_()
 
 
+USER_DATA_DIR = 'user_data'
+
+
+def preparing():
+    if not os.path.exists(USER_DATA_DIR):
+        os.mkdir(USER_DATA_DIR)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('addr', default='localhost', type=str, nargs='?',
@@ -25,6 +33,7 @@ def main():
     addr = args.addr
     port = args.port
 
+    preparing()
     app = QApplication(sys.argv)
     login = LoginWindow()
     login.show()

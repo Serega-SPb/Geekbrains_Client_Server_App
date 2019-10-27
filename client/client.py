@@ -218,7 +218,7 @@ class Client:
         if code in self.subs.keys():
             self.subs[code].append(func)
         else:
-            self[code] = [func]
+            self.subs[code] = [func]
 
     def parse_recv_message(self, msg):
         msg = Msg.from_formated(msg)

@@ -55,7 +55,7 @@ class ClientStorage(metaclass=Singleton):
     DB = 'sqlite:///user_data/client_db.db'
 
     def __init__(self, username=None):
-        db = self.DB.replace('client_db', username) if username else self.DB
+        db = self.DB.replace('client', username) if username else self.DB
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.database_engine = create_engine(db, echo=False, pool_recycle=7200)
         Base.metadata.create_all(self.database_engine)
