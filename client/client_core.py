@@ -5,7 +5,7 @@ import queue
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
-import logs.client_log_config as log_config
+from logs import client_log_config as log_config
 from decorators import try_except_wrapper
 from descriptors import Port
 from jim.constants import RequestAction, RESPONSE

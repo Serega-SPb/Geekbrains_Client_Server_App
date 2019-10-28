@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, or_, and_, \
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 
-import logs.server_log_config as log_config
+from logs import server_log_config as log_config
 from decorators import transaction
 from metaclasses import Singleton
 

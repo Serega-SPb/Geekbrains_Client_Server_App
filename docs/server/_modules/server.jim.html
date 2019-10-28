@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>server.jim package &#8212; Geekbrains CSA (server) 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="server-jim-package">
+<h1>server.jim package<a class="headerlink" href="#server-jim-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="server.jim.classes.html">server.jim.classes package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.jim.classes.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.jim.classes.html#module-server.jim.classes.package">server.jim.classes.package module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.jim.classes.html#module-server.jim.classes.request_body">server.jim.classes.request_body module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.jim.classes.html#module-server.jim.classes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-server.jim.codes">
+<span id="server-jim-codes-module"></span><h2>server.jim.codes module<a class="headerlink" href="#module-server.jim.codes" title="Permalink to this headline">¶</a></h2>
+<p>Module contains response code class and templates of codes</p>
+<dl class="class">
+<dt id="server.jim.codes.Code">
+<em class="property">class </em><code class="sig-prename descclassname">server.jim.codes.</code><code class="sig-name descname">Code</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#server.jim.codes.Code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class of response code</p>
+<dl class="attribute">
+<dt id="server.jim.codes.Code.code">
+<code class="sig-name descname">code</code><a class="headerlink" href="#server.jim.codes.Code.code" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.codes.Code.message">
+<code class="sig-name descname">message</code><a class="headerlink" href="#server.jim.codes.Code.message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-server.jim.constants">
+<span id="server-jim-constants-module"></span><h2>server.jim.constants module<a class="headerlink" href="#module-server.jim.constants" title="Permalink to this headline">¶</a></h2>
+<p>Module of constants used in jim protocol</p>
+<dl class="class">
+<dt id="server.jim.constants.RequestAction">
+<em class="property">class </em><code class="sig-prename descclassname">server.jim.constants.</code><code class="sig-name descname">RequestAction</code><a class="headerlink" href="#server.jim.constants.RequestAction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class the storage of request actions</p>
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.ACCEPT_CHAT">
+<code class="sig-name descname">ACCEPT_CHAT</code><em class="property"> = 'accept_chat'</em><a class="headerlink" href="#server.jim.constants.RequestAction.ACCEPT_CHAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.AUTH">
+<code class="sig-name descname">AUTH</code><em class="property"> = 'auth'</em><a class="headerlink" href="#server.jim.constants.RequestAction.AUTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.COMMAND">
+<code class="sig-name descname">COMMAND</code><em class="property"> = 'command'</em><a class="headerlink" href="#server.jim.constants.RequestAction.COMMAND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.MESSAGE">
+<code class="sig-name descname">MESSAGE</code><em class="property"> = 'msg'</em><a class="headerlink" href="#server.jim.constants.RequestAction.MESSAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.PRESENCE">
+<code class="sig-name descname">PRESENCE</code><em class="property"> = 'presence'</em><a class="headerlink" href="#server.jim.constants.RequestAction.PRESENCE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.QUIT">
+<code class="sig-name descname">QUIT</code><em class="property"> = 'quit'</em><a class="headerlink" href="#server.jim.constants.RequestAction.QUIT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="server.jim.constants.RequestAction.START_CHAT">
+<code class="sig-name descname">START_CHAT</code><em class="property"> = 'start_chat'</em><a class="headerlink" href="#server.jim.constants.RequestAction.START_CHAT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-server.jim.functions">
+<span id="server-jim-functions-module"></span><h2>server.jim.functions module<a class="headerlink" href="#module-server.jim.functions" title="Permalink to this headline">¶</a></h2>
+<p>Module of transport functions jim protocol</p>
+<dl class="function">
+<dt id="server.jim.functions.get_data">
+<code class="sig-prename descclassname">server.jim.functions.</code><code class="sig-name descname">get_data</code><span class="sig-paren">(</span><em class="sig-param">socket</em><span class="sig-paren">)</span><a class="headerlink" href="#server.jim.functions.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to receive data</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="server.jim.functions.send_data">
+<code class="sig-prename descclassname">server.jim.functions.</code><code class="sig-name descname">send_data</code><span class="sig-paren">(</span><em class="sig-param">socket</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#server.jim.functions.send_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to send data</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-server.jim">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-server.jim" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Geekbrains CSA (server)</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Serega Abissov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/_modules/server.jim.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -7,7 +7,7 @@ import sys
 import yaml
 from PyQt5.QtWidgets import QApplication
 
-from server import Server
+from server_core import Server
 from server_db import ServerStorage
 from ui.server_ui_logic import ConfigWindow, MainWindow
 

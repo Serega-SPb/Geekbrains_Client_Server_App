@@ -5,7 +5,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from select import select
 from threading import Thread
 
-import logs.server_log_config as log_config
+from logs import server_log_config as log_config
 from decorators import try_except_wrapper
 from descriptors import Port
 from jim.classes.package import Response

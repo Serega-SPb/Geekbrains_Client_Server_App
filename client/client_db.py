@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-import logs.client_log_config as log_config
+from logs import client_log_config as log_config
 from decorators import transaction
 from metaclasses import Singleton
 

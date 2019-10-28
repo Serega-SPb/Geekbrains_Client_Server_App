@@ -7,7 +7,7 @@ DIR = 'common'
 CLIENT_DIR = os.path.join(ROOT, 'client')
 SERVER_DIR = os.path.join(ROOT, 'server')
 
-EXCLUDE = ['__init__.py', '__pycache__']
+EXCLUDE = ['__pycache__']
 
 
 def get_files(dir):

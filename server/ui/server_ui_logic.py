@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, \
                             QDialog, QFileDialog
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
-import logs.server_log_config as log_config
+from logs import server_log_config as log_config
 from server_db import ServerStorage
 from .server_ui import Ui_MainWindow as ServerMainWindow
 from .server_config_ui import Ui_Dialog as ConfigDialog

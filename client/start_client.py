@@ -6,7 +6,7 @@ import sys
 
 from PyQt5.QtWidgets import QApplication
 
-from client import Client
+from client_core import Client
 from ui.client_ui_logic import LoginWindow, MainWindow, MessageBox
 
 
