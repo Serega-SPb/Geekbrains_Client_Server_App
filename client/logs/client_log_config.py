@@ -3,14 +3,19 @@ import os
 import sys
 
 LOGGER_NAME = 'client'
+ROOT = os.getcwd()
+DIR_LOG = 'logs'
 
 LOGGING_LVL = logging.DEBUG
 FILE_LOG_LVL = logging.WARNING
 STREAM_LOG_LVL = logging.INFO
 
-LOG_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+LOG_DIRECTORY = os.path.join(ROOT, DIR_LOG)
 LOG_FILENAME = f'{LOGGER_NAME}.log'
 ENCODING = 'utf-8'
+
+if not os.path.exists(LOG_DIRECTORY):
+    os.mkdir(LOG_DIRECTORY)
 
 client_formatter = logging.Formatter('%(asctime)s | %(levelname)-8s | %(module)s | %(message)s')
 

@@ -4,14 +4,19 @@ import os
 import sys
 
 LOGGER_NAME = 'server'
+ROOT = os.getcwd()
+DIR_LOG = 'logs'
 
 LOGGING_LVL = logging.DEBUG
 FILE_LOG_LVL = logging.INFO
 STREAM_LOG_LVL = logging.DEBUG
 
-LOG_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
+LOG_DIRECTORY = os.path.join(ROOT, DIR_LOG)
 LOG_FILENAME = f'{LOGGER_NAME}.log'
 ENCODING = 'utf-8'
+
+if not os.path.exists(LOG_DIRECTORY):
+    os.mkdir(LOG_DIRECTORY)
 
 BACKUP_COUNT = 5
 WHEN_INTERVAL = 'D'

@@ -97,6 +97,22 @@ class LoginWindow(QDialog):
     def password(self):
         return self.ui.passwordTxb.text()
 
+    @property
+    def ip(self):
+        return self.ui.ipAddressTxb.text()
+
+    @ip.setter
+    def ip(self, value):
+        self.ui.ipAddressTxb.setText(value)
+
+    @property
+    def port(self):
+        return int(self.ui.portTxb.text())
+
+    @port.setter
+    def port(self, value):
+        self.ui.portTxb.setText(str(value))
+
     def username_text_changed(self):
         """ Method the handler of username text field change event """
 

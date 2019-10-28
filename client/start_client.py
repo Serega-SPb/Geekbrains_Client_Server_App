@@ -39,6 +39,10 @@ def main():
     preparing()
     app = QApplication(sys.argv)
     login = LoginWindow()
+
+    login.ip = addr
+    login.port = port
+
     login.show()
     app.exec_()
 
@@ -46,7 +50,7 @@ def main():
         return
     login.close()
 
-    client = Client(addr, port)
+    client = Client(login.ip, login.port)
     client.set_user(login.username, login.password)
     client.start()
     win = MainWindow(client)
