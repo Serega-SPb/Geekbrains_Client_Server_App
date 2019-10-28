@@ -1,15 +1,22 @@
+""" Module of transport package body """
+
 import re
 
 from jim.constants import USERNAME, PASSWORD, SENDER, TO, TEXT, MESSAGE
 
 
 class BaseBody:
+    """ Base class of package body"""
 
     def get_dict(self):
+        """ Returns attributes of class as dictionary """
+
         return {s: str(getattr(self, s, None)) for s in self.__slots__}
 
 
 class User(BaseBody):
+    """ Class of user data """
+
     __slots__ = (USERNAME, PASSWORD)
 
     def __init__(self, username, password):
@@ -17,6 +24,8 @@ class User(BaseBody):
         self.password = password
 
     def get_dict(self):
+        """ Override of base get_dict function """
+
         return f'{self.username}:{self.password}'
 
     def __eq__(self, other):
@@ -31,11 +40,12 @@ class User(BaseBody):
 
 
 class Msg(BaseBody):
+    """ Class of message """
+
     __slots__ = (SENDER, TO, TEXT)
 
     PATTERN = r'@(?P<to>[\w\d]*)?(?P<message>.*)'
-
-    recv_pat = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{TO}>[\w]*): (?P<{TEXT}>(.|\n)*)'
+    RECV_PAT = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{TO}>[\w]*): (?P<{TEXT}>(.|\n)*)'
 
     def __init__(self, text, sender, to='ALL'):
         self.text = text
@@ -44,18 +54,24 @@ class Msg(BaseBody):
 
     @classmethod
     def from_dict(cls, json_obj):
+        """ Returns instance of class by dictionary """
+
         ins = cls(json_obj[TEXT], json_obj[SENDER], json_obj[TO])
         return ins
 
     @classmethod
     def from_formated(cls, formated_text):
-        match = re.match(cls.recv_pat, formated_text, re.MULTILINE)
+        """ Returns instance of class by formatted string """
+
+        match = re.match(cls.RECV_PAT, formated_text, re.MULTILINE)
         sender = match.group(SENDER)
         to = match.group(TO)
         msg = match.group(TEXT)
         return cls(msg, sender, to)
 
     def parse_msg(self):
+        """ Function to parse text of message """
+
         to_user = 'ALL'
         msg = self.text
 

@@ -1,4 +1,9 @@
+""" The module contains descriptors """
+
+
 class Port:
+    """Descriptor of port field with limits at value"""
+
     __slots__ = ('name',)
 
     def __init__(self, name):

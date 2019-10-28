@@ -1,7 +1,11 @@
+""" The module contains metaclasses """
+
 import types
 
 
 class Singleton(type):
+    """ Metaclass of implementation a singleton pattern """
+
     def __init__(cls, *args, **kwargs):
         super(Singleton, cls).__init__(*args, **kwargs)
         cls.instance = None

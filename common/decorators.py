@@ -1,9 +1,13 @@
+""" The module contains decorators """
+
 import json
 from jim.codes import SERVER_ERROR, SERVER_UNAVAILABLE, INCORRECT_REQUEST
 
 
 def try_except_wrapper(func):
-    """ For class methods with a logger """
+    """ Decorator of try except block
+        Using only for methods of class with a logger"""
+
     def wrapper(*args, **kwargs):
         logger = args[0].logger
         try:
@@ -22,7 +26,9 @@ def try_except_wrapper(func):
 
 
 def transaction(func):
-    """ For database class methods with a logger """
+    """ Decorator of database transaction
+        Using only for methods of class with a logger and a db session"""
+
     def wrapper(*args, **kwargs):
         session = args[0].session
         logger = args[0].logger

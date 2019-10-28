@@ -1,3 +1,4 @@
+""" Module of constants used in jim protocol """
 
 TYPE = 'type'
 REQUEST = 'request'
@@ -16,6 +17,8 @@ TEXT = 'text'
 
 
 class RequestAction:
+    """ Class the storage of request actions """
+
     PRESENCE = 'presence'
     AUTH = 'auth'
     MESSAGE = 'msg'

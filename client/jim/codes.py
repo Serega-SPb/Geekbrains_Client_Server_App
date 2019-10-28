@@ -1,7 +1,11 @@
+""" Module contains response code class and templates of codes """
+
 from jim.constants import CODE, MESSAGE
 
 
 class Code:
+    """ Class of response code """
+
     __slots__ = (CODE, MESSAGE)
 
     def __init__(self, code, message):

@@ -1,3 +1,5 @@
+"""" Module of transport packages """
+
 from datetime import datetime as dt
 
 from jim.constants import REQUEST, RESPONSE, \
@@ -7,6 +9,8 @@ from jim.classes.request_body import BaseBody
 
 
 class BasePackage:
+    """ Base class of request and response """
+
     __slots__ = (TIME, TYPE)
 
     def __init__(self):
@@ -14,10 +18,14 @@ class BasePackage:
         self.time = dt.timestamp(dt.now())
 
     def get_dict(self):
+        """ Returns attributes of class as dictionary """
+
         return {s: getattr(self, s, None) for s in self.__slots__}
 
 
 class Request(BasePackage):
+    """ Class of request package """
+
     __slots__ = (ACTION, BODY, TIME, TYPE)
 
     def __init__(self, action, body=''):
@@ -28,12 +36,16 @@ class Request(BasePackage):
 
     @classmethod
     def from_dict(cls, json_obj):
+        """ Returns instance of class by dictionary """
+
         ins = cls(json_obj[ACTION], json_obj[BODY])
         if TIME in json_obj:
             ins.time = json_obj[TIME]
         return ins
 
     def get_dict(self):
+        """ Override of base get_dict function """
+
         d = super().get_dict()
         b = d[BODY]
         if b and isinstance(b, BaseBody):
@@ -56,6 +68,8 @@ class Request(BasePackage):
 
 
 class Response(BasePackage):
+    """ Class of response package """
+
     __slots__ = (CODE, MESSAGE, TIME, TYPE)
 
     def __init__(self, code, message=None):
@@ -69,6 +83,8 @@ class Response(BasePackage):
 
     @classmethod
     def from_dict(cls, json_obj):
+        """ Returns instance of class by dictionary """
+
         ins = cls(Code(json_obj[CODE], json_obj[MESSAGE]))
         if TIME in json_obj:
             ins.time = json_obj[TIME]
