@@ -1,3 +1,5 @@
+""" Module implements client connection and data exchange """
+
 import logging
 import queue
 from socket import socket, AF_INET, SOCK_STREAM
@@ -18,6 +20,8 @@ from ui.client_ui_logic import MessageBox
 
 
 class ClientThread(Thread):
+    """ Thread class for async execution the function of client """
+
     __slots__ = ('func', 'logger')
 
     def __init__(self, func, logger):
@@ -32,12 +36,17 @@ class ClientThread(Thread):
 
 
 def show_error(mes):
+    """ Function for shows message on UI """
+    # TODO Obsolete
+
     msb = MessageBox(mes)
     msb.show()
     msb.exec_()
 
 
 class Client:
+    """ Class client connection and data exchange """
+
     __slots__ = ('addr', '_port', 'user',
                  'logger', 'socket', 'connected',
                  'listener', 'sender', 'encryptors', 'priv_key',
@@ -71,6 +80,8 @@ class Client:
         self.storage = ClientStorage(username)
 
     def start(self):
+        """ Method start connection to server """
+
         self.socket = socket(*self.TCP)
         start_txt = f'Connect to {self.addr}:{self.port} as {self.username}'
         self.logger.debug(start_txt)
@@ -108,6 +119,7 @@ class Client:
 
     @try_except_wrapper
     def authorization(self):
+        """ Method of authorization on server """
         pr_req = Request(RequestAction.PRESENCE, self.user.username)
         self.__send_request(pr_req)
         resp = self.__get_response()
@@ -123,18 +135,26 @@ class Client:
         return self.__get_response()
 
     def get_chat_req(self, contact):
+        """ Method send request for gets all messages of chat with contact """
+
         req = Request(RequestAction.COMMAND,
                       f'get_chat {self.user.username} {contact}')
         self.__send_request(req)
 
     def get_users_req(self):
+        """ Method send request for gets users online """
+
         self.__send_request(Request(RequestAction.COMMAND, 'get_users'))
 
     def get_contacts_req(self):
+        """ Method send request for gets list contacts """
+
         self.__send_request(Request(RequestAction.COMMAND, 'get_contacts'))
 
     @try_except_wrapper
     def start_chat(self, contact):
+        """ Method initialization of chat with contact """
+
         key = self.storage.get_key(contact)
         if key is not None:
             self.set_encryptor(contact, ClientCrypt(key))
@@ -147,6 +167,8 @@ class Client:
 
     @try_except_wrapper
     def accepting_chat(self, resp_mes):
+        """ Method of handle request to start chat """
+
         r_msg = Msg.from_formated(resp_mes)
         pub = import_pub_key(r_msg.text.encode())
 
@@ -164,6 +186,8 @@ class Client:
 
     @try_except_wrapper
     def accepted_chat(self, resp_mes):
+        """ Method of handle response about confirm start of chat """
+
         msg = Msg.from_formated(resp_mes)
         encryptor = self.get_encryptor(msg.sender)
         if encryptor is not None:
@@ -173,6 +197,8 @@ class Client:
         self.storage.add_chat_key(msg.sender, secret)
 
     def add_contact(self, contact):
+        """ Method add contact in contact list """
+
         if self.storage.get_contact(contact):
             return False
         self.storage.add_contact(contact)
@@ -181,16 +207,22 @@ class Client:
         return True
 
     def rem_contact(self, contact):
+        """ Method remove contact from contact list """
+
         self.storage.remove_contact(contact)
         req = Request(RequestAction.COMMAND, f'rem_contact {contact}')
         self.__send_request(req)
 
     def sync_contacts(self, contacts):
+        """ Method sync of list contact from server to client """
+
         for contact in contacts:
             self.storage.append_contact(contact)
 
     @try_except_wrapper
     def send_msg(self, text, to):
+        """ Method send messge to server """
+
         encryptor = self.get_encryptor(to)
         text = encryptor.encript_msg(text.encode()).decode()
         msg = Msg(text, self.user, to)
@@ -199,6 +231,8 @@ class Client:
         self.__send_request(request)
 
     def __listen_server(self):
+        """ Method listen responses from server """
+
         while self.connected:
             resp = get_data(self.socket)
             self.logger.debug(resp)
@@ -215,12 +249,16 @@ class Client:
                 print(resp.message)
 
     def subscribe(self, code, func):
+        """ Method subscribe of function to response code """
+
         if code in self.subs.keys():
             self.subs[code].append(func)
         else:
             self.subs[code] = [func]
 
     def parse_recv_message(self, msg):
+        """ Method parse/decrypt message """
+
         msg = Msg.from_formated(msg)
         encryptor = self.get_encryptor(msg.sender)
         msg.text = encryptor.decrypt_msg(msg.text.encode()).decode()

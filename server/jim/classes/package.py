@@ -44,7 +44,7 @@ class Request(BasePackage):
         return ins
 
     def get_dict(self):
-        """ Override of base get_dict function """
+        """ Override of base get_dict method """
 
         d = super().get_dict()
         b = d[BODY]

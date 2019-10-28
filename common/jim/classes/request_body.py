@@ -24,7 +24,7 @@ class User(BaseBody):
         self.password = password
 
     def get_dict(self):
-        """ Override of base get_dict function """
+        """ Override of base get_dict method """
 
         return f'{self.username}:{self.password}'
 
@@ -70,7 +70,7 @@ class Msg(BaseBody):
         return cls(msg, sender, to)
 
     def parse_msg(self):
-        """ Function to parse text of message """
+        """ Method to parse text of message """
 
         to_user = 'ALL'
         msg = self.text

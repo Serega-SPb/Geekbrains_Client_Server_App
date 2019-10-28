@@ -1,3 +1,5 @@
+""" Module implements client database models """
+
 import logging
 from datetime import datetime
 
@@ -13,6 +15,8 @@ Base = declarative_base()
 
 
 class Contact(Base):
+    """ Class model of Contacts table """
+
     __tablename__ = 'contacts'
     id = Column(Integer, primary_key=True)
     contact = Column(String)
@@ -25,6 +29,8 @@ class Contact(Base):
 
 
 class ChatKey(Base):
+    """ Class model of Chat keys table """
+
     __tablename__ = 'chat_keys'
     id = Column(Integer, primary_key=True)
     user = Column(String)
@@ -36,6 +42,8 @@ class ChatKey(Base):
 
 
 class Message(Base):
+    """ Class model of Messages table """
+
     __tablename__ = 'messages'
     id = Column(Integer, primary_key=True)
     text = Column(String)
@@ -52,6 +60,8 @@ class Message(Base):
 
 
 class ClientStorage(metaclass=Singleton):
+    """ Class a connector to database """
+
     DB = 'sqlite:///user_data/client_db.db'
 
     def __init__(self, username=None):
@@ -64,28 +74,42 @@ class ClientStorage(metaclass=Singleton):
 
     @transaction
     def add_contact(self, contact):
+        """ Method adds contact in db """
+
         contact = Contact(contact)
         self.session.add(contact)
 
     @transaction
     def remove_contact(self, contact):
+        """ Method removes contact in db """
+
         self.session.query(Contact).filter_by(contact=contact).delete()
 
     def get_contact(self, contact):
+        """ Method gets contact from db """
+
         return self.session.query(Contact).filter_by(contact=contact).first()
 
     def get_contacts(self):
+        """ Method gets contacts from db """
+
         return self.session.query(Contact).all()
 
     @transaction
     def add_message(self, recipient, text):
+        """ Method adds message in db """
+
         message = Message(text, recipient, datetime.now())
         self.session.add(message)
 
     def get_messages(self):
+        """ Method gets messages from db """
+
         return self.session.query(Message).all()
 
     def append_contact(self, contact):
+        """ Method appends contact if not exist """
+
         check = self.session.query(Contact).filter_by(contact=contact).first()
         if check:
             return
@@ -93,10 +117,14 @@ class ClientStorage(metaclass=Singleton):
 
     @transaction
     def add_chat_key(self, user, key):
+        """ Method adds key to contact in db """
+
         chat_key = ChatKey(user, key)
         self.session.add(chat_key)
 
     def get_key(self, user):
+        """ Method gets key of contact from db """
+
         key = self.session.query(ChatKey).filter_by(user=user).first()
         return key.key if key else None
 

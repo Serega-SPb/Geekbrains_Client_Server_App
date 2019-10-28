@@ -1,3 +1,5 @@
+""" Module start client application """
+
 import argparse
 import os
 import sys
@@ -20,6 +22,7 @@ USER_DATA_DIR = 'user_data'
 def preparing():
     if not os.path.exists(USER_DATA_DIR):
         os.mkdir(USER_DATA_DIR)
+
 
 def main():
     parser = argparse.ArgumentParser()

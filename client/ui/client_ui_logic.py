@@ -1,3 +1,5 @@
+""" Module implements ui logic and addinional widgets """
+
 from datetime import datetime
 import os
 
@@ -13,6 +15,8 @@ UI_DIR = os.path.dirname(__file__)
 
 
 class UserWidget(QWidget):
+    """ Class the widget of list item to display user """
+
     def __init__(self, username, action_name, action, parent=None):
         super().__init__(parent)
         self.ui()
@@ -22,6 +26,8 @@ class UserWidget(QWidget):
         self.actinBtn.clicked.connect(action)
 
     def ui(self):
+        """ Method build ui """
+
         # self.resize(200, 50)
         box = QHBoxLayout(self)
         self.setLayout(box)
@@ -35,6 +41,8 @@ class UserWidget(QWidget):
 
 
 class Message(QWidget):
+    """ Class the widget of list item to display message in chat """
+
     def __init__(self, user, text, time, parent=None):
         super().__init__(parent)
         self.ui()
@@ -44,6 +52,8 @@ class Message(QWidget):
         self.msgLbl.setText(text)
 
     def ui(self):
+        """ Method build ui """
+
         # self.setGeometry(0, 0, 100, 50)
         # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         # self.setMaximumWidth(100)
@@ -65,6 +75,7 @@ class Message(QWidget):
 
 
 class LoginWindow(QDialog):
+    """ Class the login dialog """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -87,23 +98,29 @@ class LoginWindow(QDialog):
         return self.ui.passwordTxb.text()
 
     def username_text_changed(self):
+        """ Method the handler of username text field change event """
+
         if len(self.username) > 2:
             self.ui.loginBtn.setEnabled(True)
         else:
             self.ui.loginBtn.setEnabled(False)
 
     def login(self):
+        """ Method the handler of login button click event """
         self.start = True
         self.close()
 
 
 class MessageBox(QDialog):
+    """ Class the dialog to display system message """
+
     def __init__(self, messge, parent=None):
         super().__init__(parent)
         self.ui()
         self.errorLbl.setText(messge)
 
     def ui(self):
+        """ Method build ui """
         self.resize(250, 125)
         self.setFixedSize(self.size())
         self.setWindowTitle('Error')
@@ -116,6 +133,7 @@ class MessageBox(QDialog):
 
 
 class SignalStorage(QObject):
+    """ Class the signal storage """
 
     user_connected = pyqtSignal(str)
     user_disconnected = pyqtSignal(str)
@@ -132,6 +150,7 @@ class SignalStorage(QObject):
 
 
 class MainWindow(QMainWindow):
+    """ Class the implementation of main window logic """
 
     SELF_SIDE = 0
     OTHER_SIDE = 1
@@ -147,6 +166,8 @@ class MainWindow(QMainWindow):
         self.init_ui()
 
     def init_ui(self):
+        """ Method the initialization ui and link ui widgets to logic """
+
         self.storage = SignalStorage()
         self.set_chat_active(False)
 
@@ -180,6 +201,8 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def __add_user_in_list(list_view, user, action_name, action):
+        """ Method adds user in list on ui """
+
         item = QListWidgetItem()
         item.user = user
         widget = UserWidget(user, action_name, action, list_view)
@@ -191,12 +214,16 @@ class MainWindow(QMainWindow):
 
     @staticmethod
     def __rem_user_from_list(list_view, user):
+        """ Method removes user from list on ui """
+
         items = [list_view.item(i) for i in range(list_view.count())]
         item = [i for i in items if hasattr(i, 'user') and i.user == user]
         if len(item) > 0:
             list_view.takeItem(list_view.row(item[0]))
 
     def load_users(self):
+        """ Method loads users in online list """
+
         self.client.get_users_req()
         users = self.client.answers.get()
         for user in users:
@@ -205,13 +232,19 @@ class MainWindow(QMainWindow):
             self.add_online_user(user)
 
     def add_online_user(self, user):
+        """ Method adds user in online list """
+
         self.__add_user_in_list(self.ui.usersList, user,
                                 'Add', self.add_contact)
 
     def rem_online_user(self, user):
+        """ Method removes user in online list """
+
         self.__rem_user_from_list(self.ui.usersList, user)
 
     def load_contacts(self):
+        """ Method loads users in contact list """
+
         self.client.get_contacts_req()
         contacts = self.client.answers.get()
         self.client.sync_contacts(contacts)
@@ -220,6 +253,8 @@ class MainWindow(QMainWindow):
                                     'Del', self.remove_contact)
 
     def add_contact(self):
+        """ Method adds user in contact list """
+
         sender = self.sender()
         widget = sender.parent()
         username = widget.username
@@ -230,6 +265,8 @@ class MainWindow(QMainWindow):
                                 'Del', self.remove_contact)
 
     def remove_contact(self):
+        """ Method removes user in contact list """
+
         sender = self.sender()
         widget = sender.parent()
         username = widget.username
@@ -238,6 +275,8 @@ class MainWindow(QMainWindow):
         self.__rem_user_from_list(self.ui.contactsList, username)
 
     def start_chat(self):
+        """ Method the initialization chat with user """
+
         self.ui.chatList.clear()
         sender = self.sender()
         items = sender.selectedItems()
@@ -250,15 +289,21 @@ class MainWindow(QMainWindow):
             self.load_chat()
 
     def starting_chat(self, resp):
+        """ Method the handler of request of start chat """
+
         # self.curr_chat_user =
         self.client.accepting_chat(resp)
         # self.load_chat()
 
     def accepted_chat(self, resp):
+        """ Method the handler of request of initialized chat """
+
         self.client.accepted_chat(resp)
         self.load_chat()
 
     def load_chat(self):
+        """ Method the load chat messages on ui """
+
         self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
         chat = self.client.answers.get()
@@ -268,12 +313,17 @@ class MainWindow(QMainWindow):
     TIME_FMT = '%Y-%m-%d %H:%M:%S.%f'
 
     def recieve_message(self, msg):
+        """ Method of handle of received message """
+
         sender, msg = self.client.parse_recv_message(msg)
         # TODO get from resp
         time = time = datetime.now().strftime('%H:%M')
         self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
 
-    def parse_message(self, msg):  # TODO not UI logic
+    def parse_message(self, msg):
+        """ Method the parse chat messages gotten from server """
+        # TODO not UI logic
+
         sender, time, message, _ = msg.split('__')
         time = datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
         side = self.SELF_SIDE \
@@ -284,6 +334,8 @@ class MainWindow(QMainWindow):
         self.add_message_in_chat(side, sender, message, time)
 
     def send_message(self):
+        """ Method the send message in chat """
+
         user = self.curr_chat_user
         msg = self.message
         time = datetime.now().strftime('%H:%M')
@@ -293,6 +345,8 @@ class MainWindow(QMainWindow):
         self.message = ''
 
     def add_message_in_chat(self, side, user, msg, time):
+        """ Method the add message in chat """
+
         if user not in [self.client.username, self.curr_chat_user]:
             return
 
@@ -307,6 +361,8 @@ class MainWindow(QMainWindow):
         self.ui.chatList.setItemWidget(item, widget)
 
     def set_chat_active(self, flag):
+        """ Method set active of chat widgets """
+
         self.ui.chatList.setEnabled(flag)
         self.ui.messageTxa.setEnabled(flag)
         self.ui.sendMsgBtn.setEnabled(flag)
