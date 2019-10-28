@@ -1,3 +1,5 @@
+""" Module implements ui logic and addinional widgets """
+
 import logging
 import os
 import sys
@@ -20,6 +22,8 @@ UI_DIR = os.path.dirname(__file__)
 
 
 def add_row(model, row_ind, source, cols_field):
+    """ Function adds row in table in ui """
+
     col_ind = 0
     for f in cols_field:
         path = f.split('.')
@@ -37,6 +41,8 @@ def add_row(model, row_ind, source, cols_field):
 
 
 def fill_table(table, data, headers, fields):
+    """ Function fills table in ui """
+
     model = QStandardItemModel(len(data), len(headers))
     model.setHorizontalHeaderLabels(headers)
     for i, d in enumerate(data):
@@ -45,6 +51,8 @@ def fill_table(table, data, headers, fields):
 
 
 class UiLogHandler(logging.Handler):
+    """ Class the log handler """
+
     def __init__(self, log_widget):
         super().__init__()
         self.widget = log_widget
@@ -61,6 +69,7 @@ class UiLogHandler(logging.Handler):
 
 
 class ConfigWindow(QDialog):
+    """ Class the config dialog logic """
 
     DIR = os.getcwd()
     CONFIG = 'server.cfg'
@@ -83,12 +92,16 @@ class ConfigWindow(QDialog):
         self.load_confg()
 
     def save_config(self):
+        """ Method save config """
+
         d = {p: f.text() for p, f in self.fields.items()}
         file = os.path.join(self.DIR, self.CONFIG)
         with open(file, 'w', encoding='utf-8') as file:
             yaml.dump(d, file)
 
     def load_confg(self):
+        """ Method load config """
+
         file = os.path.join(self.DIR, self.CONFIG)
         if not os.path.isfile(file):
             return
@@ -99,8 +112,11 @@ class ConfigWindow(QDialog):
                 self.fields[k].setText(v)
 
     def __init_ui(self):
+        """ Method the initialization ui and link ui widgets to logic """
 
         def open_file_dialog():
+            """ Function of opens file dialog """
+
             dialog = QFileDialog(self)
             path = dialog.getOpenFileName()[0]
             path = os.path.relpath(path, os.getcwd())
@@ -108,6 +124,8 @@ class ConfigWindow(QDialog):
             print(path)
 
         def save_btn_click():
+            """ Function the handler save button click event """
+
             self.save_config()
             self.close()
 
@@ -117,6 +135,8 @@ class ConfigWindow(QDialog):
 
 
 class MainWindow(QMainWindow):
+    """ Class the implementation of main window logic """
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         # uic.loadUi(os.path.join(UI_DIR, 'server.ui'), self)
@@ -128,14 +148,19 @@ class MainWindow(QMainWindow):
         self.__init_ui()
 
     def __init_ui(self):
+        """ Method the initialization ui and link ui widgets to logic """
 
         def switch_refresh():
+            """ Function the handler of refresh action """
+
             if self.ui.action_refresh.isChecked():
                 self.timer_refresh.start()
             else:
                 self.timer_refresh.stop()
 
         def open_config_func():
+            """ Function of opens config dialog """
+
             win = ConfigWindow(self)
             win.exec_()
 
@@ -150,6 +175,8 @@ class MainWindow(QMainWindow):
         self.ui.action_refresh.trigger()
 
     def refresh(self):
+        """ Method the reload all tables """
+
         self.load_users()
         self.load_users_online()
         self.load_users_stats()
@@ -157,23 +184,31 @@ class MainWindow(QMainWindow):
         self.load_messages()
 
     def load_users(self):
+        """ Method the load users table"""
+
         users = self.storage.get_users()  # temp
         tbl = self.ui.users_tbl
         fill_table(tbl, users, ['id', 'name', 'password'],
                    ['id', 'name', 'password'])
 
     def load_users_online(self):
+        """ Method the load online users table"""
+
         online = self.storage.get_users_online()
         tbl = self.ui.users_online_tbl
         fill_table(tbl, online, ['name'], ['name'])
 
     def load_users_stats(self):
+        """ Method the load users stats table"""
+
         stats = self.storage.get_user_stats()
         tbl = self.ui.user_stats_tbl
         fill_table(tbl, stats, ['name', 'sent', 'recv'],
                    ['User.name', 'UserStat.mes_sent', 'UserStat.mes_recv'])
 
     def load_history(self):
+        """ Method the load history table"""
+
         history = self.storage.get_history()
         tbl = self.ui.history_tbl
         fill_table(tbl, history, ['id', 'name', 'date', 'ip'],
@@ -181,6 +216,8 @@ class MainWindow(QMainWindow):
                     'LoginHistory.datetime', 'LoginHistory.ip'])
 
     def load_messages(self):
+        """ Method the load users messages table"""
+
         messages = self.storage.get_user_messages()
         tbl = self.ui.messages_tbl
         fill_table(tbl, messages,

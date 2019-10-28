@@ -1,3 +1,5 @@
+""" Module implements server logic of chat application """
+
 import logging
 from socket import socket, AF_INET, SOCK_STREAM
 from select import select
@@ -18,6 +20,8 @@ from server_db import ServerStorage
 
 
 class ServerThread(Thread):
+    """ Thread class for async execution the function of server """
+
     __slots__ = ('func', 'logger')
 
     def __init__(self, func, logger):
@@ -32,6 +36,8 @@ class ServerThread(Thread):
 
 
 class Server:
+    """ Class implement receive, handle, response to client request """
+
     __slots__ = ('bind_addr', '_port', 'logger', 'socket',
                  'clients', 'users', 'client_keys', 'listener',
                  'storage', 'commands', 'request_handlers')
@@ -53,6 +59,8 @@ class Server:
         self.__init_req_handlers()
 
     def __init_commands(self):
+        """ Method fills dictionary commands """
+
         self.commands = {
             'get_users': self.storage.get_users_online,
             'add_contact': self.storage.add_contact,
@@ -62,6 +70,8 @@ class Server:
         }
 
     def __init_req_handlers(self):
+        """ Method fills dictionary request handlers """
+
         self.request_handlers = {
             RequestAction.PRESENCE: self.__req_presence_handler,
             RequestAction.AUTH: self.__req_auth_handler,
@@ -73,6 +83,8 @@ class Server:
         }
 
     def start(self, request_count=5):
+        """ Method the start configuration server """
+
         self.socket = socket(*self.TCP)
         self.socket.settimeout(0.5)
         self.socket.bind((self.bind_addr, self.port))
@@ -85,6 +97,8 @@ class Server:
         self.listener.start()
 
     def __listen(self):
+        """ Method the listener client connections """
+
         self.logger.info('Start listen')
         while True:
             try:
@@ -112,6 +126,8 @@ class Server:
 
     @try_except_wrapper
     def __get_requests(self, i_clients):
+        """ Method the handler of client requests """
+
         requests = {}
         for client in i_clients:
             try:
@@ -135,6 +151,8 @@ class Server:
 
     @try_except_wrapper
     def __send_responses(self, requests, o_clients):
+        """ Method the sender of responses to clients """
+
         for client, i_req in requests.items():
             other_clients = [c for c in o_clients if c != client]
             self.logger.info(client)
@@ -189,6 +207,8 @@ class Server:
 
     @try_except_wrapper
     def __req_presence_handler(self, i_req, client, *args):
+        """ Mathod the handler presence request """
+
         prv, pub = gen_keys()
         self.client_keys[i_req.body] = (client, prv)
         self.__send_to_client(client, Response(AUTH,
@@ -196,6 +216,8 @@ class Server:
 
     @try_except_wrapper
     def __req_auth_handler(self, i_req, client, *args):
+        """ Mathod the handler authorization request """
+
         other_clients = args[0]
         user = [u for u, c in self.users.items() if c == client]
         if len(user) == 0:
@@ -222,6 +244,8 @@ class Server:
 
     @try_except_wrapper
     def __req_start_chat_handler(self, i_req, client, *args):
+        """ Mathod the handler start chat request """
+
         msg = Msg.from_dict(i_req.body)
         if msg.to not in self.users:
             self.logger.warning(f'{msg.to} not found')
@@ -231,6 +255,8 @@ class Server:
 
     @try_except_wrapper
     def __req_accept_chat_handler(self, i_req, client, *args):
+        """ Mathod the handler accept chat request """
+
         msg = Msg.from_dict(i_req.body)
         if msg.to not in self.users:
             self.logger.warning(f'{msg.to} not found')
@@ -240,6 +266,8 @@ class Server:
 
     @try_except_wrapper
     def __req_message_handler(self, i_req, client, *args):
+        """ Mathod the handler message request """
+
         other_clients = args[0]
         msg = Msg.from_dict(i_req.body)
         self.storage.user_stat_update(msg.sender, ch_sent=1)
@@ -258,6 +286,8 @@ class Server:
 
     @try_except_wrapper
     def __req_command_handler(self, i_req, client, *args):
+        """ Mathod the handler command request """
+
         command, *args = i_req.body.split()
         user = [u for u, c in self.users.items() if c == client].pop()
         if len(args) < 1 or args[0] != user:

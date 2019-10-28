@@ -75,7 +75,7 @@ class Message(QWidget):
 
 
 class LoginWindow(QDialog):
-    """ Class the login dialog """
+    """ Class the login dialog logic """
 
     def __init__(self, parent=None):
         super().__init__(parent)

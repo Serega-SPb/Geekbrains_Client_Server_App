@@ -1,3 +1,5 @@
+""" Module start server application """
+
 import argparse
 import os
 import sys
