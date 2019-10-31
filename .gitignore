@@ -109,3 +109,4 @@ venv.bak/
 
 *.db
 *.log.*
+doc/
