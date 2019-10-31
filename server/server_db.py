@@ -1,19 +1,24 @@
+""" Module implements server database models """
+
 import logging
 import threading
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, DateTime, or_, and_
+from sqlalchemy import create_engine, or_, and_, \
+                       Column, Integer, String, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 
-import logs.server_log_config as log_config
-from common.decorators import transaction
-from common.metaclasses import Singleton
+from logs import server_log_config as log_config
+from decorators import transaction
+from metaclasses import Singleton
 
 Base = declarative_base()
 
 
 class User(Base):
+    """ Class model of Users table """
+
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True)
@@ -31,6 +36,8 @@ class User(Base):
 
 
 class UserOnline(Base):
+    """ Class model of Users online table """
+
     __tablename__ = 'online'
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
 
@@ -39,6 +46,8 @@ class UserOnline(Base):
 
 
 class LoginHistory(Base):
+    """ Class model of History table """
+
     __tablename__ = 'history'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'))
@@ -52,6 +61,8 @@ class LoginHistory(Base):
 
 
 class Contact(Base):
+    """ Class model of Contacts table """
+
     __tablename__ = 'contacts'
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     contact_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
@@ -62,6 +73,8 @@ class Contact(Base):
 
 
 class UserStat(Base):
+    """ Class model of User stats table """
+
     __tablename__ = 'user_stats'
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
     mes_sent = Column(Integer, default=0)
@@ -74,6 +87,8 @@ class UserStat(Base):
 
 
 class UserMessage(Base):
+    """ Class model of User messages table """
+
     __tablename__ = 'user_messages'
     id = Column(Integer, primary_key=True)
     sender_id = Column(Integer, ForeignKey('users.id'))
@@ -92,6 +107,8 @@ class UserMessage(Base):
 
 
 class ServerStorage(metaclass=Singleton):
+    """ Class a connector to database """
+
     DB = 'sqlite:///server_db.db'
     sessions = {}
 
@@ -99,6 +116,8 @@ class ServerStorage(metaclass=Singleton):
         self.set_database(db_file)
 
     def set_database(self, db_file):
+        """ Method the create connection to db """
+
         db = f'sqlite:///{db_file}' if db_file else self.DB
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.database_engine = create_engine(db, echo=False, pool_recycle=7200)
@@ -120,14 +139,20 @@ class ServerStorage(metaclass=Singleton):
 
     @transaction
     def register_user(self, username, password):
+        """ Method the registration new user """
+
         user = User(username, password)
         self.session.add(user)
         return user
 
     def get_users(self):
+        """ Method gets users from db """
+
         return self.session.query(User).all()
 
     def authorization_user(self, username, password):
+        """ Method authorization user """
+
         user = self.session.query(User).filter_by(name=username).first()
         if not user:
             self.register_user(username, password)
@@ -136,6 +161,8 @@ class ServerStorage(metaclass=Singleton):
 
     @transaction
     def login_user(self, username, ip):
+        """ Method the login user """
+
         print(threading.current_thread())
         user = self.session.query(User).filter_by(name=username).first()
         if not user:
@@ -149,15 +176,20 @@ class ServerStorage(metaclass=Singleton):
 
     @transaction
     def logout_user(self, username):
+        """ Method the logout user """
+
         user = self.session.query(User).filter_by(name=username).first()
         if user:
             self.session.query(UserOnline).filter_by(user_id=user.id).delete()
 
     def get_history(self):
-        return self.session.query(User, LoginHistory).join(LoginHistory, User.id == LoginHistory.user_id).all()
+        return self.session.query(User, LoginHistory)\
+            .join(LoginHistory, User.id == LoginHistory.user_id).all()
 
     @transaction
     def add_contact(self, username, contactname):
+        """ Method adds contact to user in db """
+
         user = self.session.query(User).filter_by(name=username).first()
         contact = self.session.query(User).filter_by(name=contactname).first()
 
@@ -170,6 +202,8 @@ class ServerStorage(metaclass=Singleton):
 
     @transaction
     def remove_contact(self, username, contactname):
+        """ Method removes contact from user in db """
+
         user = self.session.query(User).filter_by(name=username).first()
         contact = self.session.query(User).filter_by(name=contactname).first()
 
@@ -177,12 +211,17 @@ class ServerStorage(metaclass=Singleton):
             self.logger.error('DB.remove_contact: user or contact not found')
             return False
 
-        self.session.query(Contact).filter_by(user_id=user.id, contact_id=contact.id).delete()
+        self.session.query(Contact)\
+            .filter_by(user_id=user.id, contact_id=contact.id).delete()
 
     def get_users_online(self, *args):
+        """ Method gets users online from db """
+
         return self.session.query(User).join(UserOnline).all()
 
     def get_contacts(self, username):
+        """ Method gets user contacts from db """
+
         user = self.session.query(User).filter_by(name=username).first()
         if user:
             return self.session.query(User)\
@@ -192,6 +231,8 @@ class ServerStorage(metaclass=Singleton):
 
     @transaction
     def user_stat_update(self, username, ch_sent=0, ch_recv=0):
+        """ Method updates user statistics """
+
         user = self.session.query(User).filter_by(name=username).first()
         if not user:
             self.logger.error('DB.user_stat_update: user not found')
@@ -206,22 +247,28 @@ class ServerStorage(metaclass=Singleton):
         stat.mes_recv += ch_recv
 
     def get_user_stats(self):
-        return self.session.query(User, UserStat).join(UserStat, User.id == UserStat.user_id).all()
+        """ Method gets user statistics """
+
+        return self.session.query(User, UserStat)\
+            .join(UserStat, User.id == UserStat.user_id).all()
 
     @transaction
     def add_message(self, sender_name, recipient_name, text):
+        """ Method adds message in db """
 
         sender = self.session.query(User).filter_by(name=sender_name).first()
-        recipient = self.session.query(User).filter_by(name=recipient_name).first()
+        recp = self.session.query(User).filter_by(name=recipient_name).first()
 
-        if not sender or not recipient:
+        if not sender or not recp:
             self.logger.error('DB.add_message: user not found')
             return False
 
-        msg = UserMessage(sender.id, recipient.id, text, datetime.now())
+        msg = UserMessage(sender.id, recp.id, text, datetime.now())
         self.session.add(msg)
 
     def get_user_messages(self):
+        """ Method gets users messages from db """
+
         senders = aliased(User)
         recipients = aliased(User)
 
@@ -231,6 +278,7 @@ class ServerStorage(metaclass=Singleton):
             .all()
 
     def get_chat(self, username_1, username_2):
+        """ Method gets users chat messages from db """
 
         user_1 = self.session.query(User).filter_by(name=username_1).first()
         user_2 = self.session.query(User).filter_by(name=username_2).first()
@@ -246,12 +294,16 @@ class ServerStorage(metaclass=Singleton):
             .join(senders, UserMessage.sender_id == senders.id) \
             .join(recipients, UserMessage.recipient_id == recipients.id) \
             .filter(or_(
-                and_(UserMessage.sender_id == user_1.id, UserMessage.recipient_id == user_2.id),
-                and_(UserMessage.sender_id == user_2.id, UserMessage.recipient_id == user_1.id)
+                and_(UserMessage.sender_id == user_1.id,
+                     UserMessage.recipient_id == user_2.id),
+                and_(UserMessage.sender_id == user_2.id,
+                     UserMessage.recipient_id == user_1.id)
             )).all()
         return msgs
 
     def get_chat_str(self, username_1, username_2):
+        """ Method gets users chat messages from db as formatted strings"""
+
         msgs = self.get_chat(username_1, username_2)
         return list(['__'.join(tuple(str(m) for m in msg)) for msg in msgs])
 
@@ -274,7 +326,9 @@ def main():
     storage.add_message(user2, user1, 'U2 send to U1')
 
     msgs = storage.get_user_messages()
+    print(msgs)
     chat = storage.get_chat_str(user1, user2)
+    print(chat)
 
     print(f'Users online: {storage.get_users_online()}')
 

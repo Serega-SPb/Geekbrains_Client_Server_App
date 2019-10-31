@@ -1,0 +1,38 @@
+server.ui package
+=================
+
+Submodules
+----------
+
+server.ui.server\_config\_ui module
+-----------------------------------
+
+.. automodule:: server.ui.server_config_ui
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+server.ui.server\_ui module
+---------------------------
+
+.. automodule:: server.ui.server_ui
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+server.ui.server\_ui\_logic module
+----------------------------------
+
+.. automodule:: server.ui.server_ui_logic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Module contents
+---------------
+
+.. automodule:: server.ui
+   :members:
+   :undoc-members:
+   :show-inheritance:

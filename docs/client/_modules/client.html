@@ -1,0 +1,623 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>client package &#8212; Geekbrains CSA (client) 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="client-package">
+<h1>client package<a class="headerlink" href="#client-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="client.jim.html">client.jim package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="client.jim.classes.html">client.jim.classes package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="client.jim.classes.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="client.jim.classes.html#module-client.jim.classes.package">client.jim.classes.package module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="client.jim.classes.html#module-client.jim.classes.request_body">client.jim.classes.request_body module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="client.jim.classes.html#module-client.jim.classes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#module-client.jim.codes">client.jim.codes module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#module-client.jim.constants">client.jim.constants module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#module-client.jim.functions">client.jim.functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.jim.html#module-client.jim">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.logs.html">client.logs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.logs.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.logs.html#module-client.logs.client_log_config">client.logs.client_log_config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.logs.html#module-client.logs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="client.ui.html">client.ui package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.ui.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.ui.html#module-client.ui.client_ui">client.ui.client_ui module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.ui.html#module-client.ui.client_ui_logic">client.ui.client_ui_logic module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.ui.html#module-client.ui.login_ui">client.ui.login_ui module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.ui.html#module-client.ui">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-client.client_core">
+<span id="client-client-core-module"></span><h2>client.client_core module<a class="headerlink" href="#module-client.client_core" title="Permalink to this headline">¶</a></h2>
+<p>Module implements client connection and data exchange</p>
+<dl class="class">
+<dt id="client.client_core.Client">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_core.</code><code class="sig-name descname">Client</code><span class="sig-paren">(</span><em class="sig-param">addr</em>, <em class="sig-param">port</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class client connection and data exchange</p>
+<dl class="attribute">
+<dt id="client.client_core.Client.TCP">
+<code class="sig-name descname">TCP</code><em class="property"> = (&lt;AddressFamily.AF_INET: 2&gt;, &lt;SocketKind.SOCK_STREAM: 1&gt;)</em><a class="headerlink" href="#client.client_core.Client.TCP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.accepted_chat">
+<code class="sig-name descname">accepted_chat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.accepted_chat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.accepting_chat">
+<code class="sig-name descname">accepting_chat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.accepting_chat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.add_contact">
+<code class="sig-name descname">add_contact</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.add_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method add contact in contact list</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.addr">
+<code class="sig-name descname">addr</code><a class="headerlink" href="#client.client_core.Client.addr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.answers">
+<code class="sig-name descname">answers</code><a class="headerlink" href="#client.client_core.Client.answers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.authorization">
+<code class="sig-name descname">authorization</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.authorization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.connected">
+<code class="sig-name descname">connected</code><a class="headerlink" href="#client.client_core.Client.connected" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.encryptors">
+<code class="sig-name descname">encryptors</code><a class="headerlink" href="#client.client_core.Client.encryptors" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.get_chat_req">
+<code class="sig-name descname">get_chat_req</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.get_chat_req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method send request for gets all messages of chat with contact</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.get_contacts_req">
+<code class="sig-name descname">get_contacts_req</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.get_contacts_req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method send request for gets list contacts</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.get_encryptor">
+<code class="sig-name descname">get_encryptor</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.get_encryptor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.get_users_req">
+<code class="sig-name descname">get_users_req</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.get_users_req" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method send request for gets users online</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.listener">
+<code class="sig-name descname">listener</code><a class="headerlink" href="#client.client_core.Client.listener" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.logger">
+<code class="sig-name descname">logger</code><a class="headerlink" href="#client.client_core.Client.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.parse_recv_message">
+<code class="sig-name descname">parse_recv_message</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.parse_recv_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method parse/decrypt message</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.port">
+<code class="sig-name descname">port</code><a class="headerlink" href="#client.client_core.Client.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Descriptor of port field with limits at value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.priv_key">
+<code class="sig-name descname">priv_key</code><a class="headerlink" href="#client.client_core.Client.priv_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.rem_contact">
+<code class="sig-name descname">rem_contact</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.rem_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method remove contact from contact list</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.send_msg">
+<code class="sig-name descname">send_msg</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.send_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.sender">
+<code class="sig-name descname">sender</code><a class="headerlink" href="#client.client_core.Client.sender" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.set_encryptor">
+<code class="sig-name descname">set_encryptor</code><span class="sig-paren">(</span><em class="sig-param">contact</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.set_encryptor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.set_user">
+<code class="sig-name descname">set_user</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.set_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.socket">
+<code class="sig-name descname">socket</code><a class="headerlink" href="#client.client_core.Client.socket" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.start">
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method start connection to server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.start_chat">
+<code class="sig-name descname">start_chat</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.start_chat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.storage">
+<code class="sig-name descname">storage</code><a class="headerlink" href="#client.client_core.Client.storage" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.subs">
+<code class="sig-name descname">subs</code><a class="headerlink" href="#client.client_core.Client.subs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.subscribe">
+<code class="sig-name descname">subscribe</code><span class="sig-paren">(</span><em class="sig-param">code</em>, <em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.subscribe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method subscribe of function to response code</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.sync_contacts">
+<code class="sig-name descname">sync_contacts</code><span class="sig-paren">(</span><em class="sig-param">contacts</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.Client.sync_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method sync of list contact from server to client</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.Client.user">
+<code class="sig-name descname">user</code><a class="headerlink" href="#client.client_core.Client.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.Client.username">
+<em class="property">property </em><code class="sig-name descname">username</code><a class="headerlink" href="#client.client_core.Client.username" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="client.client_core.ClientThread">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_core.</code><code class="sig-name descname">ClientThread</code><span class="sig-paren">(</span><em class="sig-param">func</em>, <em class="sig-param">logger</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.ClientThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">threading.Thread</span></code></p>
+<p>Thread class for async execution the function of client</p>
+<dl class="attribute">
+<dt id="client.client_core.ClientThread.func">
+<code class="sig-name descname">func</code><a class="headerlink" href="#client.client_core.ClientThread.func" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_core.ClientThread.logger">
+<code class="sig-name descname">logger</code><a class="headerlink" href="#client.client_core.ClientThread.logger" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_core.ClientThread.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.ClientThread.run" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_core.show_error">
+<code class="sig-prename descclassname">client.client_core.</code><code class="sig-name descname">show_error</code><span class="sig-paren">(</span><em class="sig-param">mes</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_core.show_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for shows message on UI</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-client.client_crypt">
+<span id="client-client-crypt-module"></span><h2>client.client_crypt module<a class="headerlink" href="#module-client.client_crypt" title="Permalink to this headline">¶</a></h2>
+<p>Module implements cryptography on client side</p>
+<dl class="class">
+<dt id="client.client_crypt.ClientCrypt">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_crypt.</code><code class="sig-name descname">ClientCrypt</code><span class="sig-paren">(</span><em class="sig-param">secret</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.ClientCrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class implementation of AES crypt</p>
+<dl class="attribute">
+<dt id="client.client_crypt.ClientCrypt.CRYPT_MODE">
+<code class="sig-name descname">CRYPT_MODE</code><em class="property"> = 2</em><a class="headerlink" href="#client.client_crypt.ClientCrypt.CRYPT_MODE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_crypt.ClientCrypt.decrypt_msg">
+<code class="sig-name descname">decrypt_msg</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.ClientCrypt.decrypt_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method of AES decrypt</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_crypt.ClientCrypt.encript_msg">
+<code class="sig-name descname">encript_msg</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.ClientCrypt.encript_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method of AES encrypt</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_crypt.ClientCrypt.gen_secret">
+<em class="property">classmethod </em><code class="sig-name descname">gen_secret</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.ClientCrypt.gen_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constrictor with secret generation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_crypt.ClientCrypt.secret">
+<code class="sig-name descname">secret</code><a class="headerlink" href="#client.client_crypt.ClientCrypt.secret" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_crypt.decrypt_rsa">
+<code class="sig-prename descclassname">client.client_crypt.</code><code class="sig-name descname">decrypt_rsa</code><span class="sig-paren">(</span><em class="sig-param">prv_key</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.decrypt_rsa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function of RSA decrypt</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_crypt.encrypt_rsa">
+<code class="sig-prename descclassname">client.client_crypt.</code><code class="sig-name descname">encrypt_rsa</code><span class="sig-paren">(</span><em class="sig-param">pub_key</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.encrypt_rsa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function of RSA encrypt</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_crypt.gen_keys">
+<code class="sig-prename descclassname">client.client_crypt.</code><code class="sig-name descname">gen_keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.gen_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function generate public and private keys</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_crypt.import_pub_key">
+<code class="sig-prename descclassname">client.client_crypt.</code><code class="sig-name descname">import_pub_key</code><span class="sig-paren">(</span><em class="sig-param">binary_key</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_crypt.import_pub_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function import of public key</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-client.client_db">
+<span id="client-client-db-module"></span><h2>client.client_db module<a class="headerlink" href="#module-client.client_db" title="Permalink to this headline">¶</a></h2>
+<p>Module implements client database models</p>
+<dl class="class">
+<dt id="client.client_db.ChatKey">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_db.</code><code class="sig-name descname">ChatKey</code><span class="sig-paren">(</span><em class="sig-param">user</em>, <em class="sig-param">key</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ChatKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<p>Class model of Chat keys table</p>
+<dl class="attribute">
+<dt id="client.client_db.ChatKey.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#client.client_db.ChatKey.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.ChatKey.key">
+<code class="sig-name descname">key</code><a class="headerlink" href="#client.client_db.ChatKey.key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.ChatKey.user">
+<code class="sig-name descname">user</code><a class="headerlink" href="#client.client_db.ChatKey.user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="client.client_db.ClientStorage">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_db.</code><code class="sig-name descname">ClientStorage</code><span class="sig-paren">(</span><em class="sig-param">username=None</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class a connector to database</p>
+<dl class="attribute">
+<dt id="client.client_db.ClientStorage.DB">
+<code class="sig-name descname">DB</code><em class="property"> = 'sqlite:///user_data/client_db.db'</em><a class="headerlink" href="#client.client_db.ClientStorage.DB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.add_chat_key">
+<code class="sig-name descname">add_chat_key</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.add_chat_key" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.add_contact">
+<code class="sig-name descname">add_contact</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.add_contact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.add_message">
+<code class="sig-name descname">add_message</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.add_message" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.append_contact">
+<code class="sig-name descname">append_contact</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.append_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method appends contact if not exist</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.get_contact">
+<code class="sig-name descname">get_contact</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.get_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method gets contact from db</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.get_contacts">
+<code class="sig-name descname">get_contacts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.get_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method gets contacts from db</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.get_key">
+<code class="sig-name descname">get_key</code><span class="sig-paren">(</span><em class="sig-param">user</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.get_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method gets key of contact from db</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.get_messages">
+<code class="sig-name descname">get_messages</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.get_messages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method gets messages from db</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.ClientStorage.instance">
+<code class="sig-name descname">instance</code><em class="property"> = None</em><a class="headerlink" href="#client.client_db.ClientStorage.instance" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="client.client_db.ClientStorage.remove_contact">
+<code class="sig-name descname">remove_contact</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.ClientStorage.remove_contact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="client.client_db.Contact">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_db.</code><code class="sig-name descname">Contact</code><span class="sig-paren">(</span><em class="sig-param">contact</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.Contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<p>Class model of Contacts table</p>
+<dl class="attribute">
+<dt id="client.client_db.Contact.contact">
+<code class="sig-name descname">contact</code><a class="headerlink" href="#client.client_db.Contact.contact" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.Contact.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#client.client_db.Contact.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="client.client_db.Message">
+<em class="property">class </em><code class="sig-prename descclassname">client.client_db.</code><code class="sig-name descname">Message</code><span class="sig-paren">(</span><em class="sig-param">text</em>, <em class="sig-param">recipient</em>, <em class="sig-param">time</em><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.Message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">sqlalchemy.ext.declarative.api.Base</span></code></p>
+<p>Class model of Messages table</p>
+<dl class="attribute">
+<dt id="client.client_db.Message.id">
+<code class="sig-name descname">id</code><a class="headerlink" href="#client.client_db.Message.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.Message.recipient">
+<code class="sig-name descname">recipient</code><a class="headerlink" href="#client.client_db.Message.recipient" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.Message.text">
+<code class="sig-name descname">text</code><a class="headerlink" href="#client.client_db.Message.text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="client.client_db.Message.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#client.client_db.Message.time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="client.client_db.main">
+<code class="sig-prename descclassname">client.client_db.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.client_db.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-client.decorators">
+<span id="client-decorators-module"></span><h2>client.decorators module<a class="headerlink" href="#module-client.decorators" title="Permalink to this headline">¶</a></h2>
+<p>The module contains decorators</p>
+<dl class="function">
+<dt id="client.decorators.transaction">
+<code class="sig-prename descclassname">client.decorators.</code><code class="sig-name descname">transaction</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#client.decorators.transaction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator of database transaction
+Using only for methods of class with a logger and a db session</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="client.decorators.try_except_wrapper">
+<code class="sig-prename descclassname">client.decorators.</code><code class="sig-name descname">try_except_wrapper</code><span class="sig-paren">(</span><em class="sig-param">func</em><span class="sig-paren">)</span><a class="headerlink" href="#client.decorators.try_except_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator of try except block
+Using only for methods of class with a logger</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-client.descriptors">
+<span id="client-descriptors-module"></span><h2>client.descriptors module<a class="headerlink" href="#module-client.descriptors" title="Permalink to this headline">¶</a></h2>
+<p>The module contains descriptors</p>
+<dl class="class">
+<dt id="client.descriptors.Port">
+<em class="property">class </em><code class="sig-prename descclassname">client.descriptors.</code><code class="sig-name descname">Port</code><span class="sig-paren">(</span><em class="sig-param">name</em><span class="sig-paren">)</span><a class="headerlink" href="#client.descriptors.Port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Descriptor of port field with limits at value</p>
+<dl class="attribute">
+<dt id="client.descriptors.Port.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#client.descriptors.Port.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-client.metaclasses">
+<span id="client-metaclasses-module"></span><h2>client.metaclasses module<a class="headerlink" href="#module-client.metaclasses" title="Permalink to this headline">¶</a></h2>
+<p>The module contains metaclasses</p>
+<dl class="class">
+<dt id="client.metaclasses.Singleton">
+<em class="property">class </em><code class="sig-prename descclassname">client.metaclasses.</code><code class="sig-name descname">Singleton</code><span class="sig-paren">(</span><em class="sig-param">*args</em>, <em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#client.metaclasses.Singleton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">type</span></code></p>
+<p>Metaclass of implementation a singleton pattern</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-client.start_client">
+<span id="client-start-client-module"></span><h2>client.start_client module<a class="headerlink" href="#module-client.start_client" title="Permalink to this headline">¶</a></h2>
+<p>Module start client application</p>
+<dl class="function">
+<dt id="client.start_client.main">
+<code class="sig-prename descclassname">client.start_client.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.start_client.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="client.start_client.preparing">
+<code class="sig-prename descclassname">client.start_client.</code><code class="sig-name descname">preparing</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#client.start_client.preparing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="client.start_client.show_error">
+<code class="sig-prename descclassname">client.start_client.</code><code class="sig-name descname">show_error</code><span class="sig-paren">(</span><em class="sig-param">mes</em><span class="sig-paren">)</span><a class="headerlink" href="#client.start_client.show_error" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-client">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-client" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Geekbrains CSA (client)</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Serega Abissov.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/_modules/client.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
