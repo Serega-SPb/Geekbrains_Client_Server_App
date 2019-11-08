@@ -237,11 +237,22 @@ class MainWindow(QMainWindow):
         if len(item) > 0:
             list_view.takeItem(list_view.row(item[0]))
 
+    def __get_collection_response(self):
+        result = []
+        while True:
+            resp = self.client.answers.get()
+            if not resp:
+                break
+            result.append(resp)
+        return result
+
     def load_users(self):
         """ Method loads users in online list """
 
         self.client.get_users_req()
-        users = self.client.answers.get()
+        # users = self.client.answers.get()
+        users = self.__get_collection_response()
+
         for user in users:
             if user == self.client.username:
                 continue
@@ -262,7 +273,8 @@ class MainWindow(QMainWindow):
         """ Method loads users in contact list """
 
         self.client.get_contacts_req()
-        contacts = self.client.answers.get()
+        # contacts = self.client.answers.get()
+        contacts = self.__get_collection_response()
         self.client.sync_contacts(contacts)
         for contact in contacts:
             self.__add_user_in_list(self.ui.contactsList, contact,
@@ -322,7 +334,8 @@ class MainWindow(QMainWindow):
 
         self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
-        chat = self.client.answers.get()
+        # chat = self.client.answers.get()
+        chat = self.__get_collection_response()
         for msg in chat:
             self.parse_message(msg)
 
