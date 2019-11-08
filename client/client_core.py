@@ -97,7 +97,7 @@ class Client:
         if response.code != OK:
             show_error(str(response.message))
             self.logger.warning(response)
-            return
+            exit()
 
         self.listener = ClientThread(self.__listen_server, self.logger)
         self.listener.start()

@@ -53,6 +53,10 @@ def main():
     client = Client(login.ip, login.port)
     client.set_user(login.username, login.password)
     client.start()
+    if not client.connected:
+        show_error('Service Unavailable')
+        exit()
+
     win = MainWindow(client)
     win.setWindowTitle(client.username)
     win.show()
