@@ -5,7 +5,7 @@ import os
 
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox, QFrame
 
 from .client_ui import Ui_MainWindow as ClientMainWindow
 from .additional_ui import UserWidget, MessageWidget, LoginWindow, ImageFilterWidnow
@@ -101,6 +101,7 @@ class MainWindow(QMainWindow):
         av_file = f'user_data/{self.client.username}_avatar.png'
         if os.path.isfile(av_file):
             self.ui.avatarLbl.setPixmap(QPixmap(av_file))
+            self.ui.avatarLbl.setFrameShape(QFrame.NoFrame)
 
     @staticmethod
     def __add_user_in_list(list_view, user, action_name, action):

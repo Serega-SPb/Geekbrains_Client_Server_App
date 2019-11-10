@@ -64,7 +64,11 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
-            <widget class="QListWidget" name="usersList"/>
+            <widget class="QListWidget" name="usersList">
+             <property name="frameShape">
+              <enum>QFrame::Box</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -95,6 +99,9 @@
              <width>50</width>
              <height>50</height>
             </size>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
            </property>
            <property name="text">
             <string/>

@@ -344,7 +344,8 @@ class TestChatWindow(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        loadUi('test_chat.ui', self)
+        ui_file = os.path.join(os.path.dirname(__file__),'test_chat.ui')
+        loadUi(ui_file, self)
         self.__init_ui()
         self.load_smiles()
 
@@ -373,7 +374,7 @@ class TestChatWindow(QDialog):
         self.message_widget.clear()
 
     def load_smiles(self):
-        path = os.path.abspath(os.path.join(os.getcwd(), '..', self.SMILES_DIR))
+        path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', self.SMILES_DIR))
         for file in os.listdir(path):
             file = os.path.join(path, file)
             if not os.path.isfile(file):

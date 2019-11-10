@@ -63,6 +63,7 @@ class Ui_MainWindow(object):
         self.avatarLbl = QtWidgets.QLabel(self.contactsGridLayout)
         self.avatarLbl.setMinimumSize(QtCore.QSize(50, 50))
         self.avatarLbl.setMaximumSize(QtCore.QSize(50, 50))
+        self.avatarLbl.setFrameShape(QtWidgets.QFrame.Box)
         self.avatarLbl.setText("")
         self.avatarLbl.setObjectName("avatarLbl")
         self.horizontalLayout.addWidget(self.avatarLbl)

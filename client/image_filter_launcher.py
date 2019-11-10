@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QApplication
 
-from client.ui.additional_ui import ImageFilterWidnow
+from ui.additional_ui import ImageFilterWidnow
 
 
 def main():
