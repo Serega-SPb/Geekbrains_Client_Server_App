@@ -4,10 +4,11 @@ from datetime import datetime
 import os
 
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import QMainWindow, QListWidgetItem
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox
 
 from .client_ui import Ui_MainWindow as ClientMainWindow
-from .additional_ui import UserWidget, Message, LoginWindow, MessageBox
+from .additional_ui import UserWidget, MessageWidget, LoginWindow, ImageFilterWidnow
 
 UI_DIR = os.path.dirname(__file__)
 
@@ -51,8 +52,12 @@ class MainWindow(QMainWindow):
         self.storage = SignalStorage()
         self.set_chat_active(False)
 
+        self.load_avatar()
         self.load_users()
         self.load_contacts()
+
+        self.ui.avatarLbl.mouseDoubleClickEvent = self.set_avatar
+        self.ui.usernameLbl.setText(self.client.username)
 
         self.ui.usersList.doubleClicked.connect(self.start_chat)
         self.ui.contactsList.doubleClicked.connect(self.start_chat)
@@ -78,6 +83,24 @@ class MainWindow(QMainWindow):
     @message.setter
     def message(self, value):
         self.ui.messageTxa.setText(value)
+
+    def set_avatar(self, *args, **kwargs):
+        image_filter_win = ImageFilterWidnow(self)
+        image_filter_win.setModal(True)
+        image_filter_win.exec_()
+
+        answer = QMessageBox.question(self, 'Question', 'Use this image',
+                                      QMessageBox.Yes | QMessageBox.No)
+        if answer == QMessageBox.No:
+            return
+        av_file = f'user_data/{self.client.username}_avatar.png'
+        image_filter_win.save_file(av_file, 48)
+        self.load_avatar()
+
+    def load_avatar(self):
+        av_file = f'user_data/{self.client.username}_avatar.png'
+        if os.path.isfile(av_file):
+            self.ui.avatarLbl.setPixmap(QPixmap(av_file))
 
     @staticmethod
     def __add_user_in_list(list_view, user, action_name, action):
@@ -242,12 +265,11 @@ class MainWindow(QMainWindow):
 
         if user not in [self.client.username, self.curr_chat_user]:
             return
-
         item = QListWidgetItem()
         item.setTextAlignment(Qt.AlignLeft
                               if side == self.SELF_SIDE
                               else Qt.AlignRight)
-        widget = Message(user, msg, time)
+        widget = MessageWidget(user, msg, time)
 
         item.setSizeHint(widget.sizeHint())
         self.ui.chatList.addItem(item)

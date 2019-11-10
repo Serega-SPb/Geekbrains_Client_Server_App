@@ -16,7 +16,7 @@ from jim.functions import get_data, send_data
 from client_crypt import encrypt_rsa, decrypt_rsa, \
                          import_pub_key, gen_keys, ClientCrypt
 from client_db import ClientStorage
-from ui.client_ui_logic import MessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 
 class ClientThread(Thread):
@@ -39,7 +39,9 @@ def show_error(mes):
     """ Function for shows message on UI """
     # TODO Obsolete
 
-    msb = MessageBox(mes)
+    msb = QMessageBox()
+    msb.setWindowTitle('Error')
+    msb.setText(mes)
     msb.show()
     msb.exec_()
 

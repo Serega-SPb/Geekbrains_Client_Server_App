@@ -1,12 +1,19 @@
 """ Module implements addinional widgets """
+import re
+import os
 
+from PyQt5.uic import loadUi
 from PyQt5.QtCore import Qt
 from PyQt5.Qt import QSizePolicy, QFrame, QAbstractScrollArea
-from PyQt5.QtWidgets import QWidget, QDialog, \
-                            QGridLayout, QHBoxLayout, \
-                            QLabel, QPushButton, QTextBrowser
+from PyQt5.QtGui import QPixmap, QIcon, QFont, QTextCursor
+from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QFileDialog, \
+                            QGridLayout, QHBoxLayout, QListWidgetItem, \
+                            QLabel, QPushButton, QTextBrowser, QTextEdit, QComboBox
+from PIL import Image, ImageDraw
+from PIL.ImageQt import ImageQt
 
-from .login_ui import Ui_Dialog as LoginDialog
+from ui.login_ui import Ui_Dialog as LoginDialog
+from ui.image_filters_ui import Ui_Dialog as ImageFilterDialog
 
 
 class UserWidget(QWidget):
@@ -35,8 +42,14 @@ class UserWidget(QWidget):
         box.addWidget(self.actinBtn)
 
 
-class Message(QWidget):
+class MessageWidget(QWidget):
     """ Class the widget of list item to display message in chat """
+
+    FORMAT_PATTERN = {
+        r'\*\*(.+)\*\*': r'<b>\1</b>',
+        '__(.+)__': r'<u>\1</u>',
+        '##(.+)##': r'<i>\1</i>',
+    }
 
     def __init__(self, user, text, time, parent=None):
         super().__init__(parent)
@@ -44,7 +57,8 @@ class Message(QWidget):
 
         self.userLbl.setText(user)
         self.timeLbl.setText(time)
-        self.msgLbl.setHtml(text)
+        self.set_text(self.apply_format(text))
+        # self.msgLbl.setHtml(text)
 
     def ui(self):
         """ Method build ui """
@@ -53,16 +67,44 @@ class Message(QWidget):
 
         self.userLbl = QLabel(self)
         self.timeLbl = QLabel(self)
-        self.msgLbl = QTextBrowser(self)
-        self.msgLbl.setFrameShape(QFrame.NoFrame)
-        self.msgLbl.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
-        self.msgLbl.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-
         self.timeLbl.setAlignment(Qt.AlignRight)
+
+        self.line_1 = QFrame(self)
+        self.line_1.setFrameShape(QFrame.HLine)
+        self.line_1.setFrameShadow(QFrame.Sunken)
+        self.line_2 = QFrame(self)
+        self.line_2.setFrameShape(QFrame.HLine)
+        self.line_2.setFrameShadow(QFrame.Sunken)
+
+        self.msgLbl = QTextBrowser(self)
+        # font = QFont()
+        # font.setPointSize(12)
+        # self.msgLbl.setFont(font)
+        self.msgLbl.setFrameShape(QFrame.NoFrame)
+        self.msgLbl.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.msgLbl.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        self.msgLbl.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         grid.addWidget(self.userLbl, 0, 0)
         grid.addWidget(self.timeLbl, 0, 1)
-        grid.addWidget(self.msgLbl, 1, 0, 1, 2)
+        grid.addWidget(self.line_1, 1, 0, 1, 2)
+        grid.addWidget(self.msgLbl, 2, 0, 1, 2)
+        grid.addWidget(self.line_2, 3, 0, 1, 2)
+
+    def set_text(self, text):
+        size = self.msgLbl.font().pointSize() * 2
+        line_count = len(text.split('<br>'))
+        size = size * line_count + 6
+        self.msgLbl.setMaximumHeight(size)
+        self.msgLbl.setMinimumHeight(size)
+        self.msgLbl.setHtml(text)
+
+    def apply_format(self, text):
+        text = text.strip()
+        text = text.replace('\n', '<br>')
+        for pat, fmt in self.FORMAT_PATTERN.items():
+            text = re.sub(pat, fmt, text)
+        return text
 
 
 class LoginWindow(QDialog):
@@ -139,8 +181,219 @@ class MessageBox(QDialog):
         grid.addWidget(self.errorLbl)
 
 
+class ImageFilter:
+    def __init__(self, image_file, size=512):
+        self.imageFile = image_file
+        self.size = size
+
+    def __load_image(self):
+        image = Image.open(self.imageFile)
+        s = self.size
+        w = image.size[0]
+        h = image.size[1]
+        if w > h:
+            w, h = s, h / w * s
+        else:
+            h, w = s, w / h * s
+        image = image.resize((int(w), int(h)), Image.ANTIALIAS)
+        return image
+
+    def get_image(self):
+        image = self.__load_image()
+        return ImageQt(image.convert('RGBA'))
+
+    def get_sepia(self):
+        image = self.__load_image()
+        draw = ImageDraw.Draw(image)
+        width = image.size[0]
+        height = image.size[1]
+        pix = image.load()
+
+        depth = 30
+        for i in range(width):
+            for j in range(height):
+                a = pix[i, j][0]
+                b = pix[i, j][1]
+                c = pix[i, j][2]
+                S = (a + b + c)
+                a = S + depth * 2
+                b = S + depth
+                c = S
+                if (a > 255):
+                    a = 255
+                if (b > 255):
+                    b = 255
+                if (c > 255):
+                    c = 255
+                draw.point((i, j), (a, b, c))
+        return ImageQt(image.convert('RGBA'))
+
+    def get_gray(self):
+        image = self.__load_image()
+        draw = ImageDraw.Draw(image)
+        width = image.size[0]
+        height = image.size[1]
+        pix = image.load()
+
+        for i in range(width):
+            for j in range(height):
+                a = pix[i, j][0]
+                b = pix[i, j][1]
+                c = pix[i, j][2]
+                S = (a + b + c)
+                draw.point((i, j), (S, S, S))
+        return ImageQt(image.convert('RGBA'))
+
+    def get_black_white(self):
+        image = self.__load_image()
+        draw = ImageDraw.Draw(image)
+        width = image.size[0]
+        height = image.size[1]
+        pix = image.load()
+
+        factor = 50
+        for i in range(width):
+            for j in range(height):
+                a = pix[i, j][0]
+                b = pix[i, j][1]
+                c = pix[i, j][2]
+                S = a + b + c
+                if (S > (((255 + factor) // 2) * 3)):
+                    a, b, c = 255, 255, 255
+                else:
+                    a, b, c = 0, 0, 0
+                draw.point((i, j), (a, b, c))
+        return ImageQt(image.convert('RGBA'))
+
+    def get_negative(self):
+        image = self.__load_image()
+        draw = ImageDraw.Draw(image)
+        width = image.size[0]
+        height = image.size[1]
+        pix = image.load()
+
+        for i in range(width):
+            for j in range(height):
+                a = pix[i, j][0]
+                b = pix[i, j][1]
+                c = pix[i, j][2]
+                draw.point((i, j), (255 - a, 255 - b, 255 - c))
+        return ImageQt(image.convert('RGBA'))
+
+
+class ImageFilterWidnow(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.ui = ImageFilterDialog()
+        self.ui.setupUi(self)
+        self.imageFilter = ImageFilter('', self.ui.sizeSbx.value())
+        self.init_ui()
+
+    def init_ui(self):
+
+        def register_rbn_eff(rbn, eff):
+            rbn.clicked.connect(lambda: self.update_image(self.effects[eff]()))
+
+        self.effects = {
+            'None': self.imageFilter.get_image,
+            'Sepia': self.imageFilter.get_sepia,
+            'Gray': self.imageFilter.get_gray,
+            'Bw': self.imageFilter.get_black_white,
+            'Negative': self.imageFilter.get_negative,
+        }
+        self.ui.openFileBtn.clicked.connect(self.open_file)
+        self.ui.sizeSbx.valueChanged.connect(self.set_size)
+
+        register_rbn_eff(self.ui.nonEffectRbn, 'None')
+        register_rbn_eff(self.ui.sepiaEffectRbn, 'Sepia')
+        register_rbn_eff(self.ui.grayEffectRbn, 'Gray')
+        register_rbn_eff(self.ui.bwEffectRbn, 'Bw')
+        register_rbn_eff(self.ui.negativeEffectRbn, 'Negative')
+
+    def open_file(self):
+        dialog = QFileDialog(self)
+        path = dialog.getOpenFileName()[0]
+        if not path:
+            return
+        self.imageFilter.imageFile = path
+        self.ui.effectsGbx.setEnabled(True)
+        self.ui.nonEffectRbn.setChecked(True)
+        self.update_image(self.effects['None']())
+
+    def save_file(self, filepath, size=None):
+        pix = self.ui.imageLbl.pixmap()
+        if size:
+            pix = pix.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pix.save(filepath, 'PNG')
+
+    def set_size(self, s):
+        self.imageFilter.size = s
+
+    def update_image(self, img):
+        pix = QPixmap.fromImage(img)
+        size = self.imageFilter.size
+        pix = pix.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.ui.imageLbl.setPixmap(pix)
+
+
+class TestChatWindow(QDialog):
+
+    PATTERN = ''
+    USER = 'TestUser'
+    SMILES_DIR = r'resources\smiles'
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        loadUi('test_chat.ui', self)
+        self.__init_ui()
+        self.load_smiles()
+
+    @property
+    def message_widget(self):
+        return self.messageTxa
+
+    def __init_ui(self):
+        self.sendMsgBtn.clicked.connect(self.send_message)
+        self.smilesCbx.activated.connect(self.add_selected_smils)
+        # self.message_widget.textChanged.connect(lambda: print(self.message_widget.toHtml()))
+
+    def __add_message_in_chat(self, message):
+        import random
+        test_time = f'{random.randint(1,12)}:{random.randint(1,60)}'
+        item = QListWidgetItem()
+        widget = MessageWidget(self.USER, message, test_time)
+        item.setSizeHint(widget.sizeHint())
+        self.chatList.addItem(item)
+        self.chatList.setItemWidget(item, widget)
+
+    def send_message(self):
+        text = self.message_widget.toPlainText()
+        html = self.message_widget.toHtml()
+        self.__add_message_in_chat(text)
+        self.message_widget.clear()
+
+    def load_smiles(self):
+        path = os.path.abspath(os.path.join(os.getcwd(), '..', self.SMILES_DIR))
+        for file in os.listdir(path):
+            file = os.path.join(path, file)
+            if not os.path.isfile(file):
+                continue
+            icon = QIcon(file)
+            self.smilesCbx.addItem(icon, '', userData=file)
+        pass
+
+    def add_selected_smils(self):
+        data = self.smilesCbx.currentData()
+        cursor = self.message_widget.textCursor()
+        cursor.insertHtml(f'<img src="{data}" width="25" height="25">')
+
+
 def main():
-    pass
+    app = QApplication([])
+    # win = ImageFilterWidnow()
+    win = TestChatWindow()
+    win.show()
+    app.exec_()
 
 
 if __name__ == '__main__':

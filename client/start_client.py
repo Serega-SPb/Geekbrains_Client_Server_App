@@ -4,14 +4,18 @@ import argparse
 import os
 import sys
 
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 from client_core import Client
-from ui.client_ui_logic import LoginWindow, MainWindow, MessageBox
+from ui.additional_ui import LoginWindow
+from ui.client_ui_logic import MainWindow
 
 
 def show_error(mes):
-    msb = MessageBox(mes)
+    #msb = MessageBox(mes)
+    msb = QMessageBox()
+    msb.setWindowTitle('Error')
+    msb.setText(mes)
     msb.show()
     msb.exec_()
 
