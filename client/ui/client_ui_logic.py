@@ -1,151 +1,16 @@
-""" Module implements ui logic and addinional widgets """
+""" Module implements main window logic """
 
 from datetime import datetime
 import os
 
 from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtWidgets import QWidget, QMainWindow, QDialog, \
-                            QGridLayout, QHBoxLayout, QListWidgetItem, \
-                            QLabel, QPushButton
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox, QFrame
 
 from .client_ui import Ui_MainWindow as ClientMainWindow
-from .login_ui import Ui_Dialog as LoginDialog
+from .additional_ui import UserWidget, MessageWidget, LoginWindow, ImageFilterWidnow
 
 UI_DIR = os.path.dirname(__file__)
-
-
-class UserWidget(QWidget):
-    """ Class the widget of list item to display user """
-
-    def __init__(self, username, action_name, action, parent=None):
-        super().__init__(parent)
-        self.ui()
-        self.userLbl.setText(username)
-        self.username = username
-        self.actinBtn.setText(action_name)
-        self.actinBtn.clicked.connect(action)
-
-    def ui(self):
-        """ Method build ui """
-
-        # self.resize(200, 50)
-        box = QHBoxLayout(self)
-        self.setLayout(box)
-
-        self.userLbl = QLabel(self)
-        self.actinBtn = QPushButton(self)
-        self.actinBtn.setFixedSize(50, 25)
-
-        box.addWidget(self.userLbl)
-        box.addWidget(self.actinBtn)
-
-
-class Message(QWidget):
-    """ Class the widget of list item to display message in chat """
-
-    def __init__(self, user, text, time, parent=None):
-        super().__init__(parent)
-        self.ui()
-
-        self.userLbl.setText(user)
-        self.timeLbl.setText(time)
-        self.msgLbl.setText(text)
-
-    def ui(self):
-        """ Method build ui """
-
-        # self.setGeometry(0, 0, 100, 50)
-        # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        # self.setMaximumWidth(100)
-
-        # self.setStyleSheet('border:1px solid rgb(0, 0, 0);')
-
-        grid = QGridLayout(self)
-        self.setLayout(grid)
-
-        self.userLbl = QLabel(self)
-        self.timeLbl = QLabel(self)
-        self.msgLbl = QLabel(self)
-
-        self.timeLbl.setAlignment(Qt.AlignRight)
-
-        grid.addWidget(self.userLbl, 0, 0)
-        grid.addWidget(self.timeLbl, 0, 1)
-        grid.addWidget(self.msgLbl, 1, 0, 1, 2)
-
-
-class LoginWindow(QDialog):
-    """ Class the login dialog logic """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        # uic.loadUi(os.path.join(UI_DIR, 'login.ui'), self)
-        self.ui = LoginDialog()
-        self.ui.setupUi(self)
-        self.start = False
-
-        self.ui.loginBtn.setEnabled(False)
-        self.ui.usernameTxb.textChanged.connect(self.username_text_changed)
-        self.ui.loginBtn.clicked.connect(self.login)
-        self.ui.exitBtn.clicked.connect(self.close)
-
-    @property
-    def username(self):
-        return self.ui.usernameTxb.text()
-
-    @property
-    def password(self):
-        return self.ui.passwordTxb.text()
-
-    @property
-    def ip(self):
-        return self.ui.ipAddressTxb.text()
-
-    @ip.setter
-    def ip(self, value):
-        self.ui.ipAddressTxb.setText(value)
-
-    @property
-    def port(self):
-        return int(self.ui.portTxb.text())
-
-    @port.setter
-    def port(self, value):
-        self.ui.portTxb.setText(str(value))
-
-    def username_text_changed(self):
-        """ Method the handler of username text field change event """
-
-        if len(self.username) > 2:
-            self.ui.loginBtn.setEnabled(True)
-        else:
-            self.ui.loginBtn.setEnabled(False)
-
-    def login(self):
-        """ Method the handler of login button click event """
-        self.start = True
-        self.close()
-
-
-class MessageBox(QDialog):
-    """ Class the dialog to display system message """
-
-    def __init__(self, messge, parent=None):
-        super().__init__(parent)
-        self.ui()
-        self.errorLbl.setText(messge)
-
-    def ui(self):
-        """ Method build ui """
-        self.resize(250, 125)
-        self.setFixedSize(self.size())
-        self.setWindowTitle('Error')
-
-        grid = QGridLayout(self)
-        self.setLayout(grid)
-
-        self.errorLbl = QLabel()
-        grid.addWidget(self.errorLbl)
 
 
 class SignalStorage(QObject):
@@ -172,7 +37,7 @@ class MainWindow(QMainWindow):
     OTHER_SIDE = 1
 
     def __init__(self, client, parent=None):
-        QWidget.__init__(self, parent)
+        super().__init__(parent)
         self.client = client
         self.setWindowTitle(self.client.username)
         self.curr_chat_user = None
@@ -187,8 +52,12 @@ class MainWindow(QMainWindow):
         self.storage = SignalStorage()
         self.set_chat_active(False)
 
+        self.load_avatar()
         self.load_users()
         self.load_contacts()
+
+        self.ui.avatarLbl.mouseDoubleClickEvent = self.set_avatar
+        self.ui.usernameLbl.setText(self.client.username)
 
         self.ui.usersList.doubleClicked.connect(self.start_chat)
         self.ui.contactsList.doubleClicked.connect(self.start_chat)
@@ -215,6 +84,25 @@ class MainWindow(QMainWindow):
     def message(self, value):
         self.ui.messageTxa.setText(value)
 
+    def set_avatar(self, *args, **kwargs):
+        image_filter_win = ImageFilterWidnow(self)
+        image_filter_win.setModal(True)
+        image_filter_win.exec_()
+
+        answer = QMessageBox.question(self, 'Question', 'Use this image',
+                                      QMessageBox.Yes | QMessageBox.No)
+        if answer == QMessageBox.No:
+            return
+        av_file = f'user_data/{self.client.username}_avatar.png'
+        image_filter_win.save_file(av_file, 48)
+        self.load_avatar()
+
+    def load_avatar(self):
+        av_file = f'user_data/{self.client.username}_avatar.png'
+        if os.path.isfile(av_file):
+            self.ui.avatarLbl.setPixmap(QPixmap(av_file))
+            self.ui.avatarLbl.setFrameShape(QFrame.NoFrame)
+
     @staticmethod
     def __add_user_in_list(list_view, user, action_name, action):
         """ Method adds user in list on ui """
@@ -237,11 +125,22 @@ class MainWindow(QMainWindow):
         if len(item) > 0:
             list_view.takeItem(list_view.row(item[0]))
 
+    def __get_collection_response(self):
+        result = []
+        while True:
+            resp = self.client.answers.get()
+            if not resp:
+                break
+            result.append(resp)
+        return result
+
     def load_users(self):
         """ Method loads users in online list """
 
         self.client.get_users_req()
-        users = self.client.answers.get()
+        # users = self.client.answers.get()
+        users = self.__get_collection_response()
+
         for user in users:
             if user == self.client.username:
                 continue
@@ -262,7 +161,8 @@ class MainWindow(QMainWindow):
         """ Method loads users in contact list """
 
         self.client.get_contacts_req()
-        contacts = self.client.answers.get()
+        # contacts = self.client.answers.get()
+        contacts = self.__get_collection_response()
         self.client.sync_contacts(contacts)
         for contact in contacts:
             self.__add_user_in_list(self.ui.contactsList, contact,
@@ -322,7 +222,8 @@ class MainWindow(QMainWindow):
 
         self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
-        chat = self.client.answers.get()
+        # chat = self.client.answers.get()
+        chat = self.__get_collection_response()
         for msg in chat:
             self.parse_message(msg)
 
@@ -365,12 +266,11 @@ class MainWindow(QMainWindow):
 
         if user not in [self.client.username, self.curr_chat_user]:
             return
-
         item = QListWidgetItem()
         item.setTextAlignment(Qt.AlignLeft
                               if side == self.SELF_SIDE
                               else Qt.AlignRight)
-        widget = Message(user, msg, time)
+        widget = MessageWidget(user, msg, time)
 
         item.setSizeHint(widget.sizeHint())
         self.ui.chatList.addItem(item)

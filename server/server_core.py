@@ -195,8 +195,11 @@ class Server:
             if answer is False:
                 return Response(SERVER_ERROR, 'Command error')
             elif isinstance(answer, list):
-                answer = [str(a) for a in answer]
-                return Response(ANSWER, answer)
+                answer = [Response(ANSWER, str(a)) for a in answer]
+                answer.append(Response(ANSWER, None))
+                return answer
+                # answer = [str(a) for a in answer]
+                # return Response(ANSWER, answer)
             elif answer is None:
                 return Response(ANSWER, 'Done')
             return Response(ANSWER, answer)
@@ -293,6 +296,9 @@ class Server:
         if len(args) < 1 or args[0] != user:
             args.insert(0, user)
         o_resp = self.__execute_command(command, *args)
-        self.__send_to_client(client, o_resp)
+        if isinstance(o_resp, list):
+            [self.__send_to_client(client, r) for r in o_resp]
+        else:
+            self.__send_to_client(client, o_resp)
 
     # endregion
