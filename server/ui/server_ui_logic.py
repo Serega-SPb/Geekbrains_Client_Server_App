@@ -182,6 +182,7 @@ class MainWindow(QMainWindow):
         self.load_users_stats()
         self.load_history()
         self.load_messages()
+        self.load_avatars()
 
     def load_users(self):
         """ Method the load users table"""
@@ -224,6 +225,15 @@ class MainWindow(QMainWindow):
                    ['id', 'sender', 'recipient', 'text', 'time'],
                    ['UserMessage.id', '[0].name', '[2].name',
                     'UserMessage.text', 'UserMessage.time'])
+
+    def load_avatars(self):
+
+        avatars = self.storage.get_users_avatar()
+        tbl = self.ui.avatars_tbl
+        fill_table(tbl, avatars,
+                   ['user', 'avatar_md5', 'avatar'],
+                   ['User.name', 'UserAvatar.avatar_hash',
+                    'UserAvatar.avatar'])
 
 
 if __name__ == '__main__':

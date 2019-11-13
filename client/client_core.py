@@ -2,6 +2,7 @@
 
 import logging
 import queue
+from base64 import b64encode, b64decode
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
 
@@ -9,7 +10,7 @@ from logs import client_log_config as log_config
 from decorators import try_except_wrapper
 from descriptors import Port
 from jim.constants import RequestAction, RESPONSE
-from jim.codes import OK, ANSWER, SERVER_ERROR, AUTH
+from jim.codes import OK, ANSWER, SERVER_ERROR, AUTH, FILE_ANSWER
 from jim.classes.package import Request, Response
 from jim.classes.request_body import User, Msg
 from jim.functions import get_data, send_data
@@ -52,7 +53,7 @@ class Client:
     __slots__ = ('addr', '_port', 'user',
                  'logger', 'socket', 'connected',
                  'listener', 'sender', 'encryptors', 'priv_key',
-                 'storage', 'subs', 'answers')
+                 'storage', 'subs', 'answers', 'file_answers')
 
     TCP = (AF_INET, SOCK_STREAM)
     port = Port('_port')
@@ -65,6 +66,7 @@ class Client:
         self.subs = {}
         # self.subs = {201: [], 202: [], 203: [], 204: [], 205: []}
         self.answers = queue.Queue()
+        self.file_answers = queue.Queue()
         self.encryptors = {}
 
     @property
@@ -222,6 +224,72 @@ class Client:
             self.storage.append_contact(contact)
 
     @try_except_wrapper
+    def save_avatar(self, avatar_bytes):
+        self.storage.set_avatar(avatar_bytes)
+        self.send_avatar(avatar_bytes)
+
+    @property
+    def avatar(self):
+        value = self.storage.get_avatar(self.username)
+        if value:
+            return value.avatar
+
+    @avatar.setter
+    def avatar(self, value):
+        self.storage.set_avatar(self.username, value)
+        self.send_avatar_async(value)
+
+    def send_avatar_async(self, avatar_bytes):
+        sender_thread = ClientThread(lambda: self.send_avatar(avatar_bytes), self.logger)
+        sender_thread.start()
+
+    @try_except_wrapper
+    def send_avatar(self, avatar_bytes):
+        avatar_part = 512
+        for i in range(0, len(avatar_bytes), avatar_part):
+            part = b64encode(avatar_bytes[i:i + avatar_part])
+            part_req = Request(RequestAction.IMAGE, part.decode())
+            self.__send_request(part_req)
+            self.file_answers.get()
+
+        self.logger.debug(f'Send end part')
+        end_req = Request(RequestAction.END_IMAGE, 'set_avatar')
+        self.__send_request(end_req)
+
+    @try_except_wrapper
+    def check_self_avatar(self):
+        user = self.username
+        av_hash = self.storage.get_avatar_hash(self.username)
+        ch_req = Request(RequestAction.COMMAND, f'check_avatar {user} {av_hash}')
+        self.__send_request(ch_req)
+        resp = self.answers.get()
+        if not resp:
+            self.send_avatar_async(av_hash)
+
+    @try_except_wrapper
+    def get_user_avatar(self, user):
+        avatar = self.storage.get_avatar(user)
+        if avatar:
+            ch_req = Request(RequestAction.COMMAND, f'check_avatar {user} {avatar.avatar_hash}')
+            self.__send_request(ch_req)
+            resp = self.answers.get()
+            if resp == '1':
+                return avatar.avatar
+        get_req = Request(RequestAction.GET_IMAGE, user)
+        self.__send_request(get_req)
+        avatar_bytes = b''
+
+        while True:
+            resp = self.file_answers.get()
+            if not resp:
+                break
+            avatar_bytes += b64decode(resp.encode())
+
+        self.storage.set_avatar(user, avatar_bytes)
+        return avatar_bytes
+        pass
+
+    @try_except_wrapper
     def send_msg(self, text, to):
         """ Method send messge to server """
 
@@ -243,12 +311,22 @@ class Client:
                 continue
             if resp.code == ANSWER:
                 self.answers.put(resp.message)
-                print(f'server: {resp.message}')
+            elif resp.code == FILE_ANSWER:
+                self.file_answers.put(resp.message)
             elif resp.code in self.subs.keys():
                 for sub in self.subs[resp.code]:
                     sub(resp.message)
-            else:
-                print(resp.message)
+            # else:
+            #     self.logger.debug(resp.message)
+
+    def get_collection_response(self):
+        result = []
+        while True:
+            resp = self.answers.get()
+            if not resp:
+                break
+            result.append(resp)
+        return result
 
     def subscribe(self, code, func):
         """ Method subscribe of function to response code """

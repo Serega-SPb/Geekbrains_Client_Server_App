@@ -40,7 +40,7 @@ class Ui_Dialog(object):
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
         self.sizeSbx = QtWidgets.QSpinBox(Dialog)
-        self.sizeSbx.setMinimum(64)
+        self.sizeSbx.setMinimum(32)
         self.sizeSbx.setMaximum(1024)
         self.sizeSbx.setStepType(QtWidgets.QAbstractSpinBox.DefaultStepType)
         self.sizeSbx.setProperty("value", 512)

@@ -1,6 +1,7 @@
 """ Module implements server logic of chat application """
 
 import logging
+from base64 import b64decode, b64encode
 from socket import socket, AF_INET, SOCK_STREAM
 from select import select
 from threading import Thread
@@ -9,7 +10,7 @@ from logs import server_log_config as log_config
 from decorators import try_except_wrapper
 from descriptors import Port
 from jim.classes.package import Response
-from jim.codes import ANSWER, AUTH, START_CHAT, ACCEPT_CHAT, \
+from jim.codes import ANSWER, AUTH, START_CHAT, ACCEPT_CHAT, FILE_ANSWER, \
                       OK, CONNECTED, DISCONNECTED, LETTER, \
                       CONFLICT, UNAUTHORIZED, SERVER_ERROR, INCORRECT_REQUEST
 from jim.constants import RequestAction
@@ -38,9 +39,9 @@ class ServerThread(Thread):
 class Server:
     """ Class implement receive, handle, response to client request """
 
-    __slots__ = ('bind_addr', '_port', 'logger', 'socket',
+    __slots__ = ('bind_addr', '_port', 'logger', 'socket', 'blacklist',
                  'clients', 'users', 'client_keys', 'listener',
-                 'storage', 'commands', 'request_handlers')
+                 'storage', 'commands', 'request_handlers', 'images')
 
     TCP = (AF_INET, SOCK_STREAM)
     TIMEOUT = 5
@@ -52,8 +53,10 @@ class Server:
         self.bind_addr = bind_addr
         self.port = port
         self.clients = []
+        self.blacklist = []
         self.client_keys = {}
         self.users = {}
+        self.images = {}
         self.storage = ServerStorage()
         self.__init_commands()
         self.__init_req_handlers()
@@ -66,7 +69,8 @@ class Server:
             'add_contact': self.storage.add_contact,
             'rem_contact': self.storage.remove_contact,
             'get_contacts': self.storage.get_contacts,
-            'get_chat': self.storage.get_chat_str
+            'get_chat': self.storage.get_chat_str,
+            'check_avatar': self.storage.check_avatar_hash
         }
 
     def __init_req_handlers(self):
@@ -80,6 +84,9 @@ class Server:
             RequestAction.ACCEPT_CHAT: self.__req_accept_chat_handler,
             RequestAction.MESSAGE: self.__req_message_handler,
             RequestAction.COMMAND: self.__req_command_handler,
+            RequestAction.IMAGE: self.__req_recv_image_handler,
+            RequestAction.END_IMAGE: self.__req_end_recv_image_handler,
+            RequestAction.GET_IMAGE: self.__req_send_image_handler,
         }
 
     def start(self, request_count=5):
@@ -103,6 +110,9 @@ class Server:
         while True:
             try:
                 client, addr = self.socket.accept()
+                if addr in self.blacklist:
+                    self.logger.warning(f'{addr} in blacklist')
+                    client.close()
             except OSError:
                 pass
             except Exception as ex:
@@ -181,7 +191,10 @@ class Server:
     @try_except_wrapper
     def __client_disconnect(self, client):
         self.clients.remove(client)
-        user = [u for u, c in self.users.items() if c == client].pop()
+        user = next(iter([u for u, c in self.users.items() if c == client]), None)
+        if not user:
+            self.blacklist.append(client.getpeername()[0])
+            return
         self.users.pop(user)
         self.storage.logout_user(user)
         disconnection_response = Response(DISCONNECTED, user)
@@ -300,5 +313,44 @@ class Server:
             [self.__send_to_client(client, r) for r in o_resp]
         else:
             self.__send_to_client(client, o_resp)
+
+    @try_except_wrapper
+    def __req_recv_image_handler(self, i_req, client, *args):
+        user = [u for u, c in self.users.items() if c == client].pop()
+        body = b64decode(i_req.body.encode())
+        if user in self.images.keys():
+            self.images[user] += body
+        else:
+            self.images[user] = body
+        self.__send_to_client(client, Response(FILE_ANSWER))
+
+    @try_except_wrapper
+    def __req_end_recv_image_handler(self, i_req, client, *args):
+        user = [u for u, c in self.users.items() if c == client].pop()
+        if user not in self.images.keys():
+            self.logger.warning('Image is empty')
+            return
+        user_avatar = self.images.pop(user)
+        self.storage.set_avatar(user, user_avatar)
+        self.__send_to_client(client, Response(OK))
+        # TODO send to all users updated avatar
+
+    @try_except_wrapper
+    def __req_send_image_handler(self, i_req, client, *args):
+        avatar = self.storage.get_avatar(i_req.body)
+        if avatar:
+            sender_thread = ServerThread(lambda: self.__send_image_bytes(client, avatar), self.logger)
+            sender_thread.start()
+        else:
+            self.__send_to_client(client, Response(FILE_ANSWER))
+
+    @try_except_wrapper
+    def __send_image_bytes(self, client, img_bytes):
+        avatar_part = 512
+        for i in range(0, len(img_bytes), avatar_part):
+            part = b64encode(img_bytes[i:i + avatar_part])
+            part_resp = Response(FILE_ANSWER, part.decode())
+            self.__send_to_client(client, part_resp)
+        self.__send_to_client(client, Response(FILE_ANSWER))
 
     # endregion

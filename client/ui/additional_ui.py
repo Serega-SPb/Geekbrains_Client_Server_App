@@ -3,9 +3,9 @@ import re
 import os
 
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QBuffer, QIODevice, QSize
 from PyQt5.Qt import QSizePolicy, QFrame, QAbstractScrollArea
-from PyQt5.QtGui import QPixmap, QIcon, QFont, QTextCursor
+from PyQt5.QtGui import QPixmap, QIcon, QFont, QTextCursor, QImage
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QFileDialog, \
                             QGridLayout, QHBoxLayout, QListWidgetItem, \
                             QLabel, QPushButton, QTextBrowser, QTextEdit, QComboBox
@@ -19,13 +19,15 @@ from ui.image_filters_ui import Ui_Dialog as ImageFilterDialog
 class UserWidget(QWidget):
     """ Class the widget of list item to display user """
 
-    def __init__(self, username, action_name, action, parent=None):
+    def __init__(self, username, avatar_bytes,
+                 action_name, action, parent=None):
         super().__init__(parent)
         self.ui()
         self.userLbl.setText(username)
         self.username = username
         self.actinBtn.setText(action_name)
         self.actinBtn.clicked.connect(action)
+        self.set_avatar(avatar_bytes)
 
     def ui(self):
         """ Method build ui """
@@ -34,12 +36,24 @@ class UserWidget(QWidget):
         box = QHBoxLayout(self)
         self.setLayout(box)
 
+        self.avatarLbl = QLabel(self)
+        self.avatarLbl.setMinimumSize(QSize(50, 50))
+        self.avatarLbl.setMaximumSize(QSize(50, 50))
+        self.avatarLbl.setFrameShape(QFrame.Box)
+
         self.userLbl = QLabel(self)
         self.actinBtn = QPushButton(self)
         self.actinBtn.setFixedSize(50, 25)
 
+        box.addWidget(self.avatarLbl)
         box.addWidget(self.userLbl)
         box.addWidget(self.actinBtn)
+
+    def set_avatar(self, avatar_bytes):
+        if avatar_bytes:
+            img = QImage.fromData(avatar_bytes)
+            self.avatarLbl.setPixmap(QPixmap.fromImage(img))
+            self.avatarLbl.setFrameShape(QFrame.NoFrame)
 
 
 class MessageWidget(QWidget):

@@ -26,3 +26,6 @@ class RequestAction:
     COMMAND = 'command'
     START_CHAT = 'start_chat'
     ACCEPT_CHAT = 'accept_chat'
+    IMAGE = 'image'
+    END_IMAGE = 'end_image'
+    GET_IMAGE = 'get_image'

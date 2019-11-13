@@ -25,6 +25,7 @@ class Code:
 # 1xx
 BASIC = Code(100, 'Basic message')
 ANSWER = Code(101, '')
+FILE_ANSWER = Code(102, '')
 AUTH = Code(110, 'pub key')
 
 # 2xx

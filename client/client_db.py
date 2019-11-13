@@ -1,9 +1,11 @@
 """ Module implements client database models """
 
 import logging
+from base64 import b64encode, b64decode
+from hashlib import md5
 from datetime import datetime
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Binary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -57,6 +59,23 @@ class Message(Base):
 
     def __repr__(self):
         return f'<Message({self.recipient}, {self.text})>'
+
+
+class Avatar(Base):
+    __tablename__ = 'avatars'
+    id = Column(Integer, primary_key=True)
+    user = Column(String)
+    avatar = Column(Binary)
+    avatar_hash = Column(String)
+
+    def __init__(self, user, avatar_bytes):
+        self.user = user
+        self.set_avatar(avatar_bytes)
+
+    def set_avatar(self, avatar_bytes):
+        self.avatar = avatar_bytes
+        self.avatar_hash = md5(avatar_bytes).hexdigest()
+        # self.avatar_hash = hash(avatar_bytes)
 
 
 class ClientStorage(metaclass=Singleton):
@@ -127,6 +146,23 @@ class ClientStorage(metaclass=Singleton):
 
         key = self.session.query(ChatKey).filter_by(user=user).first()
         return key.key if key else None
+
+    @transaction
+    def set_avatar(self, user, avatar_bytes):
+        avatar = self.session.query(Avatar).filter_by(user=user).first()
+        if not avatar:
+            avatar = Avatar(user, avatar_bytes)
+            self.session.add(avatar)
+        else:
+            avatar.set_avatar(avatar_bytes)
+
+    def get_avatar(self, user):
+        avatar = self.session.query(Avatar).filter_by(user=user).first()
+        return avatar if avatar else None
+
+    def get_avatar_hash(self, user):
+        avatar = self.session.query(Avatar).filter_by(user=user).first()
+        return avatar.avatar_hash if avatar else None
 
 
 def main():

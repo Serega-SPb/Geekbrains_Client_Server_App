@@ -8,7 +8,7 @@ DIR_LOG = 'logs'
 
 LOGGING_LVL = logging.DEBUG
 FILE_LOG_LVL = logging.WARNING
-STREAM_LOG_LVL = logging.INFO
+STREAM_LOG_LVL = logging.DEBUG
 
 LOG_DIRECTORY = os.path.join(ROOT, DIR_LOG)
 LOG_FILENAME = f'{LOGGER_NAME}.log'
