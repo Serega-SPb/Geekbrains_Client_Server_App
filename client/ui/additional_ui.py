@@ -3,8 +3,8 @@ import re
 import os
 
 from PyQt5.uic import loadUi
-from PyQt5.QtCore import Qt, QBuffer, QIODevice, QSize
-from PyQt5.Qt import QSizePolicy, QFrame, QAbstractScrollArea
+from PyQt5.QtCore import Qt, QBuffer, QIODevice, QSize, QRect, QPoint
+from PyQt5.Qt import QSizePolicy, QFrame, QAbstractScrollArea, QRubberBand
 from PyQt5.QtGui import QPixmap, QIcon, QFont, QTextCursor, QImage
 from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QFileDialog, \
                             QGridLayout, QHBoxLayout, QListWidgetItem, \
@@ -318,6 +318,10 @@ class ImageFilterWidnow(QDialog):
         self.ui.openFileBtn.clicked.connect(self.open_file)
         self.ui.sizeSbx.valueChanged.connect(self.set_size)
 
+        self.ui.imageLbl.mousePressEvent = self.lbl_mousePressEvent
+        self.ui.imageLbl.mouseMoveEvent = self.lbl_mouseMoveEvent
+        self.ui.imageLbl.mouseReleaseEvent = self.lbl_mouseReleaseEvent
+
         register_rbn_eff(self.ui.nonEffectRbn, 'None')
         register_rbn_eff(self.ui.sepiaEffectRbn, 'Sepia')
         register_rbn_eff(self.ui.grayEffectRbn, 'Gray')
@@ -348,6 +352,46 @@ class ImageFilterWidnow(QDialog):
         size = self.imageFilter.size
         pix = pix.scaled(size, size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.ui.imageLbl.setPixmap(pix)
+
+    def get_delta(self):
+        lbl_size = self.ui.imageLbl.size()
+        pix = self.ui.imageLbl.pixmap()
+        if not pix:
+            return QPoint(0, 0)
+        size = (lbl_size - pix.size()) / 2
+        return QPoint(size.width(), size.height())
+
+    def lbl_mousePressEvent(self, event):
+        if event.button() == Qt.RightButton:
+            if hasattr(self, 'currentQRubberBand'):
+                self.currentQRubberBand.hide()
+                self.currentQRubberBand.deleteLater()
+                del self.currentQRubberBand
+
+        if event.button() != Qt.LeftButton:
+            return
+        self.originQPoint = event.pos()
+        self.currentQRubberBand = QRubberBand(QRubberBand.Rectangle, self.ui.imageLbl)
+        self.currentQRubberBand.setGeometry(QRect(self.originQPoint, QSize()))
+        self.currentQRubberBand.show()
+
+    def lbl_mouseMoveEvent(self, event):
+        if hasattr(self, 'currentQRubberBand'):
+            self.currentQRubberBand.setGeometry(QRect(self.originQPoint,
+                                                  event.pos()).normalized())
+
+    def lbl_mouseReleaseEvent(self, event):
+        if event.button() != Qt.LeftButton or not hasattr(self, 'currentQRubberBand'):
+            return
+        self.currentQRubberBand.hide()
+        rect = self.currentQRubberBand.geometry()
+        d = self.get_delta()
+        rect = QRect(rect.x() - d.x(), rect.y() - d.y(),
+                     rect.width(), rect.height())
+        self.currentQRubberBand.deleteLater()
+        pix = self.ui.imageLbl.pixmap()
+        crop_pixmap = pix.copy(rect)
+        self.ui.imageLbl.setPixmap(crop_pixmap)
 
 
 class TestChatWindow(QDialog):

@@ -255,6 +255,7 @@ class Client:
         self.logger.debug(f'Send end part')
         end_req = Request(RequestAction.END_IMAGE, 'set_avatar')
         self.__send_request(end_req)
+        resp = self.file_answers.get()
 
     @try_except_wrapper
     def check_self_avatar(self):
@@ -264,7 +265,7 @@ class Client:
         self.__send_request(ch_req)
         resp = self.answers.get()
         if not resp:
-            self.send_avatar_async(av_hash)
+            self.send_avatar(self.avatar)
 
     @try_except_wrapper
     def get_user_avatar(self, user):
@@ -273,7 +274,7 @@ class Client:
             ch_req = Request(RequestAction.COMMAND, f'check_avatar {user} {avatar.avatar_hash}')
             self.__send_request(ch_req)
             resp = self.answers.get()
-            if resp == '1':
+            if resp == 1:
                 return avatar.avatar
         get_req = Request(RequestAction.GET_IMAGE, user)
         self.__send_request(get_req)

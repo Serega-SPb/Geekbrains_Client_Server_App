@@ -110,16 +110,16 @@ class Server:
         while True:
             try:
                 client, addr = self.socket.accept()
-                if addr in self.blacklist:
-                    self.logger.warning(f'{addr} in blacklist')
-                    client.close()
             except OSError:
                 pass
             except Exception as ex:
                 self.logger.error(ex)
             else:
-                self.logger.info(f'Connection from {addr}')
-                self.clients.append(client)
+                if addr in self.blacklist:
+                    self.logger.warning(f'{addr} in blacklist')
+                else:
+                    self.logger.info(f'Connection from {addr}')
+                    self.clients.append(client)
 
             i_clients, o_clients = [], []
             try:
@@ -332,7 +332,7 @@ class Server:
             return
         user_avatar = self.images.pop(user)
         self.storage.set_avatar(user, user_avatar)
-        self.__send_to_client(client, Response(OK))
+        self.__send_to_client(client, Response(FILE_ANSWER))
         # TODO send to all users updated avatar
 
     @try_except_wrapper
