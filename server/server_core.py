@@ -4,6 +4,7 @@ import logging
 from base64 import b64decode, b64encode
 from socket import socket, AF_INET, SOCK_STREAM
 from select import select
+from time import sleep
 from threading import Thread
 
 from logs import server_log_config as log_config
@@ -179,6 +180,7 @@ class Server:
         try:
             self.logger.debug(resp)
             send_data(client, resp)
+            sleep(0.1)
         except ConnectionError:
             self.__client_disconnect(client)
         except Exception as e:
