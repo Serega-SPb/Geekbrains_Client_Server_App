@@ -3,8 +3,8 @@
 from datetime import datetime
 import os
 
-from PyQt5.QtCore import Qt, pyqtSignal, QObject
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, pyqtSignal, QObject, QBuffer, QIODevice, QByteArray
+from PyQt5.QtGui import QPixmap, QImage
 from PyQt5.QtWidgets import QMainWindow, QListWidgetItem, QMessageBox, QFrame
 
 from .client_ui import Ui_MainWindow as ClientMainWindow
@@ -39,6 +39,8 @@ class MainWindow(QMainWindow):
     def __init__(self, client, parent=None):
         super().__init__(parent)
         self.client = client
+        self.avatars = {}
+        self.user_widgets = {}
         self.setWindowTitle(self.client.username)
         self.curr_chat_user = None
         # uic.loadUi(os.path.join(UI_DIR, 'client.ui'), self)
@@ -93,23 +95,31 @@ class MainWindow(QMainWindow):
                                       QMessageBox.Yes | QMessageBox.No)
         if answer == QMessageBox.No:
             return
-        av_file = f'user_data/{self.client.username}_avatar.png'
-        image_filter_win.save_file(av_file, 48)
-        self.load_avatar()
+        buf = QBuffer()
+        buf.open(QIODevice.ReadWrite)
+        image_filter_win.save_file(buf, 48)
+        data = buf.data().data()
+        self.client.avatar = data
+        self.__load_avatar(data)
+
+    def __load_avatar(self, avatar_bytes):
+        img = QImage.fromData(avatar_bytes)
+        self.ui.avatarLbl.setPixmap(QPixmap.fromImage(img))
+        self.ui.avatarLbl.setFrameShape(QFrame.NoFrame)
 
     def load_avatar(self):
-        av_file = f'user_data/{self.client.username}_avatar.png'
-        if os.path.isfile(av_file):
-            self.ui.avatarLbl.setPixmap(QPixmap(av_file))
-            self.ui.avatarLbl.setFrameShape(QFrame.NoFrame)
+        avatar = self.client.avatar
+        if avatar:
+            self.__load_avatar(avatar)
+            self.client.check_self_avatar()
 
     @staticmethod
-    def __add_user_in_list(list_view, user, action_name, action):
+    def __add_user_in_list(list_view, user, action_name, action, avatar):
         """ Method adds user in list on ui """
 
         item = QListWidgetItem()
         item.user = user
-        widget = UserWidget(user, action_name, action, list_view)
+        widget = UserWidget(user, avatar, action_name, action, list_view)
         widget.setObjectName(user)
 
         item.setSizeHint(widget.sizeHint())
@@ -134,12 +144,21 @@ class MainWindow(QMainWindow):
             result.append(resp)
         return result
 
+    def __get_user_avatar(self, user):
+        if user not in self.avatars.keys():
+            avatar = self.client.get_user_avatar(user)
+            self.avatars[user] = avatar
+        else:
+            avatar = self.avatars[user]
+        return avatar
+
     def load_users(self):
         """ Method loads users in online list """
 
         self.client.get_users_req()
+        users = self.client.get_collection_response()
         # users = self.client.answers.get()
-        users = self.__get_collection_response()
+        # users = self.__get_collection_response()
 
         for user in users:
             if user == self.client.username:
@@ -150,7 +169,8 @@ class MainWindow(QMainWindow):
         """ Method adds user in online list """
 
         self.__add_user_in_list(self.ui.usersList, user,
-                                'Add', self.add_contact)
+                                'Add', self.add_contact,
+                                self.__get_user_avatar(user))
 
     def rem_online_user(self, user):
         """ Method removes user in online list """
@@ -161,12 +181,15 @@ class MainWindow(QMainWindow):
         """ Method loads users in contact list """
 
         self.client.get_contacts_req()
+        contacts = self.client.get_collection_response()
         # contacts = self.client.answers.get()
-        contacts = self.__get_collection_response()
+        # contacts = self.__get_collection_response()
+
         self.client.sync_contacts(contacts)
         for contact in contacts:
             self.__add_user_in_list(self.ui.contactsList, contact,
-                                    'Del', self.remove_contact)
+                                    'Del', self.remove_contact,
+                                    self.__get_user_avatar(contact))
 
     def add_contact(self):
         """ Method adds user in contact list """
@@ -178,7 +201,8 @@ class MainWindow(QMainWindow):
             return
         self.client.answers.get()
         self.__add_user_in_list(self.ui.contactsList, username,
-                                'Del', self.remove_contact)
+                                'Del', self.remove_contact,
+                                self.__get_user_avatar(username))
 
     def remove_contact(self):
         """ Method removes user in contact list """
@@ -222,8 +246,9 @@ class MainWindow(QMainWindow):
 
         self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
+        chat = self.client.get_collection_response()
         # chat = self.client.answers.get()
-        chat = self.__get_collection_response()
+        # chat = self.__get_collection_response()
         for msg in chat:
             self.parse_message(msg)
 

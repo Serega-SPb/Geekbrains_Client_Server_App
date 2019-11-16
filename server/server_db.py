@@ -3,9 +3,10 @@
 import logging
 import threading
 from datetime import datetime
+from hashlib import md5
 
-from sqlalchemy import create_engine, or_, and_, \
-                       Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import create_engine, or_, and_, Column, ForeignKey, \
+                       Integer, String, DateTime, Binary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, aliased
 
@@ -104,6 +105,23 @@ class UserMessage(Base):
 
     def __str__(self):
         return f'{self.time}__{self.text}'
+
+
+class UserAvatar(Base):
+    __tablename__ = 'user_avatars'
+
+    user_id = Column(Integer, ForeignKey('users.id'), primary_key=True)
+    avatar = Column(Binary)
+    avatar_hash = Column(String)
+
+    def __init__(self, user_id, avatar_bytes):
+        self.user_id = user_id
+        self.set_avatar(avatar_bytes)
+
+    def set_avatar(self, avatar_bytes):
+        self.avatar = avatar_bytes
+        self.avatar_hash = md5(avatar_bytes).hexdigest()
+        # self.avatar_hash = hash(avatar_bytes)
 
 
 class ServerStorage(metaclass=Singleton):
@@ -307,6 +325,53 @@ class ServerStorage(metaclass=Singleton):
         msgs = self.get_chat(username_1, username_2)
         return list(['__'.join(tuple(str(m) for m in msg)) for msg in msgs])
 
+    @transaction
+    def set_avatar(self, username, avatar_bytes):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.set_avatar: user not found')
+            return False
+        u_avatar = self.session.query(UserAvatar).filter_by(user_id=user.id).first()
+        if not u_avatar:
+            u_avatar = UserAvatar(user.id, avatar_bytes)
+            self.session.add(u_avatar)
+        else:
+            u_avatar.set_avatar(avatar_bytes)
+
+    def get_avatar_hash(self, username):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.get_avatar_hash: user not found')
+            return False
+        a = self.session.query(UserAvatar).filter_by(user_id=user.id).first()
+        return a.avatar_hash if a else None
+
+    def get_avatar(self, username):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.get_avatar: user not found')
+            return False
+        a = self.session.query(UserAvatar).filter_by(user_id=user.id).first()
+        return a.avatar if a else None
+
+    def check_avatar_hash(self, *args):
+        username = args[-2]
+        av_hash = args[-1]
+
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.check_avatar_hash: user not found')
+            return False
+        answer = self.session.query(UserAvatar).filter(and_(
+                UserAvatar.user_id == user.id,
+                UserAvatar.avatar_hash == av_hash
+            )).first()
+        return 1 if answer else 0
+
+    def get_users_avatar(self):
+        return self.session.query(User, UserAvatar)\
+            .join(User, UserAvatar.user_id == User.id).all()
+
 
 def main():
     import random
@@ -318,6 +383,7 @@ def main():
 
     # st = storage.get_user_stats()
     # hist = storage.get_history()
+    avs = storage.get_users_avatar()
 
     storage.login_user(user1, ip)
     storage.login_user(user2, ip)
