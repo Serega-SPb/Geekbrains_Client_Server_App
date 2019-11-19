@@ -12,7 +12,6 @@ from ui.client_ui_logic import MainWindow
 
 
 def show_error(mes):
-    #msb = MessageBox(mes)
     msb = QMessageBox()
     msb.setWindowTitle('Error')
     msb.setText(mes)
