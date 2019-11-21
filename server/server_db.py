@@ -124,6 +124,35 @@ class UserAvatar(Base):
         # self.avatar_hash = hash(avatar_bytes)
 
 
+class Room(Base):
+    __tablename__ = 'rooms'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+    def __init__(self, name):
+        self.name = name
+
+
+class RoomMessage(Base):
+    __tablename__ = 'room_messages'
+
+    id = Column(Integer, primary_key=True)
+    room_id = Column(Integer, ForeignKey('rooms.id'))
+    message = Column(String)
+    sender_id = Column(Integer, ForeignKey('users.id'))
+    time = Column(DateTime)
+
+    def __init__(self, room_id, message, sender_id, time):
+        self.room_id = room_id
+        self.message = message
+        self.sender_id = sender_id
+        self.time = time
+
+    def __str__(self):
+        return f'{self.time}__{self.message}'
+
+
 class ServerStorage(metaclass=Singleton):
     """ Class a connector to database """
 
@@ -322,6 +351,12 @@ class ServerStorage(metaclass=Singleton):
     def get_chat_str(self, username_1, username_2):
         """ Method gets users chat messages from db as formatted strings"""
 
+        # TODO TEMP
+        if username_1.startswith('@'):
+            return self.get_room_messages_str(username_1[1:])
+        if username_2.startswith('@'):
+            return self.get_room_messages_str(username_2[1:])
+
         msgs = self.get_chat(username_1, username_2)
         return list(['__'.join(tuple(str(m) for m in msg)) for msg in msgs])
 
@@ -372,6 +407,44 @@ class ServerStorage(metaclass=Singleton):
         return self.session.query(User, UserAvatar)\
             .join(User, UserAvatar.user_id == User.id).all()
 
+    @transaction
+    def create_room(self, room_name):
+        room = self.session.query(Room).filter_by(name=room_name).first()
+        if room:
+            self.logger.error('DB.create_room: room already exists')
+            return False
+        room = Room(room_name)
+        self.session.add(room)
+        return room
+
+    @transaction
+    def add_message_to_room(self, room_name, message, username):
+        user = self.session.query(User).filter_by(name=username).first()
+        if not user:
+            self.logger.error('DB.add_message_to_room: user not found')
+            return False
+        room = self.session.query(Room).filter_by(name=room_name).first()
+        if not room:
+            room = self.create_room(room_name)
+        room_msg = RoomMessage(room.id, message, user.id, datetime.now())
+        self.session.add(room_msg)
+
+    def get_room_messages(self, room_name):
+        room = self.session.query(Room).filter_by(name=room_name).first()
+        if not room:
+            self.logger.error('DB.get_room_messages: room not found')
+            return False
+
+        msgs = self.session.query(User,RoomMessage)\
+            .join(User, RoomMessage.sender_id == User.id)\
+            .filter(RoomMessage.room_id == room.id)\
+            .all()
+        return msgs
+
+    def get_room_messages_str(self, room_name):
+        msgs = self.get_room_messages(room_name)
+        return list(['__'.join(tuple(str(m) for m in msg)) for msg in msgs])
+
 
 def main():
     import random
@@ -380,6 +453,12 @@ def main():
     ip = '127.0.0.1'
     user1 = f'User{random.randint(0, 100)}'
     user2 = f'User{random.randint(0, 100)}'
+    room = 'ALL'
+
+    # storage.create_room(room)
+    # storage.add_message_to_room(room, 'test_msg', 'Serega')
+    # rch = storage.get_room_messages(room)
+    rch_s = storage.get_room_messages_str(room)
 
     # st = storage.get_user_stats()
     # hist = storage.get_history()

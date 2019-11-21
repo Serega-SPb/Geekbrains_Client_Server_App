@@ -1,5 +1,6 @@
 """ Module implements main window logic """
 
+from base64 import b64encode, b64decode
 from datetime import datetime
 import os
 
@@ -42,7 +43,7 @@ class MainWindow(QMainWindow):
         self.avatars = {}
         self.user_widgets = {}
         self.setWindowTitle(self.client.username)
-        self.curr_chat_user = None
+        self._curr_chat_user = None
         # uic.loadUi(os.path.join(UI_DIR, 'client.ui'), self)
         self.ui = ClientMainWindow()
         self.ui.setupUi(self)
@@ -52,11 +53,24 @@ class MainWindow(QMainWindow):
         """ Method the initialization ui and link ui widgets to logic """
 
         self.storage = SignalStorage()
-        self.set_chat_active(False)
+        # self.set_chat_active(False)
+        self.curr_chat_user = '@ALL'
+        self.load_chat()
 
         self.load_avatar()
         self.load_users()
         self.load_contacts()
+
+        self.ui.addContactTbx.textChanged.connect(
+            lambda x: self.ui.addContactBtn.setEnabled(len(x) > 2))
+        self.ui.addContactBtn.clicked.connect(
+            lambda: self.add_contact_by_name(self.ui.addContactTbx.text()))
+
+        def close_chat():
+            self.curr_chat_user = '@ALL'
+            self.load_chat()
+
+        self.ui.closeChatBtn.clicked.connect(close_chat)
 
         self.ui.avatarLbl.mouseDoubleClickEvent = self.set_avatar
         self.ui.usernameLbl.setText(self.client.username)
@@ -85,6 +99,16 @@ class MainWindow(QMainWindow):
     @message.setter
     def message(self, value):
         self.ui.messageTxa.setText(value)
+
+    @property
+    def curr_chat_user(self):
+        return self._curr_chat_user
+
+    @curr_chat_user.setter
+    def curr_chat_user(self, value):
+        self._curr_chat_user = value
+        self.ui.chatNameLbl.setText(value)
+        self.ui.closeChatBtn.setEnabled(not value.startswith('@'))
 
     def set_avatar(self, *args, **kwargs):
         image_filter_win = ImageFilterWidnow(self)
@@ -197,12 +221,28 @@ class MainWindow(QMainWindow):
         sender = self.sender()
         widget = sender.parent()
         username = widget.username
+        self.add_contact_by_name(username)
+        # if not self.client.add_contact(username):
+        #     return
+        # self.client.answers.get()
+        # self.__add_user_in_list(self.ui.contactsList, username,
+        #                         'Del', self.remove_contact,
+        #                         self.__get_user_avatar(username))
+
+    def add_contact_by_name(self, username):
+        self.ui.addContactTbx.clear()
         if not self.client.add_contact(username):
             return
-        self.client.answers.get()
-        self.__add_user_in_list(self.ui.contactsList, username,
-                                'Del', self.remove_contact,
-                                self.__get_user_avatar(username))
+
+        # TODO temp
+        try:
+            self.client.answers.get(timeout=2)
+        except Exception as e:
+            self.client.logger.error(e)
+        else:
+            self.__add_user_in_list(self.ui.contactsList, username,
+                                    'Del', self.remove_contact,
+                                    self.__get_user_avatar(username))
 
     def remove_contact(self):
         """ Method removes user in contact list """
@@ -217,7 +257,7 @@ class MainWindow(QMainWindow):
     def start_chat(self):
         """ Method the initialization chat with user """
 
-        self.ui.chatList.clear()
+
         sender = self.sender()
         items = sender.selectedItems()
         if len(items) == 0:
@@ -244,13 +284,15 @@ class MainWindow(QMainWindow):
     def load_chat(self):
         """ Method the load chat messages on ui """
 
+        self.ui.chatList.clear()
         self.set_chat_active(True)
         self.client.get_chat_req(self.curr_chat_user)
         chat = self.client.get_collection_response()
         # chat = self.client.answers.get()
         # chat = self.__get_collection_response()
-        for msg in chat:
-            self.parse_message(msg)
+        if chat:
+            for msg in chat:
+                self.parse_message(msg)
 
     TIME_FMT = '%Y-%m-%d %H:%M:%S.%f'
 
@@ -259,20 +301,23 @@ class MainWindow(QMainWindow):
 
         sender, msg = self.client.parse_recv_message(msg)
         # TODO get from resp
-        time = time = datetime.now().strftime('%H:%M')
+        time = datetime.now().strftime('%H:%M')
         self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
 
     def parse_message(self, msg):
         """ Method the parse chat messages gotten from server """
         # TODO not UI logic
 
-        sender, time, message, _ = msg.split('__')
+        sender, time, message, *_ = msg.split('__')
         time = datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
         side = self.SELF_SIDE \
             if sender == self.client.username \
             else self.OTHER_SIDE
-        message = self.client.get_encryptor(self.curr_chat_user)\
+        if self.curr_chat_user != '@ALL':
+            message = self.client.get_encryptor(self.curr_chat_user)\
                              .decrypt_msg(message).decode()
+        else:
+            message = b64decode(message).decode()
         self.add_message_in_chat(side, sender, message, time)
 
     def send_message(self):
@@ -289,7 +334,8 @@ class MainWindow(QMainWindow):
     def add_message_in_chat(self, side, user, msg, time):
         """ Method the add message in chat """
 
-        if user not in [self.client.username, self.curr_chat_user]:
+        if self.curr_chat_user != '@ALL' and \
+                user not in [self.client.username, self.curr_chat_user]:
             return
         item = QListWidgetItem()
         item.setTextAlignment(Qt.AlignLeft
@@ -300,6 +346,7 @@ class MainWindow(QMainWindow):
         item.setSizeHint(widget.sizeHint())
         self.ui.chatList.addItem(item)
         self.ui.chatList.setItemWidget(item, widget)
+        self.ui.chatList.scrollToBottom()
 
     def set_chat_active(self, flag):
         """ Method set active of chat widgets """

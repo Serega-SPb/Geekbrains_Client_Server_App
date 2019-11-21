@@ -46,6 +46,7 @@ class Server:
 
     TCP = (AF_INET, SOCK_STREAM)
     TIMEOUT = 5
+    SPAM = ['cheat']
 
     port = Port('_port')
 
@@ -289,18 +290,20 @@ class Server:
         other_clients = args[0]
         msg = Msg.from_dict(i_req.body)
         self.storage.user_stat_update(msg.sender, ch_sent=1)
-        if msg.to.upper() != 'ALL' and msg.to in self.users:
+        if msg.to.upper() != '@ALL' and msg.to in self.users:
             self.storage.user_stat_update(msg.to, ch_recv=1)
             self.storage.add_message(msg.sender, msg.to, msg.text)
             self.__send_to_client(self.users[msg.to],
                                   Response(LETTER, str(msg)))
         else:
+            text = b64decode(msg.text).decode().lower()
+            spam_filter = [s for s in self.SPAM if s in text]
+            if len(spam_filter) > 0:
+                self.logger.warning('SPAM DETECT')
+                return
+            self.storage.add_message_to_room(msg.to.upper()[1:], msg.text, msg.sender)
+
             self.__send_to_all(other_clients, Response(LETTER, str(msg)))
-            for u in self.storage.get_users_online():
-                if str(u) == msg.sender:
-                    continue
-                self.storage.user_stat_update(str(u), ch_recv=1)
-                self.storage.add_message(msg.sender, str(u), msg.text)
 
     @try_except_wrapper
     def __req_command_handler(self, i_req, client, *args):
