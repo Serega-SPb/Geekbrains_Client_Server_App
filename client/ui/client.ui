@@ -64,6 +64,23 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLineEdit" name="addContactTbx"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="addContactBtn">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Add</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item row="2" column="0">
             <widget class="QListWidget" name="usersList">
              <property name="frameShape">
               <enum>QFrame::Box</enum>
@@ -131,7 +148,17 @@
       <property name="rightMargin">
        <number>15</number>
       </property>
-      <item row="0" column="0" rowspan="2" colspan="2">
+      <item row="4" column="0">
+       <widget class="QTextEdit" name="messageTxa">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>50</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" rowspan="2" colspan="4">
        <widget class="QListWidget" name="chatList">
         <property name="enabled">
          <bool>true</bool>
@@ -147,17 +174,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QTextEdit" name="messageTxa">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
+      <item row="4" column="1" colspan="3">
        <widget class="QPushButton" name="sendMsgBtn">
         <property name="minimumSize">
          <size>
@@ -167,6 +184,48 @@
         </property>
         <property name="text">
          <string>Send</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="0" column="1" colspan="4">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="rightMargin">
+       <number>15</number>
+      </property>
+      <item>
+       <widget class="QLabel" name="chatNameLbl">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>CHAT_NAME</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="closeChatBtn">
+        <property name="minimumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>25</width>
+          <height>25</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>X</string>
         </property>
        </widget>
       </item>

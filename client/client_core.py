@@ -294,10 +294,14 @@ class Client:
     def send_msg(self, text, to):
         """ Method send messge to server """
 
-        encryptor = self.get_encryptor(to)
-        text = encryptor.encript_msg(text.encode()).decode()
+        if to != '@ALL':
+            encryptor = self.get_encryptor(to)
+            text = encryptor.encript_msg(text.encode()).decode()
+        else:
+            text = b64encode(text.encode()).decode()
         msg = Msg(text, self.user, to)
-        self.storage.add_message(msg.to, msg.text)
+        if to != '@ALL':
+            self.storage.add_message(msg.to, msg.text)
         request = Request(RequestAction.MESSAGE, msg)
         self.__send_request(request)
 
@@ -320,10 +324,11 @@ class Client:
             # else:
             #     self.logger.debug(resp.message)
 
+    @try_except_wrapper
     def get_collection_response(self):
         result = []
         while True:
-            resp = self.answers.get()
+            resp = self.answers.get(timeout=5)
             if not resp:
                 break
             result.append(resp)
@@ -341,6 +346,9 @@ class Client:
         """ Method parse/decrypt message """
 
         msg = Msg.from_formated(msg)
-        encryptor = self.get_encryptor(msg.sender)
-        msg.text = encryptor.decrypt_msg(msg.text.encode()).decode()
+        if msg.to != '@ALL':
+            encryptor = self.get_encryptor(msg.sender)
+            msg.text = encryptor.decrypt_msg(msg.text.encode()).decode()
+        else:
+            msg.text = b64decode(msg.text).decode()
         return msg.sender, msg.text

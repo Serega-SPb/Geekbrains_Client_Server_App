@@ -45,7 +45,7 @@ class Msg(BaseBody):
     __slots__ = (SENDER, TO, TEXT)
 
     PATTERN = r'@(?P<to>[\w\d]*)?(?P<message>.*)'
-    RECV_PAT = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{TO}>[\w]*): (?P<{TEXT}>(.|\n)*)'
+    RECV_PAT = rf'^(?P<{SENDER}>[\w\d]*) to @(?P<{TO}>[@\w\d]*): (?P<{TEXT}>(.|\n)*)'
 
     def __init__(self, text, sender, to='ALL'):
         self.text = text
