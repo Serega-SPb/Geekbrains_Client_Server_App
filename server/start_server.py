@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QApplication
 
 from server_core import Server
 from server_db import ServerStorage
+from server_db_mongo import ServerStorageMongo
 from ui.server_ui_logic import ConfigWindow, MainWindow
 
 
@@ -31,7 +32,12 @@ def main():
         if config and 'database' in config \
         else 'server_db.db'
 
-    ServerStorage(db_file)
+    if not config or config['is_sqlite_db']:
+        storage = ServerStorage(db_file)
+    elif config['is_mongo_db']:
+        storage = ServerStorageMongo()
+    else:
+        storage = ServerStorage()
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', default=port, type=int, nargs='?',
@@ -44,10 +50,11 @@ def main():
     port = args.port
 
     server = Server(addr, port)
+    server.set_db_storage(storage)
     server.start()
 
     application = QApplication(sys.argv)
-    main_window = MainWindow()
+    main_window = MainWindow(storage=storage)
     main_window.show()
     application.exec_()
 

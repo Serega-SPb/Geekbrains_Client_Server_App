@@ -8,8 +8,8 @@ from threading import Lock
 import yaml
 
 from PyQt5.QtCore import QTimer, QMetaObject, Qt, Q_ARG
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, \
-                            QDialog, QFileDialog
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QMessageBox, \
+                            QDialog, QFileDialog, QLineEdit, QRadioButton
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 
 from logs import server_log_config as log_config
@@ -26,11 +26,17 @@ def add_row(model, row_ind, source, cols_field):
 
     col_ind = 0
     for f in cols_field:
-        path = f.split('.')
         data = source
+        path = f.split('.')
         for p in path:
+            if not p:
+                continue
             if p.startswith('['):
-                data = data[int(p[1:-1])]
+                key = p[1:-1]
+                if key.isdigit():
+                    data = data[int(key)]
+                else:
+                    data = data[key]
             else:
                 data = getattr(data, p)
 
@@ -74,6 +80,9 @@ class ConfigWindow(QDialog):
     DIR = os.getcwd()
     CONFIG = 'server.cfg'
 
+    IS_MONGO_DB = 'is_mongo_db'
+    DB_HOST = 'db_host'
+    IS_SQLITE_DB = 'is_sqlite_db'
     DB_FILE = 'database'
     PORT = 'port'
     BIND_ADDR = 'bind'
@@ -84,6 +93,9 @@ class ConfigWindow(QDialog):
         self.ui = ConfigDialog()
         self.ui.setupUi(self)
         self.fields = {
+            self.IS_MONGO_DB: self.ui.mongo_db_rbn,
+            self.DB_HOST: self.ui.db_host_txb,
+            self.IS_SQLITE_DB: self.ui.sqlite_db_rbn,
             self.DB_FILE: self.ui.db_filepath_txb,
             self.PORT: self.ui.port_txb,
             self.BIND_ADDR: self.ui.bind_addr_txb
@@ -94,10 +106,16 @@ class ConfigWindow(QDialog):
     def save_config(self):
         """ Method save config """
 
-        d = {p: f.text() for p, f in self.fields.items()}
+        data = {}
+        for p, f in self.fields.items():
+            if isinstance(f, QLineEdit):
+                data[p] = f.text()
+            elif isinstance(f, QRadioButton):
+                data[p] = f.isChecked()
+
         file = os.path.join(self.DIR, self.CONFIG)
         with open(file, 'w', encoding='utf-8') as file:
-            yaml.dump(d, file)
+            yaml.dump(data, file)
 
     def load_confg(self):
         """ Method load config """
@@ -109,7 +127,11 @@ class ConfigWindow(QDialog):
             content = yaml.load(file, yaml.FullLoader)
         for k, v in content.items():
             if k in self.fields:
-                self.fields[k].setText(v)
+                wid = self.fields[k]
+                if isinstance(wid, QLineEdit):
+                    wid.setText(v)
+                elif isinstance(wid, QRadioButton):
+                    wid.setChecked(v)
 
     def __init_ui(self):
         """ Method the initialization ui and link ui widgets to logic """
@@ -127,6 +149,7 @@ class ConfigWindow(QDialog):
             """ Function the handler save button click event """
 
             self.save_config()
+            QMessageBox.information(self, 'Info', 'Restart the program to apply the changes')
             self.close()
 
         self.ui.select_file_btn.clicked.connect(lambda: open_file_dialog())
@@ -137,14 +160,14 @@ class ConfigWindow(QDialog):
 class MainWindow(QMainWindow):
     """ Class the implementation of main window logic """
 
-    def __init__(self, parent=None):
+    def __init__(self, storage=None, parent=None):
         QWidget.__init__(self, parent)
         # uic.loadUi(os.path.join(UI_DIR, 'server.ui'), self)
         self.ui = ServerMainWindow()
         self.ui.setupUi(self)
         logging.getLogger(log_config.LOGGER_NAME)\
             .addHandler(UiLogHandler(self.ui.logPtx))
-        self.storage = ServerStorage()
+        self.storage = storage if storage else ServerStorage()
         self.__init_ui()
 
     def __init_ui(self):
@@ -179,7 +202,7 @@ class MainWindow(QMainWindow):
 
         self.load_users()
         self.load_users_online()
-        self.load_users_stats()
+        # self.load_users_stats()
         self.load_history()
         self.load_messages()
         self.load_avatars()
@@ -189,51 +212,59 @@ class MainWindow(QMainWindow):
 
         users = self.storage.get_users()  # temp
         tbl = self.ui.users_tbl
-        fill_table(tbl, users, ['id', 'name', 'password'],
-                   ['id', 'name', 'password'])
+        fill_table(tbl, users, ['id', 'name', 'password'], ['id', 'name', 'password'])
 
     def load_users_online(self):
         """ Method the load online users table"""
 
         online = self.storage.get_users_online()
         tbl = self.ui.users_online_tbl
-        fill_table(tbl, online, ['name'], ['name'])
+        fields = ['name'] \
+            if isinstance(self.storage, ServerStorage) \
+            else ['.']
+        fill_table(tbl, online, ['name'], fields)
 
-    def load_users_stats(self):
-        """ Method the load users stats table"""
-
-        stats = self.storage.get_user_stats()
-        tbl = self.ui.user_stats_tbl
-        fill_table(tbl, stats, ['name', 'sent', 'recv'],
-                   ['User.name', 'UserStat.mes_sent', 'UserStat.mes_recv'])
+    # def load_users_stats(self):
+    #     """ Method the load users stats table"""
+    #
+    #     stats = self.storage.get_user_stats()
+    #     tbl = self.ui.user_stats_tbl
+    #     fields = ['User.name', 'UserStat.mes_sent', 'UserStat.mes_recv'] \
+    #         if isinstance(self.storage, ServerStorage) \
+    #         else ['id', 'name', 'password']
+    #     fill_table(tbl, stats, ['name', 'sent', 'recv'], fields)
 
     def load_history(self):
         """ Method the load history table"""
 
         history = self.storage.get_history()
         tbl = self.ui.history_tbl
-        fill_table(tbl, history, ['id', 'name', 'date', 'ip'],
-                   ['LoginHistory.id', 'User.name',
-                    'LoginHistory.datetime', 'LoginHistory.ip'])
+        fields = ['LoginHistory.id', 'User.name',
+                  'LoginHistory.datetime', 'LoginHistory.ip'] \
+            if isinstance(self.storage, ServerStorage) \
+            else ['[0].id', '[0].name', '[1].datetime', '[1].ip']
+        fill_table(tbl, history, ['id', 'name', 'date', 'ip'], fields)
 
     def load_messages(self):
         """ Method the load users messages table"""
 
         messages = self.storage.get_user_messages()
         tbl = self.ui.messages_tbl
+        fields = ['UserMessage.id', '[0].name', '[2].name',
+                  'UserMessage.text', 'UserMessage.time'] \
+            if isinstance(self.storage, ServerStorage) \
+            else ['id', 'sender.name', 'recipient.name', 'text', 'time']
         fill_table(tbl, messages,
-                   ['id', 'sender', 'recipient', 'text', 'time'],
-                   ['UserMessage.id', '[0].name', '[2].name',
-                    'UserMessage.text', 'UserMessage.time'])
+                   ['id', 'sender', 'recipient', 'text', 'time'], fields)
 
     def load_avatars(self):
 
         avatars = self.storage.get_users_avatar()
         tbl = self.ui.avatars_tbl
-        fill_table(tbl, avatars,
-                   ['user', 'avatar_md5', 'avatar'],
-                   ['User.name', 'UserAvatar.avatar_hash',
-                    'UserAvatar.avatar'])
+        fields = ['User.name', 'UserAvatar.avatar_hash', 'UserAvatar.avatar'] \
+            if isinstance(self.storage, ServerStorage) \
+            else ['name', 'avatar_hash', 'avatar']
+        fill_table(tbl, avatars, ['user', 'avatar_md5', 'avatar'], fields)
 
 
 if __name__ == '__main__':

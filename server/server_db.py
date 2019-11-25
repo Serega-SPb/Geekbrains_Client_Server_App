@@ -210,10 +210,9 @@ class ServerStorage(metaclass=Singleton):
     def login_user(self, username, ip):
         """ Method the login user """
 
-        print(threading.current_thread())
         user = self.session.query(User).filter_by(name=username).first()
         if not user:
-            self.logger.error('Unregistered user')
+            self.logger.error('DB.login_user: Unregistered user')
             return
 
         online = UserOnline(user.id)
@@ -417,6 +416,9 @@ class ServerStorage(metaclass=Singleton):
         self.session.add(room)
         return room
 
+    def get_rooms(self):
+        return self.session.query(Room).all()
+
     @transaction
     def add_message_to_room(self, room_name, message, username):
         user = self.session.query(User).filter_by(name=username).first()
@@ -435,7 +437,7 @@ class ServerStorage(metaclass=Singleton):
             self.logger.error('DB.get_room_messages: room not found')
             return False
 
-        msgs = self.session.query(User,RoomMessage)\
+        msgs = self.session.query(User, RoomMessage)\
             .join(User, RoomMessage.sender_id == User.id)\
             .filter(RoomMessage.room_id == room.id)\
             .all()
