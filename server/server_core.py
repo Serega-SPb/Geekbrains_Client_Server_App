@@ -59,9 +59,17 @@ class Server:
         self.client_keys = {}
         self.users = {}
         self.images = {}
-        self.storage = ServerStorage()
-        self.__init_commands()
+        self.storage = None
+        # self.storage = ServerStorage()
+        # self.__init_commands()
         self.__init_req_handlers()
+
+    def set_db_storage(self, storage=None):
+        if storage:
+            self.storage = storage
+        else:
+            self.storage = ServerStorage()
+        self.__init_commands()
 
     def __init_commands(self):
         """ Method fills dictionary commands """
@@ -93,6 +101,9 @@ class Server:
 
     def start(self, request_count=5):
         """ Method the start configuration server """
+
+        if not self.storage:
+            self.set_db_storage()
 
         self.socket = socket(*self.TCP)
         self.socket.settimeout(0.5)

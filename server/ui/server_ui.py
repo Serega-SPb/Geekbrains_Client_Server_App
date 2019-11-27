@@ -45,7 +45,7 @@ class Ui_MainWindow(object):
         self.user_stats_tbl.setMinimumSize(QtCore.QSize(0, 0))
         self.user_stats_tbl.setObjectName("user_stats_tbl")
         self.gridLayout_4.addWidget(self.user_stats_tbl, 0, 0, 1, 1)
-        self.tabWidget.addTab(self.user_stats, "")
+        # self.tabWidget.addTab(self.user_stats, "")
         self.history = QtWidgets.QWidget()
         self.history.setObjectName("history")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.history)
