@@ -1,0 +1,265 @@
+#: kivy 1.11.0
+
+ScreenManager:
+    id: screen_manager
+    LoginScreen:
+        id: login_screen
+        name: 'login'
+        manager: screen_manager
+    ClientMainScreen:
+        id: main_screen
+        name: 'main'
+        manager: screen_manager
+
+# BackgroundedBox
+<BackgroundedBox@BoxLayout>:
+    background_color: 0.8, 0.8, 0.8, 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+# CustomLabel
+<CustomLabel@Label>
+    value: ''
+    foreground_hex: '212121'
+    markup: True
+    size_hint: None, 0.75
+    font_size: '20sp'
+    text: '[color='+ self.foreground_hex +'][b]' + self.value + '[/b][/color]'
+
+# LoginTextInput
+<LoginTextInput@TextInput>
+    multiline: False
+    write_tab: False
+    font_size: '24sp'
+    size_hint: 1, 0.75
+    padding_y: [self.height / 2.0 - (self.line_height / 2.0), 0]
+
+# LoginScreen
+<LoginScreen>:
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+        BackgroundedBox:
+            orientation: 'vertical'
+            spacing: 5
+            size: 512, 250
+            size_hint: None, None
+            BoxLayout:
+                CustomLabel:
+                    value: 'Connect to'
+                LoginTextInput:
+                    id: address
+                    text: root.address
+                LoginTextInput:
+                    id: port
+                    text: str(root.port)
+                    size_hint: None, 0.75
+                    input_filter: 'int'
+            BoxLayout:
+                CustomLabel:
+                    value: 'Login'
+                LoginTextInput:
+                    id: username
+                    text: root.username
+            BoxLayout:
+                CustomLabel:
+                    value: 'Password'
+                LoginTextInput:
+                    id: password
+                    text: root.password
+                    password: True
+            BoxLayout:
+                Button:
+                    text: 'Login'
+                    on_press:
+                        app.root.current = 'main'
+                        app.login(root.address, int(root.port), root.username, root.password)
+                Button:
+                    text: 'Quit'
+                    on_press: app.stop()
+
+<ClientMainScreen@Screen>:
+    ScreenManager:
+        id: client_manager
+        ProfileScreen:
+            id: profile_screen
+            name: 'profile'
+            manager: client_manager
+        MessangerScreen:
+            id: messanger_screen
+            name: 'messanger'
+            manager: client_manager
+        ImageFilterScreen:
+            id: image_filter_screen
+            name: 'image_filter'
+            manager: client_manager
+
+# UserBox
+<UserBox>:
+    size_hint_x: 1
+    size_hint_y: None
+    height: 50
+    BoxLayout:
+        size_hint: None, None
+        size: 50, 50
+        Image:
+            id: user_avatar
+            size_hint: None, None
+            size: 50, 50
+    CustomLabel:
+        id: user_lbl
+    Widget:
+    Button:
+        id: start_chat_btn
+        text: 'MSG'
+        size: 50, 50
+        size_hint: None, None
+
+
+<ProfileScreen>:
+    BackgroundedBox:
+        orientation: 'vertical'
+        padding: 15, 15
+        spacing: 10
+        BoxLayout:
+            size_hint: 1, None
+            height: 50
+            BoxLayout:
+                size_hint: None, None
+                size: 50, 50
+                Image:
+                    texture: root.avatar.texture
+                    on_touch_down: root.open_filter(*args)
+                    size_hint: None, None
+                    size: 50, 50
+            CustomLabel:
+                value: root.username
+        Accordion:
+            orientation: 'vertical'
+            AccordionItem:
+                title: 'Users'
+                ScrollView:
+                    BackgroundedBox:
+                        id: users_list
+                        background_color: 1,1,1,1
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        Widget:
+
+            AccordionItem:
+                title: 'Contacts'
+                ScrollView:
+                    BackgroundedBox:
+                        id: contacts_list
+                        background_color: 1,1,1,1
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        Widget:
+        Button:
+            text: 'Messanger'
+            size: 0, 30
+            size_hint_y: None
+            on_press:
+                root.manager.current = 'messanger'
+
+# ImageFilterScreen
+<ImageFilterScreen@Screen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Image filter'
+        Button:
+            text: 'Profile'
+            size_y: 30
+            size_hint_y: None
+            on_press:
+                root.manager.current = 'profile'
+        Button:
+            text: 'Messanger'
+            size_y: 30
+            size_hint_y: None
+            on_press:
+                root.manager.current = 'messanger'
+
+<Separator@Widget>:
+    id: separator
+    size_hint_y: None
+    height: 2
+    canvas:
+        Color:
+            rgb: 0, 0, 0.
+        Rectangle:
+            pos: 0, separator.center_y
+            size: separator.width, 2
+
+<MessageBox@BoxLayout>:
+    user: 'Serega'
+    time: '02:15'
+    msg: 'Test text \n qwer'
+    orientation: 'vertical'
+    size_hint_y: None
+    BoxLayout:
+        CustomLabel:
+            value: root.user
+        Widget:
+        CustomLabel:
+            value: root.time
+    Separator:
+    CustomLabel:
+        multiline: True
+        font_size: '16sp'
+        value: root.msg
+
+
+<MessangerScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        Button:
+            text: 'Back to profile'
+            size: 0, 30
+            size_hint_y: None
+            on_press: root.manager.current = 'profile'
+        ScrollView:
+            BackgroundedBox:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: (len(self.children) - 1) * 150
+                MessageBox:
+                    user: 'Serega'
+                    time: '01:44'
+                    msg: 'First test'
+                MessageBox:
+                    user: 'User1'
+                    time: '01:50'
+                    msg: 'QQQ\nAAA'
+                MessageBox:
+                    user: 'Serega'
+                    time: '02:00'
+                    msg: 'TEMP RESULT'
+                MessageBox:
+                    user: 'Serega'
+                    time: '01:44'
+                    msg: 'First test'
+                MessageBox:
+                    user: 'User1'
+                    time: '01:50'
+                    msg: 'QQQ\nAAA'
+                MessageBox:
+                    user: 'Serega'
+                    time: '02:00'
+                    msg: 'TEMP RESULT'
+                Widget:
+
+        BoxLayout:
+            size_hint_y: None
+            height: 75
+            TextInput:
+                background_color: 1, 1, 1, 1
+            Button:
+                size_hint_x: None
+                width: 75
+                text: 'Send'

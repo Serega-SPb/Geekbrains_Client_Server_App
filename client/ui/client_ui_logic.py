@@ -257,7 +257,6 @@ class MainWindow(QMainWindow):
     def start_chat(self):
         """ Method the initialization chat with user """
 
-
         sender = self.sender()
         items = sender.selectedItems()
         if len(items) == 0:

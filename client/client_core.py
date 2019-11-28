@@ -51,7 +51,7 @@ class Client:
     """ Class client connection and data exchange """
 
     __slots__ = ('addr', '_port', 'user',
-                 'logger', 'socket', 'connected',
+                 'logger', 'socket', 'connected', 'get_chat_sended',
                  'listener', 'sender', 'encryptors', 'priv_key',
                  'storage', 'subs', 'answers', 'file_answers')
 
@@ -62,7 +62,7 @@ class Client:
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.addr = addr
         self.port = port
-        self.connected = False
+        self.connected = self.get_chat_sended = False
         self.subs = {}
         # self.subs = {201: [], 202: [], 203: [], 204: [], 205: []}
         self.answers = queue.Queue()
@@ -140,7 +140,8 @@ class Client:
 
     def get_chat_req(self, contact):
         """ Method send request for gets all messages of chat with contact """
-
+        if self.get_chat_sended:
+            return
         req = Request(RequestAction.COMMAND,
                       f'get_chat {self.user.username} {contact}')
         self.__send_request(req)
@@ -328,7 +329,7 @@ class Client:
     def get_collection_response(self):
         result = []
         while True:
-            resp = self.answers.get(timeout=5)
+            resp = self.answers.get(timeout=10)
             if not resp:
                 break
             result.append(resp)
