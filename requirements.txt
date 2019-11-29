@@ -16,6 +16,12 @@ idna==2.8
 imagesize==1.1.0
 isort==4.3.21
 Jinja2==2.10.3
+Kivy==1.11.1
+kivy-deps.angle==0.1.9
+kivy-deps.glew==0.1.12
+kivy-deps.sdl2==0.1.22
+Kivy-examples==1.11.1
+Kivy-Garden==0.1.4
 lazy-object-proxy==1.4.3
 Mako==1.1.0
 Markdown==2.4.1
@@ -35,11 +41,13 @@ PyInstaller==3.5
 pylint==2.4.3
 pymongo==3.9.0
 pyparsing==2.4.2
+pypiwin32==223
 PyQt5==5.13.0
 PyQt5-sip==12.7.0
 pyqt5-tools==5.13.0.1.5
 python-dotenv==0.10.3
 pytz==2019.3
+pywin32==227
 pywin32-ctypes==0.2.0
 PyYAML==5.1.2
 readme-renderer==24.0
