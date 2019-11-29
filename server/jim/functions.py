@@ -13,13 +13,22 @@ def send_data(socket, data):
 
     data_dict = data.get_dict()
     js_str = json.dumps(data_dict)
-    socket.send(b64encode(js_str.encode(ENCODING)))
+    package = b64encode(js_str.encode(ENCODING))
+    socket.send(f'{len(package)}.'.encode())
+    socket.send(package)
 
 
 def get_data(socket):
     """ Function to receive data """
 
-    data = b64decode(socket.recv(BUFFER))
+    data = socket.recv(1)
+    pack_len = b''
+    while data != b'.':
+        pack_len += data
+        data = socket.recv(1)
+
+    data = b64decode(socket.recv(int(pack_len)))
+    # data = b64decode(socket.recv(BUFFER))
     if not isinstance(data, bytes) or len(data) == 0:
         raise ValueError
     js_data = json.loads(data.decode(ENCODING))

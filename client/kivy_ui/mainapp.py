@@ -1,5 +1,6 @@
 import io
 import logging
+import re
 from datetime import datetime
 
 from kivy.app import App
@@ -210,8 +211,9 @@ class ProfileScreen(Screen):
             avatar_texture = CoreImage(io.BytesIO(avatar_bytes), ext='png').texture
         wid = UserBox(user, avatar_texture)
         wid.start_chat_link(self.init_chat)
-        ui_list.add_widget(wid, 0)
-        ui_list.height = (len(ui_list.children) - 1) * 50
+        ui_list_len = len(ui_list.children)
+        ui_list.add_widget(wid, ui_list_len - 1)
+        ui_list.height = ui_list_len * 50
 
     @try_except_wrapper
     def remove_user_from_list(self, ui_list, user):
@@ -238,6 +240,31 @@ class ProfileScreen(Screen):
         self.manager.current = 'messanger'
 
 
+class MessageBox(BoxLayout):
+
+    user = StringProperty()
+    time = StringProperty()
+    msg = StringProperty()
+
+    FORMAT_PATTERN = {
+        r'\*\*(.+)\*\*': r'[b]\1[/b]',
+        '__(.+)__': r'[u]\1[/u]',
+        '##(.+)##': r'[i]\1[/i]',
+    }
+
+    def __init__(self,user, time, msg,  **kwargs):
+        super().__init__(**kwargs)
+        self.user = user
+        self.time = time
+        self.msg = self.apply_format(msg)
+
+    def apply_format(self, text):
+        text = text.strip()
+        for pat, fmt in self.FORMAT_PATTERN.items():
+            text = re.sub(pat, fmt, text)
+        return text
+
+
 class MessangerScreen(Screen):
     TIME_FMT = '%Y-%m-%d %H:%M:%S.%f'
 
@@ -247,9 +274,25 @@ class MessangerScreen(Screen):
         self.logger = self.storage.logger
 
         self.storage.messages_loaded += lambda msgs: [self.parse_message(m) for m in msgs] if msgs else None
+        self.storage.got_message += self.recieve_message
+
+    @property
+    def chat_list(self):
+        return self.ids['chat_list']
+
+    @property
+    def mesasge_input(self):
+        return self.ids['mesasge_input']
 
     def add_message_in_chat(self, user, msg, time):
-        pass
+        if self.storage.curr_chat_user != '@ALL' and \
+                user not in [self.storage.curr_chat_user, self.storage.client.username]:
+            return
+        msg_wid = MessageBox(user, time, msg)
+        ui_list = self.chat_list
+        ui_list_len = len(ui_list.children)
+        ui_list.add_widget(msg_wid, ui_list_len - 1)
+        ui_list.height = sum([w.height for w in ui_list.children[:-1]])
 
     def recieve_message(self, msg):
         sender, msg = self.client.parse_recv_message(msg)
@@ -261,6 +304,13 @@ class MessangerScreen(Screen):
         time = datetime.strptime(time, self.TIME_FMT).strftime('%H:%M')
         message = self.storage.decrypt_message(message)
         self.add_message_in_chat(sender, message, time)
+
+    def send_message(self):
+        user = self.storage.curr_chat_user
+        msg = self.mesasge_input.text
+        time = datetime.now().strftime('%H:%M')
+        self.storage.client.send_msg(msg, user)
+        self.add_message_in_chat(user, msg, time)
 
 
 class MainApp(App):

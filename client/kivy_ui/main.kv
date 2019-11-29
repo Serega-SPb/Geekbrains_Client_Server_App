@@ -26,9 +26,9 @@ ScreenManager:
     value: ''
     foreground_hex: '212121'
     markup: True
-    size_hint: None, 0.75
+    size_hint: 1, 1
     font_size: '20sp'
-    text: '[color='+ self.foreground_hex +'][b]' + self.value + '[/b][/color]'
+    text: '[color='+ self.foreground_hex +']' + self.value + '[/color]'
 
 # LoginTextInput
 <LoginTextInput@TextInput>
@@ -196,23 +196,28 @@ ScreenManager:
             pos: 0, separator.center_y
             size: separator.width, 2
 
-<MessageBox@BoxLayout>:
-    user: 'Serega'
-    time: '02:15'
-    msg: 'Test text \n qwer'
+<MessageBox>:
     orientation: 'vertical'
     size_hint_y: None
     BoxLayout:
         CustomLabel:
+            # halign: 'left'
             value: root.user
         Widget:
         CustomLabel:
+            # halign: 'right'
             value: root.time
     Separator:
-    CustomLabel:
-        multiline: True
-        font_size: '16sp'
-        value: root.msg
+    BackgroundedBox:
+        padding: 5,0,0,0
+        background_color: 1, 1, 1, 1
+        CustomLabel:
+            # halign: 'left'
+            # valign: 'top'
+            multiline: True
+            font_size: '16sp'
+            value: root.msg
+        Widget:
 
 
 <MessangerScreen>:
@@ -225,41 +230,21 @@ ScreenManager:
             on_press: root.manager.current = 'profile'
         ScrollView:
             BackgroundedBox:
+                id: chat_list
                 orientation: 'vertical'
                 size_hint_y: None
                 height: (len(self.children) - 1) * 150
-                MessageBox:
-                    user: 'Serega'
-                    time: '01:44'
-                    msg: 'First test'
-                MessageBox:
-                    user: 'User1'
-                    time: '01:50'
-                    msg: 'QQQ\nAAA'
-                MessageBox:
-                    user: 'Serega'
-                    time: '02:00'
-                    msg: 'TEMP RESULT'
-                MessageBox:
-                    user: 'Serega'
-                    time: '01:44'
-                    msg: 'First test'
-                MessageBox:
-                    user: 'User1'
-                    time: '01:50'
-                    msg: 'QQQ\nAAA'
-                MessageBox:
-                    user: 'Serega'
-                    time: '02:00'
-                    msg: 'TEMP RESULT'
+
                 Widget:
 
         BoxLayout:
             size_hint_y: None
             height: 75
             TextInput:
+                id: mesasge_input
                 background_color: 1, 1, 1, 1
             Button:
                 size_hint_x: None
                 width: 75
                 text: 'Send'
+                on_press: root.send_message()

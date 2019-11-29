@@ -53,7 +53,8 @@ class Client:
     __slots__ = ('addr', '_port', 'user',
                  'logger', 'socket', 'connected', 'get_chat_sended',
                  'listener', 'sender', 'encryptors', 'priv_key',
-                 'storage', 'subs', 'answers', 'file_answers')
+                 'storage', 'subs', 'answers', 'file_answers',
+                 'executor', 'execute_queue' )
 
     TCP = (AF_INET, SOCK_STREAM)
     port = Port('_port')
@@ -67,6 +68,7 @@ class Client:
         # self.subs = {201: [], 202: [], 203: [], 204: [], 205: []}
         self.answers = queue.Queue()
         self.file_answers = queue.Queue()
+        self.execute_queue = queue.Queue()
         self.encryptors = {}
 
     @property
@@ -105,6 +107,19 @@ class Client:
 
         self.listener = ClientThread(self.__listen_server, self.logger)
         self.listener.start()
+
+        self.executor = ClientThread(self.__execute, self.logger)
+        self.executor.start()
+
+    def __execute(self):
+        self.logger.debug('EXECUTER STARTED')
+        while self.connected:
+            func, *args = self.execute_queue.get()
+            self.logger.debug(f'{func} | {args}')
+            try:
+                func(*args)
+            except Exceptiona as e:
+                self.logger.error(e)
 
     @try_except_wrapper
     def __send_request(self, request):
@@ -321,7 +336,8 @@ class Client:
                 self.file_answers.put(resp.message)
             elif resp.code in self.subs.keys():
                 for sub in self.subs[resp.code]:
-                    sub(resp.message)
+                    # sub(resp.message)
+                    self.execute_queue.put((sub, resp.message))
             # else:
             #     self.logger.debug(resp.message)
 
@@ -329,7 +345,7 @@ class Client:
     def get_collection_response(self):
         result = []
         while True:
-            resp = self.answers.get(timeout=10)
+            resp = self.answers.get(timeout=60)
             if not resp:
                 break
             result.append(resp)
