@@ -1,13 +1,14 @@
 """ Module implements client database models """
 
 import logging
+import threading
 from base64 import b64encode, b64decode
 from hashlib import md5
 from datetime import datetime
 
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, Binary
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from logs import client_log_config as log_config
 from decorators import transaction
@@ -82,14 +83,24 @@ class ClientStorage(metaclass=Singleton):
     """ Class a connector to database """
 
     DB = 'sqlite:///user_data/client_db.db'
+    sessions = {}
 
     def __init__(self, username=None):
         db = self.DB.replace('client', username) if username else self.DB
         self.logger = logging.getLogger(log_config.LOGGER_NAME)
         self.database_engine = create_engine(db, echo=False, pool_recycle=7200)
         Base.metadata.create_all(self.database_engine)
-        session_factory = sessionmaker(bind=self.database_engine)
-        self.session = session_factory()
+        self.session_factory = sessionmaker(bind=self.database_engine)
+
+    @property
+    def session(self):
+        thread = threading.current_thread().name
+        if thread in self.sessions:
+            return self.sessions[thread]
+        else:
+            session = scoped_session(self.session_factory)()
+            self.sessions[thread] = session
+            return session
 
     @transaction
     def add_contact(self, contact):
