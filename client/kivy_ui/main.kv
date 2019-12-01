@@ -1,4 +1,5 @@
 #: kivy 1.11.0
+#:import isdir os.path.isdir
 
 ScreenManager:
     id: screen_manager
@@ -10,6 +11,26 @@ ScreenManager:
         id: main_screen
         name: 'main'
         manager: screen_manager
+
+<ClientMainScreen@Screen>:
+    ScreenManager:
+        id: client_manager
+        ProfileScreen:
+            id: profile_screen
+            name: 'profile'
+            manager: client_manager
+        MessengerScreen:
+            id: messenger_screen
+            name: 'messenger'
+            manager: client_manager
+        ImageFilterScreen:
+            id: image_filter_screen
+            name: 'image_filter'
+            manager: client_manager
+        OpenFileScreen:
+            id: open_file_screen
+            name: 'open_file'
+            manager: client_manager
 
 # BackgroundedBox
 <BackgroundedBox@BoxLayout>:
@@ -26,7 +47,7 @@ ScreenManager:
     value: ''
     foreground_hex: '212121'
     markup: True
-    size_hint: 1, 1
+    size_hint: None, 1
     font_size: '20sp'
     text: '[color='+ self.foreground_hex +']' + self.value + '[/color]'
 
@@ -75,28 +96,10 @@ ScreenManager:
             BoxLayout:
                 Button:
                     text: 'Login'
-                    on_press:
-                        app.root.current = 'main'
-                        app.login(root.address, int(root.port), root.username, root.password)
+                    on_press: root.login(address.text, int(port.text), username.text, password.text)
                 Button:
                     text: 'Quit'
                     on_press: app.stop()
-
-<ClientMainScreen@Screen>:
-    ScreenManager:
-        id: client_manager
-        ProfileScreen:
-            id: profile_screen
-            name: 'profile'
-            manager: client_manager
-        MessangerScreen:
-            id: messanger_screen
-            name: 'messanger'
-            manager: client_manager
-        ImageFilterScreen:
-            id: image_filter_screen
-            name: 'image_filter'
-            manager: client_manager
 
 # UserBox
 <UserBox>:
@@ -114,12 +117,19 @@ ScreenManager:
         id: user_lbl
     Widget:
     Button:
+        id: action_btn
+        size: 50, 50
+        size_hint: None, None
+    Widget:
+        size_hint_x: None
+        width: 25
+    Button:
         id: start_chat_btn
         text: 'MSG'
         size: 50, 50
         size_hint: None, None
 
-
+# ProfileScreen
 <ProfileScreen>:
     BackgroundedBox:
         orientation: 'vertical'
@@ -148,7 +158,6 @@ ScreenManager:
                         background_color: 1,1,1,1
                         orientation: 'vertical'
                         size_hint_y: None
-                        Widget:
 
             AccordionItem:
                 title: 'Contacts'
@@ -158,33 +167,13 @@ ScreenManager:
                         background_color: 1,1,1,1
                         orientation: 'vertical'
                         size_hint_y: None
-                        Widget:
         Button:
-            text: 'Messanger'
+            text: 'Messenger'
             size: 0, 30
             size_hint_y: None
-            on_press:
-                root.manager.current = 'messanger'
+            on_press: root.open_chat_room_all()
 
-# ImageFilterScreen
-<ImageFilterScreen@Screen>:
-    BoxLayout:
-        orientation: 'vertical'
-        Label:
-            text: 'Image filter'
-        Button:
-            text: 'Profile'
-            size_y: 30
-            size_hint_y: None
-            on_press:
-                root.manager.current = 'profile'
-        Button:
-            text: 'Messanger'
-            size_y: 30
-            size_hint_y: None
-            on_press:
-                root.manager.current = 'messanger'
-
+# Separator
 <Separator@Widget>:
     id: separator
     size_hint_y: None
@@ -196,47 +185,64 @@ ScreenManager:
             pos: 0, separator.center_y
             size: separator.width, 2
 
+# MessageBox
 <MessageBox>:
     orientation: 'vertical'
-    size_hint_y: None
+    size_hint_y: 1
     BoxLayout:
+        id: header
+        size_hint_y: 1
+        height: 50
         CustomLabel:
-            # halign: 'left'
+            halign: 'left'
             value: root.user
         Widget:
         CustomLabel:
-            # halign: 'right'
+            halign: 'right'
             value: root.time
     Separator:
     BackgroundedBox:
-        padding: 5,0,0,0
+        id: msg
+        padding: 5, 5, 5, 5
         background_color: 1, 1, 1, 1
+        size_hint: 1, 1
+        height: root.text_height
         CustomLabel:
-            # halign: 'left'
-            # valign: 'top'
+            size_hint: 1, 1
             multiline: True
             font_size: '16sp'
             value: root.msg
-        Widget:
+            text_size: self.width, self.height
 
-
-<MessangerScreen>:
-    BoxLayout:
+# MessengerScreen
+<MessengerScreen>:
+    BackgroundedBox:
         orientation: 'vertical'
-        Button:
-            text: 'Back to profile'
-            size: 0, 30
-            size_hint_y: None
-            on_press: root.manager.current = 'profile'
+        BackgroundedBox:
+            background_color: .2 ,.2, .2, 1
+            size_hint: 1, None
+            height: 50
+            BoxLayout:
+                Button:
+                    text: 'Back to profile'
+                    size_hint: None, None
+                    size: 75, 50
+                    halign: 'center'
+                    valign: 'center'
+                    text_size: self.width, self.height
+                    on_press: root.manager.current = 'profile'
+            CustomLabel:
+                id: header
+                foreground_hex: 'AAAAAA'
+                halign: 'center'
+                valign: 'center'
+                font_size: '25sp'
+            Widget:
         ScrollView:
             BackgroundedBox:
                 id: chat_list
                 orientation: 'vertical'
                 size_hint_y: None
-                height: (len(self.children) - 1) * 150
-
-                Widget:
-
         BoxLayout:
             size_hint_y: None
             height: 75
@@ -248,3 +254,94 @@ ScreenManager:
                 width: 75
                 text: 'Send'
                 on_press: root.send_message()
+
+# ImageFilterScreen
+<ImageFilterScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        BackgroundedBox:
+            background_color: .2 ,.2, .2, 1
+            size_hint: 1, None
+            height: 50
+            BoxLayout:
+                Button:
+                    text: 'Back to profile'
+                    size_hint: None, None
+                    size: 75, 50
+                    halign: 'center'
+                    valign: 'center'
+                    text_size: self.width, self.height
+                    on_press: root.manager.current = 'profile'
+        BoxLayout:
+#            on_touch_down: root.box_on_touch_down(*args)
+#            on_touch_move: root.box_on_touch_move(*args)
+#            on_touch_up: root.box_on_touch_up(*args)
+            BoxLayout:
+                id: wrapper
+                size_hint: 0,0
+                size: image.norm_image_size
+                on_touch_down: root.box_on_touch_down(*args)
+                on_touch_move: root.box_on_touch_move(*args)
+                on_touch_up: root.box_on_touch_up(*args)
+                Image:
+                    id: image
+                    keep_ratio: True
+                    allow_stretch: True
+                    size: self.texture_size
+            Widget:
+                id: crop_area
+                size_hint: 0,0
+                canvas:
+                    Color:
+                        rgba: 0.5,0.5,0.5,0.5
+                    Rectangle:
+                        id: crop_rect
+                        pos: (root.start_point_x, root.start_point_y)
+                        size: (root.end_point_x, root.end_point_y)
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                size_hint: 0.5, 1
+                text: 'Open file'
+                halign: 'center'
+                valign: 'center'
+                text_size: self.width, self.height
+                on_press: root.manager.current = 'open_file'
+            Widget:
+                width: 25
+                size_hint: None, 1
+            Button:
+                text: 'Apply'
+                on_press: root.apply_avatar()
+            Button:
+                text: 'Cancel'
+                on_press: root.cancel()
+
+<OpenFileScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        TextInput:
+            id: input_path
+            size_hint_y: None
+            height: 40
+            font_size: '20sp'
+            multiline: False
+            write_tab: False
+            text: file_chooser.path
+            on_text: file_chooser.path = self.text if isdir(self.text) else file_chooser.path
+        FileChooserListView:
+            id: file_chooser
+            filters: [lambda folder, filename: not filename.endswith('.sys')]
+            on_submit: root.open()
+        BoxLayout:
+            size_hint_y: None
+            height: 50
+            Button:
+                text: 'Open'
+                on_press: root.open()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.cancel()
+

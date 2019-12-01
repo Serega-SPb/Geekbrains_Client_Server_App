@@ -298,10 +298,14 @@ class MainWindow(QMainWindow):
     def recieve_message(self, msg):
         """ Method of handle of received message """
 
-        sender, msg = self.client.parse_recv_message(msg)
-        # TODO get from resp
-        time = datetime.now().strftime('%H:%M')
-        self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
+        sender, msg, recipient = self.client.parse_recv_message(msg)
+        if (recipient == '@ALL' and self.curr_chat_user == '@ALL') or \
+                (recipient != '@ALL' and sender == self.curr_chat_user):
+            # TODO get from resp
+            time = datetime.now().strftime('%H:%M')
+            self.add_message_in_chat(self.OTHER_SIDE, sender, msg, time)
+        else:
+            pass  # TODO add in cache
 
     def parse_message(self, msg):
         """ Method the parse chat messages gotten from server """
