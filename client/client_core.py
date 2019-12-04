@@ -368,4 +368,4 @@ class Client:
             msg.text = encryptor.decrypt_msg(msg.text.encode()).decode()
         else:
             msg.text = b64decode(msg.text).decode()
-        return msg.sender, msg.text
+        return msg.sender, msg.text, msg.to
