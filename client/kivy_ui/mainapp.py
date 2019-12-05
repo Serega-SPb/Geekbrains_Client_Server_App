@@ -309,10 +309,13 @@ class ImageFilterScreen(Screen):
         d = self.image.norm_image_size[0] / self.image.texture.size[0]
         st_x, st_y = self.start_point_x, self.start_point_y
         en_x, en_y = self.end_point_x, self.end_point_y
-        w, h = self.p_image.size
-
+        w, h = self.image.texture.size
+        h += h * 0.1  # magic
         x1, y1 = st_x/d, h - st_y/d
-        x2, y2 = st_x/d + en_x/d, h - st_y/d + en_y/d
+        x2, y2 = x1 + en_x/d, y1 - en_y/d
+
+        x1, x2 = x1 % w, x2 % w
+        y1, y2 = y1 % h, y2 % h
 
         if x1 > x2:
             x1, x2 = x2, x1
