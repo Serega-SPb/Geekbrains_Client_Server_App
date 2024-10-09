@@ -1,7 +1,7 @@
 alabaster==0.7.12
 altgraph==0.16.1
 astroid==2.3.2
-certifi==2022.12.7
+certifi==2024.7.4
 Babel==2.9.1
 bleach==3.3.0
 chardet==3.0.4
@@ -12,7 +12,7 @@ docutils==0.15.2
 entrypoints==0.3
 flake8==3.7.8
 future==0.18.3
-idna==2.8
+idna==3.7
 imagesize==1.1.0
 isort==4.3.21
 Jinja2==3.1.4
@@ -34,9 +34,9 @@ Pillow==10.3.0
 pkginfo==1.5.0.1
 pyasn1==0.4.7
 pycodestyle==2.5.0
-pycryptodome==3.9.0
+pycryptodome==3.19.1
 pyflakes==2.1.1
-Pygments==2.7.4
+Pygments==2.15.0
 PyInstaller==3.5
 pylint==2.4.3
 pymongo==4.6.3
