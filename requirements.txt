@@ -34,7 +34,7 @@ Pillow==10.3.0
 pkginfo==1.5.0.1
 pyasn1==0.4.7
 pycodestyle==2.5.0
-pycryptodome==3.9.0
+pycryptodome==3.19.1
 pyflakes==2.1.1
 Pygments==2.15.0
 PyInstaller==3.5
